@@ -1,7 +1,7 @@
-# This script is used to detect an AR tag through Webcam in real time
+# This script is used to detect an AR tag through Webcam in real time.
 # It displays two plots:
-# One to visualize the corners of the tag
-# One to visualize the pose of the tag (pitch, yaw, roll)
+# One to visualize the corners of the tag.
+# One to visualize the pose of the tag (pitch, yaw, roll).
 import numpy as np
 import cv2
 import cv2.aruco as ar
@@ -55,8 +55,6 @@ def detect():
         # A tag is detected
         if len(corners) > 0:
 
-            #            print(corners)
-
             focal_length = size[1]
             center = (size[1]/2, size[0]/2)
             camera_matrix = np.array(
@@ -68,9 +66,6 @@ def detect():
             # Get rotation and translation vectors
             rvec, tvec, _ = ar.estimatePoseSingleMarkers(
                 corners[0], marker_length, camera_matrix, dist_coeffs)
-
-#            print(rvec)
-#            print(tvec)
 
             picture = ar.drawAxis(picture, camera_matrix,
                                   dist_coeffs, rvec, tvec, marker_size)
