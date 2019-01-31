@@ -1,0 +1,48 @@
+#VRML_SIM R2019a utf8
+WorldInfo {
+  basicTimeStep 16
+}
+Viewpoint {
+  orientation -0.15215815276691713 0.9620467725920716 0.2265257245695031 1.994179646507212
+  position 27.864876424965743 15.09113845343894 0.7181809936107157
+}
+Background {
+  skyColor [
+    0.25 0.25 0.25
+  ]
+}
+RectangleArena {
+  translation 0.851592647191155 -5.329070518200751e-15 -8.510414679935742
+  floorSize 50 50
+  floorTileSize 1 1
+  floorAppearance Asphalt {
+  }
+  wallHeight 2
+  wallTileSize 1 1
+}
+DirectionalLight {
+  direction 1 -1 1
+  intensity 2
+  castShadows TRUE
+}
+BmwX5 {
+  translation 1.3534449389710077 0.07780644914914814 -32.424722503205864
+  rotation 1 4.618587598381098e-14 6.792578496497879e-14 -0.03271646383731837
+  name "Ego Vehicle"
+  controller "forward_collision_avoidance"
+  sensorsSlotFront [
+    DistanceSensor {
+      translation 0.08 0 0
+      rotation 0 1 0 1.5707
+      lookupTable [
+        0 0 0
+        0.1 0.1 0
+        999.9 999.9 0
+        1000 1000 0
+      ]
+    }
+  ]
+}
+TeslaModel3Simple {
+  translation 1.35510903238807 0.3999999999999627 12.120769114997904
+}
