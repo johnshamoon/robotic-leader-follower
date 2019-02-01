@@ -1,0 +1,66 @@
+#VRML_SIM R2019a utf8
+WorldInfo {
+  info [
+    "The MyBot robot, the robot used in the tutorial of Webots, with a Camera device"
+  ]
+  title "MyBot with a Camera"
+}
+Viewpoint {
+  orientation -0.31739393320404535 -0.895258384822688 -0.3126875686207208 1.6972925797212075
+  position -3.441408924733157 3.7624773450238154 -1.2034577990068327
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+Altino {
+  hidden translation_1 0 0 0
+  hidden rotation_1 -4.915413080154438e-07 0.9999999999990331 -1.300870881934511e-06 2.4190489936794943
+  hidden translation_2 0 0 0
+  hidden rotation_2 5.14395773417336e-07 0.9999999999994025 9.64498083066701e-07 2.1616831740055398
+  hidden translation_3 0 0 0
+  hidden rotation_3 0 1 0 1.078018060609663
+  hidden translation_4 0 0 0
+  hidden rotation_4 0 1 0 4.1863526205541906
+  translation 2.776444465979262 0.017354489556057007 -0.2051875308563373
+  rotation 0.002343970392236019 -0.9999915730068148 -0.0033704180981075967 1.796864222128898
+  controller "autonomous_vehicle"
+}
+Floor {
+  tileSize 20 20
+}
+WoodenPallet {
+  translation -0.5000000000000021 0 0.5699999999999996
+  name "wooden pallet(5)"
+}
+WoodenPallet {
+  translation 0.8500000000000003 0 0.5999999999999999
+  name "wooden pallet(1)"
+}
+WoodenPallet {
+  translation 2.559999999999993 0 0.5999999999999999
+  name "wooden pallet(2)"
+}
+WoodenPallet {
+  translation 2.6099999999999954 0 -1.1700000000000008
+  name "wooden pallet(3)"
+}
+WoodenPallet {
+  translation -0.5000000000000021 0 -1.1400000000000008
+  name "wooden pallet(4)"
+}
+WoodenPallet {
+  translation -0.5000000000000021 0 -2.6699999999999973
+  name "wooden pallet(6)"
+}
+WoodenPallet {
+  translation 0.8399999999999983 0 -2.6699999999999973
+  name "wooden pallet(7)"
+}
+WoodenPallet {
+  translation 2.6399999999999983 0 -2.6699999999999973
+  name "wooden pallet(8)"
+}
+WoodenPallet {
+  translation 0.8500000000000003 0 -1.1500000000000006
+}
