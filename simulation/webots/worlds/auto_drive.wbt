@@ -1,9 +1,9 @@
 #VRML_SIM R2019a utf8
 WorldInfo {
   info [
-    "The MyBot robot, the robot used in the tutorial of Webots, with a Camera device"
+    "Object Avoidance
   ]
-  title "MyBot with a Camera"
+  title "Object Avoidance"
 }
 Viewpoint {
   orientation -0.31739393320404535 -0.895258384822688 -0.3126875686207208 1.6972925797212075
