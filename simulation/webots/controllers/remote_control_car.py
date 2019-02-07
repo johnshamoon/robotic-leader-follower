@@ -1,6 +1,6 @@
-from vehicle import Driver
-from controller import Keyboard
 from numpy import pi
+from controller import Keyboard
+from vehicle import Driver
 
 ego_vehicle = Driver()
 keyboard = Keyboard()
@@ -16,41 +16,43 @@ LEFT = -RIGHT
 FORWARD = 0
 BACKWARD = -FORWARD
 NEUTRAL = 0
+SIGNALS = {
+    (-1, -1): (NEUTRAL, NEUTRAL),
 
-def set_vel_and_steer(v, s):
-    ego_vehicle.setCruisingSpeed(v)
-    ego_vehicle.setSteeringAngle(s)
+    (keyboard.LEFT, -1): (NEUTRAL, LEFT),
+    (-1, keyboard.LEFT): (NEUTRAL, LEFT),
+
+    (keyboard.RIGHT, -1): (NEUTRAL, RIGHT),
+    (-1, keyboard.RIGHT): (NEUTRAL, RIGHT),
+
+    (keyboard.UP, -1): (SPEED, FORWARD),
+    (-1, keyboard.UP): (SPEED, FORWARD),
+
+    (keyboard.DOWN, -1): (-SPEED, BACKWARD),
+    (-1, keyboard.DOWN): (-SPEED, BACKWARD),
+
+    (keyboard.UP, keyboard.RIGHT): (SPEED, FORWARD_RIGHT),
+    (keyboard.RIGHT, keyboard.UP): (SPEED, FORWARD_RIGHT),
+    (keyboard.DOWN, keyboard.RIGHT): (-SPEED, BACKWARD_RIGHT),
+    (keyboard.RIGHT, keyboard.DOWN): (-SPEED, BACKWARD_RIGHT),
+
+    (keyboard.UP, keyboard.LEFT): (SPEED, FORWARD_LEFT),
+    (keyboard.LEFT, keyboard.UP): (SPEED, FORWARD_LEFT),
+    (keyboard.DOWN, keyboard.LEFT): (-SPEED, BACKWARD_LEFT),
+    (keyboard.LEFT, keyboard.DOWN): (-SPEED, BACKWARD_RIGHT)
+}
+
+
+def set_vel_and_steer(speed_angle):
+    ego_vehicle.setCruisingSpeed(speed_angle[0])
+    ego_vehicle.setSteeringAngle(speed_angle[1])
+
 
 def main():
     while ego_vehicle.step() != -1:
-        key = keyboard.getKey()
-        key_2 = keyboard.getKey()
-        if key == keyboard.UP and key_2 == keyboard.LEFT:
-            set_vel_and_steer(SPEED, FORWARD_LEFT)
-        elif key == keyboard.UP and key_2 == keyboard.RIGHT:
-            set_vel_and_steer(SPEED, FORWARD_RIGHT)
-        elif key == keyboard.DOWN and key_2 == keyboard.LEFT:
-            set_vel_and_steer(-SPEED, BACKWARD_LEFT)
-        elif key == keyboard.DOWN and key_2 == keyboard.RIGHT:
-            set_vel_and_steer(-SPEED, BACKWARD_RIGHT)
-        elif key == keyboard.LEFT and key_2 == keyboard.UP:
-            set_vel_and_steer(SPEED, LEFT)
-        elif key == keyboard.RIGHT and key_2 == keyboard.UP:
-            set_vel_and_steer(SPEED, RIGHT)
-        elif key == keyboard.LEFT and key_2 == keyboard.DOWN:
-            set_vel_and_steer(-SPEED, BACKWARD_LEFT)
-        elif key == keyboard.RIGHT and key_2 == keyboard.DOWN:
-            set_vel_and_steer(-SPEED, BACKWARD_RIGHT)
-        elif key == keyboard.LEFT:
-            set_vel_and_steer(NEUTRAL, LEFT)
-        elif key == keyboard.RIGHT:
-            set_vel_and_steer(NEUTRAL, RIGHT)
-        elif key == keyboard.UP:
-            set_vel_and_steer(SPEED, FORWARD)
-        elif key == keyboard.DOWN:
-            set_vel_and_steer(-SPEED, BACKWARD)
-        else:
-            set_vel_and_steer(NEUTRAL, NEUTRAL)
+        set_vel_and_steer(SIGNALS[(keyboard.getKey(), keyboard.getKey())])
+
+
 
 if __name__ == '__main__':
     main()
