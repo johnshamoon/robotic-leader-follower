@@ -2,10 +2,6 @@
 import numpy as np
 import cv2
 import cv2.aruco as ar
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from matplotlib import style
-
 
 RESOLUTIONS = {
         1080: [1920, 1080],
@@ -48,7 +44,6 @@ def detect():
         # FOR MARKER DRAWING
         # UNCOMMENT TO SEE BORDER AROUND TAG IN CAMERA VIEW
         #picture = ar.drawDetectedMarkers(picture, corners)
-
 
         if len(corners) == 0:
             continue
