@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+CXX_SOURCES = src/follower.cpp src/follower_vehicle.cpp
+
 INCLUDE = -I"$(WEBOTS_AUTOMOBILE_PATH)/CppDriver/include"
 LIBRARIES = -L"$(WEBOTS_AUTOMOBILE_PATH)/CppDriver" -lCppDriver
 
