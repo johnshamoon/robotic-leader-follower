@@ -1,7 +1,4 @@
 # This script is used to detect an AR tag through Webcam in real time.
-# It displays two plots:
-# One to visualize the corners of the tag.
-# One to visualize the pose of the tag (pitch, yaw, roll).
 import numpy as np
 import cv2
 import cv2.aruco as ar
@@ -10,18 +7,16 @@ import matplotlib.animation as animation
 from matplotlib import style
 
 
+RESOLUTIONS = {
+        1080: [1920, 1080],
+        720: [1280, 720],
+        480: [720, 480]
+}
+
+
 def detect():
 
-    # MATPLOTLIB
-    ###
-    style.use('fivethirtyeight')
-    fig = plt.figure(figsize=(10, 6))
-    ax1 = fig.add_subplot(1, 2, 1, aspect='equal', adjustable='box')
-    ax1.set_title('Corner Points')
-    ax2 = fig.add_subplot(1, 2, 2, aspect='equal', adjustable='box')
-    ax2.set_title('Tag Pose')
-    ax2.legend(loc='upper right')
-    ###
+    RESOLUTION = 480 # Use this to set the resolution for video feed
 
     cap = cv2.VideoCapture(0)
 
@@ -45,58 +40,41 @@ def detect():
 
         size = frame.shape
 
-        picture = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        picture = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         corners, ids, rejected_img_points = ar.detectMarkers(
             picture, ar_dict, parameters=parameters)
 
-        picture = ar.drawDetectedMarkers(picture, corners)
+        # FOR MARKER DRAWING
+        # UNCOMMENT TO SEE BORDER AROUND TAG IN CAMERA VIEW
+        #picture = ar.drawDetectedMarkers(picture, corners)
+
+
+        if len(corners) == 0:
+            continue
 
         # A tag is detected
-        if len(corners) > 0:
+        print(corners[0])
+        focal_length = size[1]
+        center = (size[1]/2, size[0]/2)
+        camera_matrix = np.array(
+            [[focal_length, 0, center[0]],
+             [0, focal_length, center[1]],
+             [0, 0, 1]], dtype='double'
+        )
 
-            focal_length = size[1]
-            center = (size[1]/2, size[0]/2)
-            camera_matrix = np.array(
-                [[focal_length, 0, center[0]],
-                 [0, focal_length, center[1]],
-                 [0, 0, 1]], dtype='double'
-            )
+        # Get rotation and translation vectors
+        rvec, tvec, _ = ar.estimatePoseSingleMarkers(
+            corners[0], marker_length, camera_matrix, dist_coeffs)
 
-            # Get rotation and translation vectors
-            rvec, tvec, _ = ar.estimatePoseSingleMarkers(
-                corners[0], marker_length, camera_matrix, dist_coeffs)
+        # FOR POSE DRAWING
+        # UNCOMMENT TO SEE AXIS ON THE TAG IN CAMERA VIEW
+        #picture = ar.drawAxis(picture, camera_matrix,
+        #                      dist_coeffs, rvec, tvec, marker_size)
 
-            picture = ar.drawAxis(picture, camera_matrix,
-                                  dist_coeffs, rvec, tvec, marker_size)
-
-            # MATPLOTLIB
-            ###
-            for corner in corners[0]:
-                for c in corner:
-                    ax1.scatter(c[0], c[1])
-
-            ax2.scatter(rvec[0][0][0], rvec[0][0][0],
-                        color='red', label='pitch')
-            ax2.scatter(rvec[0][0][1], rvec[0][0][1],
-                        color='blue', label='roll')
-            ax2.scatter(rvec[0][0][2], rvec[0][0][2],
-                        color='green', label='yaw')
-
-            fig.canvas.draw()
-            ax1.set_title('Tag Corners')
-            ax1.set_xlabel('x')
-            ax1.set_ylabel('y')
-            ax2.set_title('Tag Pose')
-            ax2.legend(loc='lower right', fontsize='x-small')
-            plt.pause(0.001)
-            fig.show()
-            ax1.clear()
-            ax2.clear()
-            fig.canvas.flush_events()
-            ###
-
-        cv2.imshow('frame', picture)
+        # FOR CAMERA VIEW
+        # UNCOMMENT TO SEE THE CAMERA FEED
+        #cv2.imshow('frame', picture)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
