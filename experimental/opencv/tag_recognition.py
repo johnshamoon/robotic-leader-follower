@@ -2,6 +2,7 @@
 import numpy as np
 import cv2
 import cv2.aruco as ar
+import sys
 
 RESOLUTIONS = {
         1080: [1920, 1080],
@@ -12,9 +13,17 @@ RESOLUTIONS = {
 
 def detect():
 
+    if len(sys.argv) < 2:
+        with_feed = False
+    elif sys.argv[1] == '-withfeed':
+        with_feed = True
+
     RESOLUTION = 480 # Use this to set the resolution for video feed
 
     cap = cv2.VideoCapture(0)
+
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, RESOLUTIONS[RESOLUTION][0])
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, RESOLUTIONS[RESOLUTION][1])
 
     corners = np.array([[0, 0]] * 4)
 
@@ -41,9 +50,8 @@ def detect():
         corners, ids, rejected_img_points = ar.detectMarkers(
             picture, ar_dict, parameters=parameters)
 
-        # FOR MARKER DRAWING
-        # UNCOMMENT TO SEE BORDER AROUND TAG IN CAMERA VIEW
-        #picture = ar.drawDetectedMarkers(picture, corners)
+        if with_feed:
+            picture = ar.drawDetectedMarkers(picture, corners)
 
         if len(corners) == 0:
             continue
@@ -62,14 +70,11 @@ def detect():
         rvec, tvec, _ = ar.estimatePoseSingleMarkers(
             corners[0], marker_length, camera_matrix, dist_coeffs)
 
-        # FOR POSE DRAWING
-        # UNCOMMENT TO SEE AXIS ON THE TAG IN CAMERA VIEW
-        #picture = ar.drawAxis(picture, camera_matrix,
-        #                      dist_coeffs, rvec, tvec, marker_size)
+        if with_feed:
+            picture = ar.drawAxis(picture, camera_matrix,
+                          dist_coeffs, rvec, tvec, marker_size)
+            cv2.imshow('frame', picture)
 
-        # FOR CAMERA VIEW
-        # UNCOMMENT TO SEE THE CAMERA FEED
-        #cv2.imshow('frame', picture)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
