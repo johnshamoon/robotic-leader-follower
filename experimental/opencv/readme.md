@@ -14,6 +14,10 @@ This script can be used to generate a new AR tag. It will be saved in the same d
 #### tag_recognition.py 
 This script can be used to recognize a tag. It serves more as a "backend" script for recognizing ARTag objects. The script will print a 4x2 array to the console to signify the pixel location of each corner in the camera space.
 
+You can get the camera feed of this script by running the following command in your console:
+
+>python tag_recognition.py -withfeed
+
 #### tag_visualization.py 
 This script can be used to visualize a tag. It does so by opening the webcam on your machine. Recognized tags should have a green border around them with a red dot on one corner to signify the current rotation of the tag. 
 
