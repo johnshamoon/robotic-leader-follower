@@ -50,8 +50,10 @@ def set_vel_and_steer(speed_angle):
 
 def main():
     while ego_vehicle.step() != -1:
-        set_vel_and_steer(SIGNALS[(keyboard.getKey(), keyboard.getKey())])
-
+        try:
+            set_vel_and_steer(SIGNALS[(keyboard.getKey(), keyboard.getKey())])
+        except KeyError:
+            pass
 
 
 if __name__ == '__main__':
