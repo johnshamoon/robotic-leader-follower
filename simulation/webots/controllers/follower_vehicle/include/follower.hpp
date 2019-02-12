@@ -4,7 +4,6 @@
 #include <memory>
 #include <string>
 
-#include <webots/DistanceSensor.hpp>
 #include <webots/vehicle/Driver.hpp>
 #include <webots/Camera.hpp>
 
