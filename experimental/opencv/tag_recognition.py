@@ -17,6 +17,8 @@ def detect():
         with_feed = False
     elif sys.argv[1] == '-withfeed':
         with_feed = True
+    else:
+        with_feed = False
 
     RESOLUTION = 480 # Use this to set the resolution for video feed
 
