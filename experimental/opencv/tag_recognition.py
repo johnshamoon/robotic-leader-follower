@@ -4,10 +4,15 @@ import cv2
 import cv2.aruco as ar
 import sys
 
+
 RESOLUTIONS = {
         1080: [1920, 1080],
         720: [1280, 720],
-        480: [720, 480]
+        480: [720, 480],
+        360: [480, 360],
+        240: [426, 240],
+        180: [320, 180],
+        90: [160, 90]
 }
 
 
@@ -20,7 +25,7 @@ def detect():
     else:
         with_feed = False
 
-    RESOLUTION = 480 # Use this to set the resolution for video feed
+    RESOLUTION = 90 # Use this to set the resolution for video feed
 
     cap = cv2.VideoCapture(0)
 
