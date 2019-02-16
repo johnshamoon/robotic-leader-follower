@@ -26,7 +26,7 @@ def detect():
 
     RESOLUTION = 90 # Use this to set the resolution for video feed
 
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
 
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, RESOLUTIONS[RESOLUTION][0])
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, RESOLUTIONS[RESOLUTION][1])
