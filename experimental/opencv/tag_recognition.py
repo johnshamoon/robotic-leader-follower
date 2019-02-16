@@ -24,7 +24,7 @@ def detect():
     else:
         with_feed = False
 
-    RESOLUTION = 90 # Use this to set the resolution for video feed
+    RESOLUTION = 480 # Use this to set the resolution for video feed
 
     cap = cv2.VideoCapture(0)
 
