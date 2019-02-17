@@ -63,7 +63,6 @@ class InputController:
     BUTTON_MAP_BUFFER = 0x200
 
 
-
     def __init__(self, debug=False):
         self.js = open('/dev/input/js0', 'rb')
         self.axis_states = {}
