@@ -28,7 +28,7 @@ class Leader:
         self.db_file = getcwd() + "/../SunFounder_PiCar-V/remote_control/remote_control/driver/config"
         picar.setup()
 
-        self.fw = front_wheels.Front_Wheels(debug=True, db=self.db_file)
+        self.fw = front_wheels.Front_Wheels(debug=False, db=self.db_file)
         self.bw = back_wheels.Back_Wheels(debug=False, db=self.db_file)
 
         self.bw.ready()
