@@ -25,7 +25,7 @@ class Leader:
 
         camera = Camera()
         camera.turn_down(120)
-        self.db_file = os.getcwd() + "/../SunFounder_PiCar-V/remote_control/remote_control/driver/config"
+        self.db_file = getcwd() + "/../SunFounder_PiCar-V/remote_control/remote_control/driver/config"
         picar.setup()
 
         self.fw = front_wheels.Front_Wheels(debug=True, db=self.db_file)
