@@ -54,7 +54,6 @@ class InputController:
 
     EV_KEY = 0x01
     EV_REL = 0x02
-    INITIAL_STATE = 0x81
 
     AXIS_CALIBRATION = 32767.0
     DEVICE_NAME_MAX_LENGTH = 0x64
@@ -120,10 +119,6 @@ class InputController:
         event = self.js.read(8)
         if event:
             time, type, code, value = struct.unpack(self.FORMAT, event)
-            # Ignore initial states
-            if code == self.INITIAL_STATE:
-                return -1, -1
-
             # Buttons
             if code == self.EV_KEY:
                 button = self.button_map[value]
@@ -136,9 +131,8 @@ class InputController:
                         print("%s released" % (button))
                 else:
                     return button, 1
-
             # Axes
-            if code == self.EV_REL:
+            elif code == self.EV_REL:
                 axis = self.axis_map[value]
                 if axis:
                     axis_position = type / self.AXIS_CALIBRATION
@@ -147,6 +141,8 @@ class InputController:
                         print("%s: %.3f" % (axis, axis_position))
                     else:
                         return axis, axis_position
+            else:
+                return -1, -1
 
 
 def main():
