@@ -1,10 +1,12 @@
+import sys
+from os import getcwd
+sys.path.append("../SunFounder_PiCar-V/remote_control/remote_control/driver")
+
 from inputcontroller import InputController
+
+from camera import Camera
 from picar import back_wheels, front_wheels
 import picar
-import sys
-
-sys.path.append("/home/pi/SunFounder_PiCar-V/remote_control/remote_control/driver")
-from camera import Camera
 
 
 """
@@ -23,8 +25,7 @@ class Leader:
 
         camera = Camera()
         camera.turn_down(120)
-
-        self.db_file = "config"
+        self.db_file = os.getcwd() + "/../SunFounder_PiCar-V/remote_control/remote_control/driver/config"
         picar.setup()
 
         self.fw = front_wheels.Front_Wheels(debug=True, db=self.db_file)
