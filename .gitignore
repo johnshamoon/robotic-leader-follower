@@ -1,0 +1,12 @@
+*.pyc
+
+.DS_Store
+.DS_Store?
+
+*.swp
+*.swo
+
+.vscode/*
+settings.json
+
+*.wbproj
