@@ -80,7 +80,7 @@ def main():
     controller = InputController()
 
     while True:
-        code, position = controller.getInput()
+        code, position = controller.get_input()
         if code == 'right_trigger':
             leader.set_speed(position)
             leader.drive()
