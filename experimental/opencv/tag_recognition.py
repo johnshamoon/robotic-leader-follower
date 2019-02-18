@@ -34,8 +34,10 @@ def detect():
 
     corners = np.array([[0, 0]] * 4)
 
-    marker_length = 0.25
-    marker_size = 0.10
+    # Length of the AR Tag
+    # In meters
+    marker_length = 0.06
+    marker_size = 0.01
 
     ar_dict = ar.Dictionary_get(ar.DICT_6X6_250)
     parameters = ar.DetectorParameters_create()
@@ -46,6 +48,18 @@ def detect():
 
     camera_matrix = calibration_params.getNode("cameraMatrix").mat()
     dist_coeffs = calibration_params.getNode("distCoeffs").mat()
+
+    ret, frame = cap.read()
+    size = frame.shape
+
+    focal_length = size[1]
+    center = (size[1]/2, size[0]/2)
+
+    camera_matrix = np.array(
+        [[focal_length, 0, center[0]],
+         [0, focal_length, center[1]],
+         [0, 0, 1]], dtype='double'
+    )
 
     while True:
         ret, frame = cap.read()
@@ -64,18 +78,13 @@ def detect():
             continue
 
         # A tag is detected
-        print(corners[0])
-        focal_length = size[1]
-        center = (size[1]/2, size[0]/2)
-        camera_matrix = np.array(
-            [[focal_length, 0, center[0]],
-             [0, focal_length, center[1]],
-             [0, 0, 1]], dtype='double'
-        )
+        print('Corners:',corners[0])
 
         # Get rotation and translation vectors
         rvec, tvec, _ = ar.estimatePoseSingleMarkers(
             corners[0], marker_length, camera_matrix, dist_coeffs)
+
+        print('Translation:',tvec)
 
         if with_feed:
             picture = ar.drawAxis(picture, camera_matrix,

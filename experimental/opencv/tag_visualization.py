@@ -43,8 +43,8 @@ def detect():
 
     corners = np.array([[0, 0]] * 4)
 
-    marker_length = 0.25
-    marker_size = 0.10
+    marker_length = 0.06
+    marker_size = 0.01
 
     ar_dict = ar.Dictionary_get(ar.DICT_6X6_250)
     parameters = ar.DetectorParameters_create()
