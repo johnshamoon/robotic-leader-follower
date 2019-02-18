@@ -114,7 +114,7 @@ class InputController:
     If an axis is being used, the value will be in [-1, 1]. When the input on
     the axis stops, the code is -1 and the position is -2.
     """
-    def getInput(self):
+    def get_input(self):
         # Read 8 bytes: 2 for the type, 2 for the code, 4 for the value.
         event = self.js.read(8)
         if event:
@@ -148,7 +148,7 @@ class InputController:
 def main():
     controller = InputController(debug=True)
     while True:
-        controller.getInput()
+        controller.get_input()
 
 
 if __name__ == '__main__':
