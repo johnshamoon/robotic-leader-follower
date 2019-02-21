@@ -11,9 +11,11 @@ Wayne State University Senior Capstone Project to develop a semi-autonomous robo
    * This will be referred to as $PI_NAME in step 9.
 6. Enter the WiFi SSID.
 7. Enter the WiFi password.
-8. Reboot
-9. On another computer, open a terminal and enter: ssh pi@$PI_NAME
-10. Enter the password.
+8. Select Interfacing Options
+9. Enable SSH
+10. Reboot
+11. On another computer, open a terminal and enter: ssh pi@$PI_NAME
+12. Enter the password.
 
 ### Setup Repository After SSH
 1. sudo apt-get update
