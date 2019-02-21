@@ -63,7 +63,7 @@ class Leader:
 
 
     def turn_straight(self):
-        self.fw.turn(STRAIGHT_ANGLE)
+        self.fw.turn(self.STRAIGHT_ANGLE)
 
 
     def turn(self,position):
