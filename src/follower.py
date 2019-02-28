@@ -10,96 +10,145 @@ from tagrec import TagRecognition
 import numpy as np
 
 """
-Follower vehicle class.
+Autonomous follower vehicle to follow another vehicle.
 
-Takes input from camera and follows another vehicle.
+Takes input from camera and autonomously follows another vehicle with an ARTag
+mounted at the rear-center of the leader vehicle.
 """
 class Follower:
-
     def __init__(self):
+        # Car length
         self.MAX_DISTANCE = 0.28
         self.MIN_DISTANCE = self.MAX_DISTANCE / 3
         self.FOLLOWER_MAX_SPEED = 100
         self.LEADER_MAX_SPEED = self.FOLLOWER_MAX_SPEED - 25
-        self.CAMERA_MIN_PAN = 30
-        self.CAMERA_MAX_PAN = 120
 
-        self.db_file = getcwd() + "/../SunFounder_PiCar-V/remote_control/remote_control/driver/config"
         picar.setup()
 
-        self.fw = front_wheels.Front_Wheels(debug=False, db=self.db_file)
-        self.bw = back_wheels.Back_Wheels(debug=False, db=self.db_file)
+        db_file = getcwd() + "/../SunFounder_PiCar-V/remote_control/remote_control/driver/config"
+        self._fw = front_wheels.Front_Wheels(debug=False, db=db_file)
+        self._bw = back_wheels.Back_Wheels(debug=False, db=db_file)
 
-        self.bw.ready()
-        self.fw.ready()
+        self._fw.ready()
+        self._bw.ready()
 
-        self.fw.calibration()
+        self._fw.calibration()
 
-        self.camera = Camera()
+        self._camera = Camera()
         self.reset_camera()
 
-        self.tag = TagRecognition()
-        self.cycle = 0
-        self.decision = 0
-        self.speed = 0
+        self._tag = TagRecognition()
+        self._speed = 0
 
-        self.camera_offset = 0
+        self._distance = 0
+        self._turn_angle = 0
+        self._decision = 0
 
 
+    """
+    Drives the vehicle forward and avoids collisions with recognized objects.
+
+    Manages the wheel speed to avoid collisions depending on the distance to
+    the recognized object.
+    """
     def drive(self):
-        self.bw.speed = self.speed
-#        self.bw.speed = 0
-        self.bw.forward()
+        if self._distance < self.MIN_DISTANCE:
+            self._speed = 0
+        elif self._distance >= self.MAX_DISTANCE:
+            self._speed = self.FOLLOWER_MAX_SPEED
+        else:
+            self._speed = self.LEADER_MAX_SPEED
+
+        self._bw.speed = self._speed
+        self._bw.forward()
 
 
+    """
+    Stops the vehicle.
+    """
     def stop(self):
-        self.bw.speed = 0
-        self.bw.forward()
+        self._bw.speed = 0
+        self._bw.forward()
 
 
-    def turn_angle(self, angle, decision):
-        if decision == -1: # [45, 90]
-            angle *= -1
-        elif decision == 1: # [90, 135]
-            angle = 180 - angle
+    """
+    Turn the wheels towards the last recognized object.
+    """
+    def turn(self):
+        self.convert_camera_angle()
+        self._fw.turn(self._turn_angle)
+
+
+    """
+    Converts the camera's angle scale to the same scale as the wheels.
+
+    The camera reports objects directly in front of it as 90 degrees. Everything
+    to the left of center is negative ranging from [-45, -90) with -45 being the
+    leftmost angle. Everything to the right of center is positive ranging from
+    (90, 135] with 135 being the rightmost angle.
+
+    The wheels turn on a range of [45, 135] with 45 being the rightmost, 135
+    being the leftmost, and 90 being center.
+    """
+    def convert_camera_angle(self):
+        if self._decision == -1:
+            self._turn_angle *= -1
+        elif self._decision == 1:
+            self._turn_angle = 180 - self._turn_angle
         else:
-            angle = 90
-        self.fw.turn(angle)
+            self._turn_angle = 90
 
 
+    """
+    Resets the camera to the default position.
+
+    The default position is tilted to 120 degrees and panned to 90 degrees.
+    """
     def reset_camera(self):
-        self.camera.tilt_servo.write(120)
-        self.camera.tilt_servo.write(0)
-        self.camera.turn_down(120)
-        self.camera.pan_servo.write(90)
+        self._camera.turn_down(120)
+        self._camera.pan_servo.write(90)
 
 
+    """
+    Detects an ARTag and gets the object's data.
+
+    If an ARTag is detected, the object's distance and turning angle will be
+    updated and detect() will return True. If an ARTag is not detected, detect()
+    will return False.
+    """
+    def detect(self):
+        obj_data = self._tag.detect()
+        detected = False
+
+        if obj_data:
+            detected = True
+            self._distance = obj_data['z']
+            self._turn_angle = np.degrees(obj_data['direction'])
+            self._decision = obj_data['decision']
+
+        return detected
+
+
+    """
+    Follow an ARTag if one is found.
+
+    If an ARTag is detected, the follower vehicle will turn towards it and
+    manage speed to avoid collisions. If an ARTag is not detected, the vehicle
+    will stop.
+    """
     def follow(self):
-        obj_data = self.tag.detect()
-        if not obj_data:
-            self.stop()
-            return
-
-        distance = obj_data['z']
-        angle = obj_data['direction']
-        angle *= (180 / np.pi)
-        decision = obj_data['decision']
-
-        if distance < self.MIN_DISTANCE:
-            self.speed = 0
-        elif distance >= self.MAX_DISTANCE:
-            self.speed = 100
+        if self.detect():
+            self.drive()
+            self.turn()
         else:
-            self.speed = self.LEADER_MAX_SPEED
-
-        self.drive()
-        self.turn_angle(angle, decision)
+            self.stop()
 
 
 def main():
     follower = Follower()
     while True:
         follower.follow()
+
 
 if __name__ == '__main__':
     main()
