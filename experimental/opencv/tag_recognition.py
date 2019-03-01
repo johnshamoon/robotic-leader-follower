@@ -15,6 +15,10 @@ RESOLUTIONS = {
         90: [160, 90]
 }
 
+def get_direction(object_x, object_z):
+    turn_angle = np.arctan(object_z / object_x)
+
+    return turn_angle
 
 def detect():
 
@@ -26,6 +30,9 @@ def detect():
         with_feed = False
 
     RESOLUTION = 90 # Use this to set the resolution for video feed
+
+    DEADZONE_RIGHT = 1.45
+    DEADZONE_LEFT = -DEADZONE_RIGHT
 
     cap = cv2.VideoCapture(0)
 
@@ -84,7 +91,23 @@ def detect():
         rvec, tvec, _ = ar.estimatePoseSingleMarkers(
             corners[0], marker_length, camera_matrix, dist_coeffs)
 
-        print('Translation:',tvec)
+        object_x = tvec[0][0][0]
+        object_z = tvec[0][0][2]
+
+        print('X Distance',object_x)
+        print('Z Distance',object_z)
+
+        direction = get_direction(object_x, object_z)
+
+        print('Direction: ',direction)
+        
+        if DEADZONE_LEFT < direction < 0:
+            print('Turning Left')
+        elif 0 < direction < DEADZONE_RIGHT:
+            print('Turning Right')
+        else:
+            print('Going Straight')
+       
 
         if with_feed:
             picture = ar.drawAxis(picture, camera_matrix,
