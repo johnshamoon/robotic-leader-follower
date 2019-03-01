@@ -89,7 +89,7 @@ Compiling OpenCV will most likely require more RAM than the Pi has. We can solve
    * Verify that the file was created with the correct amount of memory.
 5. sudo chmod 600 /swapfile
 6. sudo mkswap /swapfile
-7. sudo swapon /s
+7. sudo swapon /swapfile
 8. free -m
    * Verify that the swapfile has been turned on.
 9. Our swapfile changes will reset when the Pi reboots. Add the following line in /etc/fstab to make these change permanent:
