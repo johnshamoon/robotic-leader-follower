@@ -1,18 +1,16 @@
 from follower import Follower
+import time
 
 follower = Follower()
 
 def seek():
-    #tag_data = follower.detect()
-    turn = follower.turn()
-
     if follower.detect() == False:
-        print('Detect False')
-        follower._speed = follower.LEADER_MAX_SPEED
-        turn = turn + 35
+        angle = follower._turn_angle + 45
+        follower.turn_camera_left(angle)
+        follower.stop()
     else:
-        print("Detect True")
-        #print(tag_data)
+        follower.reset_camera()
+        follower.drive()
 
 def main():
     while True:
