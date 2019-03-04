@@ -4,17 +4,20 @@ import time
 follower = Follower()
 
 def seek():
-    if follower.detect() == False:
-        angle = follower._turn_angle + 45
-        follower.turn_camera_left(angle)
-        follower.stop()
-    else:
-        follower.reset_camera()
-        follower.drive()
+	tag_data = follower.detect()
+
+	if tag_data == False:
+		follower.stop()
+	elif tag_data['x'] < 0:
+		follower.turn_camera_left(1)
+	elif tag_data['x'] > 0:
+		follower.turn_camera_right(1)
+	else:
+		follower.reset_camera()
 
 def main():
-    while True:
-        seek()
+	while True:
+		seek()
 
 if __name__ == '__main__':
-    main()
+    main()	
