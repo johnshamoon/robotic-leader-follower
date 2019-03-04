@@ -4,7 +4,6 @@ sys.path.append("../SunFounder_PiCar-V/remote_control/remote_control/driver")
 
 from inputcontroller import InputController
 
-from camera import Camera
 from picar import back_wheels, front_wheels
 import picar
 
