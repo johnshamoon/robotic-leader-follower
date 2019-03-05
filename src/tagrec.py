@@ -155,7 +155,7 @@ class TagRecognition():
         '''
         yaw_matrix = pyr[4]
         yaw_angle = np.arccos(yaw_matrix[0][0])
-        yaw_angle = yaw_angle*(180/np.pi)
+        yaw_angle = np.degrees(yaw_angle)
 
         self._tag_data['x'] = object_x
         self._tag_data['z'] = object_z
