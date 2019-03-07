@@ -37,12 +37,13 @@ class Follower:
         self._camera = Camera()
         self.reset_camera()
 
-        self._tag = TagRecognition()
+        self._tag = TagRecognition(marker_length=0.025)
         self._speed = 0
 
         self._distance = 0
         self._turn_angle = 0
         self._decision = 0
+        self._yaw = 0
 
 
     """
@@ -92,16 +93,15 @@ class Follower:
     """
     def convert_camera_angle(self):
         if self._decision == -1:
-            self._turn_angle *= -1
+            self._turn_angle = np.abs(self._yaw - 90)
         elif self._decision == 1:
-            self._turn_angle = 180 - self._turn_angle
+            self._turn_angle = 90 + self._yaw
         else:
             self._turn_angle = 90
 
 
     """
     Resets the camera to the default position.
-
     The default position is tilted to 120 degrees and panned to 90 degrees.
     """
     def reset_camera(self):
@@ -125,6 +125,7 @@ class Follower:
             self._distance = obj_data['z']
             self._turn_angle = np.degrees(obj_data['direction'])
             self._decision = obj_data['decision']
+            self._yaw = obj_data['yaw']
 
         return detected
 
