@@ -1,6 +1,14 @@
+import os
+
 from follower import Follower
 from leader import Leader
 from tagrec import TagRecognition
+
+"""
+Returns whether or not a Bluetooth joystick is connected.
+"""
+def is_connected():
+    return os.path.exists('/dev/input/js0')
 
 
 """
