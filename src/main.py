@@ -2,6 +2,7 @@ from follower import Follower
 from leader import Leader
 from tagrec import TagRecognition
 import subprocess
+import time
 
 """
 Script to determine leader and follower roles.
@@ -51,6 +52,13 @@ def main():
 
         else:
             vehicle.follow()
+            if tag.detect() is None:
+                startTime = time.time()
+                while (time.time() - startTime) < 5:
+                    vehicle.follow()
+                btToggle('connect', btAddress)     
+                isLeader = True
+                vehicle = Leader()
 
 if __name__ == '__main__':
     main()
