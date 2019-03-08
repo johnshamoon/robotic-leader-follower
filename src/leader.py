@@ -33,6 +33,7 @@ class Leader:
     """The angle that the hardware associates as straight."""
 
 
+
     def __init__(self):
         self._controller = InputController()
 
@@ -133,7 +134,6 @@ class Leader:
                 self.turn_straight()
         elif code == 'left_stick_x':
             self.fw.turn(self.STRAIGHT_ANGLE + (self.fw.turning_max * position))
-
 
     def lead(self):
         """

@@ -1,19 +1,10 @@
 """
-Script to determine leader and follower roles.
+Experimental script for role swapping.
 
-Takes input from the camera to determine if the current vehicle
-should lead or follow based on whether or not there exists an ARTag
-in front of the vehicle.
-
-If an ARTag exists, the vehicle will become a follower vehicle.
-If an ARTag does not exist, the vehicle will become the leader vehicle.
-
-Authors: Zein Youssef and Steven Dropiewski
+Authors: Zein Youssef
 """
-<<<<<<< HEAD
-=======
-from time import sleep
-import os
+FILE_PATH = path.dirname(path.realpath(__file__))
+sys.path.append(FILE_PATH + "/../src")
 
 from bluetoothctl import Bluetoothctl
 from follower import Follower
@@ -22,7 +13,7 @@ from tagrec import TagRecognition
 
 import os
 import subprocess
-import time
+from time import sleep
 
 
 def is_controller_connected():
@@ -50,18 +41,9 @@ def disconnect_and_remove_device(bt, bt_addr):
     sleep(Follower.CYCLE_TIME)
     if any(d['mac_address'] == bt_addr for d in bt.get_paired_devices()):
         bt.remove(bt_addr)
-"""
-This function calls the ./bt_toggle script with the specified
-command and address
-"""
-def bt_toggle(command, address):
-    subprocess.call(['./bt_toggle.sh', command, address])
 
 
 def main():
-    """
-    The main driver program for the robotic leader-follower software.
-    """
     tag = TagRecognition()
     bt = Bluetoothctl()
     BT_ADDR = "5C:BA:37:26:6D:9A"
@@ -69,9 +51,7 @@ def main():
     # If an ARTag is detected, the vehicle will become a follower.
     # If an ARTag is not detected, the vehicle will become a leader.
     if tag.detect():
-        follower = Follower()
-        while True:
-            follower.follow()
+        vehicle = Follower()
     else:
         if not is_controller_connected():
             # If a controller is not connected, remove it to avoid problems
@@ -83,24 +63,6 @@ def main():
                 bt.connect(BT_ADDR)
                 sleep(Follower.CYCLE_TIME)
 
-        leader = Leader()
-        while True:
-            leader.lead()
-
-        isLeader = True
-    bt_address = '5C:BA:37:26:6D:9A'
-    bl = Bluetoothctl()
-    BT_ADDRESS = '5C:BA:37:26:6D:9A'
-
-    # If an ARTag is detected, there is a vehicle ahead of this vehicle so it will follow.
-    # If an ARTag is not detected, no vehicle is present so this vehicle will be a leader.
-    if tag.detect():
-        while is_controller_connected():
-            bl.disconnect('5C:BA:37:26:6D:9A')
-        vehicle = Follower()
-    else:
-        while not is_controller_connected():
-            bl.connect('5C:BA:37:26:6D:9A')
         vehicle = Leader()
 
     # This loop makes the vehicle move. If the vehicle sees an ARTag then
@@ -115,7 +77,8 @@ def main():
 
             if tag_visible:
                 while is_controller_connected():
-                    bl.disconnect('5C:BA:37:26:6D:9A')
+                    bt.disconnect('5C:BA:37:26:6D:9A')
+                    sleep(Follower.CYCLE_TIME)
                 vehicle = Follower()
         else:
             vehicle.follow()
@@ -127,13 +90,12 @@ def main():
 
             if (time.time() - start_time) > 5 and timer_set:
                 timer_set = False
-                bl.connect('5C:BA:37:26:6D:9A')
-          
+
                 disconnect_and_remove_device(bt,BT_ADDR)
                 bt.start_scan()
                 bt.connect('5C:BA:37:26:6D:9A')
                 sleep(Follower.CYCLE_TIME)
-            
+
                 if is_controller_connected():
                     vehicle = Leader()
                 else:
