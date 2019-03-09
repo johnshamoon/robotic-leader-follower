@@ -55,7 +55,7 @@ def main():
             vehicle.follow()
             if tag.detect() is not None:
                 startTime = time.time()
-            if (time.time() - startTime) < 5:
+            if (time.time() - startTime) > 5:
                 btToggle('connect', btAddress)     
                 isLeader = True
                 vehicle = Leader()
