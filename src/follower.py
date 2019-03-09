@@ -45,7 +45,7 @@ class Follower:
         self._turn_angle = 0
         self._decision = 0
         self._yaw = 0
-
+        
 
     """
     Drives the vehicle forward and avoids collisions with recognized objects.
