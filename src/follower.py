@@ -7,9 +7,9 @@ from picar import back_wheels, front_wheels
 import picar
 
 from tagrec import TagRecognition
+from math import pi
 import numpy as np
 
-import time
 """
 Autonomous follower vehicle to follow another vehicle.
 
@@ -38,17 +38,14 @@ class Follower:
         self._camera = Camera()
         self.reset_camera()
 
-        self._tag = TagRecognition()
+        self._tag = TagRecognition(marker_length=0.025)
         self._speed = 0
 
         self._distance = 0
         self._turn_angle = 0
         self._decision = 0
+        self._yaw = 0
 
-        self._turn_right = 0
-        self._turn_left = 0
-
-        self._camera_angle = 0
 
     """
     Drives the vehicle forward and avoids collisions with recognized objects.
@@ -67,6 +64,7 @@ class Follower:
         self._bw.speed = self._speed
         self._bw.forward()
 
+
     """
     Stops the vehicle.
     """
@@ -74,12 +72,29 @@ class Follower:
         self._bw.speed = 0
         self._bw.forward()
 
+
     """
     Turn the wheels towards the last recognized object.
+    Pans the camera towards the last recognized object.
     """
     def turn(self):
+        self.pan_camera()
         self.convert_camera_angle()
         self._fw.turn(self._turn_angle)
+
+
+    """
+    Follows the tag by panning camera towards the same direction as the wheels.
+    Turns camera in 5 step increments.
+    """
+    def pan_camera(self):
+        if self._turn_angle < self._decision:
+            self.turn_camera_left(5)
+        elif self._turn_angle > self._decision:
+            self.turn_camera_right(5)
+        else:
+            self.reset_camera()
+
 
     """
     Converts the camera's angle scale to the same scale as the wheels.
@@ -94,32 +109,32 @@ class Follower:
     """
     def convert_camera_angle(self):
         if self._decision == -1:
-            self._turn_angle *= -1
+            self._turn_angle = np.abs(self._yaw - 90)
         elif self._decision == 1:
-            self._turn_angle = 180 - self._turn_angle
+            self._turn_angle = 90 + self._yaw
         else:
             self._turn_angle = 90
 
+
     """
     Resets the camera to the default position.
-
-    The default position is tilted to 120 degrees and panned to 90 degrees.
+    The default position is panned to 90 degrees.
     """
-    
     def reset_camera(self):
         self._camera.turn_down(120)
         self._camera.pan_servo.write(90)
 
+
     """
     Definitions for turning the camera left and right
     """
+    def turn_camera_left(self, step):
+        self._camera.turn_left(step)
 
-    def _turn_camera_left(self, angle):
-        self._camera.turn_left(angle)
-
-    def _turn_camera_right(self, angle):
-        self._camera.turn_right(angle)
+    def turn_camera_right(self, step):
+        self._camera.turn_right(step)
     
+
     """
     Detects an ARTag and gets the object's data.
 
@@ -128,53 +143,36 @@ class Follower:
     will return False.
     """
     def detect(self):
-        tag_data = self._tag.detect()
+        obj_data = self._tag.detect()
+        detected = False
 
-        if tag_data:
-            self._distance = tag_data['z']
-            self._turn_angle = np.degrees(tag_data['direction'])
-            self._decision = tag_data['decision']
-            return tag_data
-        else:
-            return False
+        if obj_data:
+            detected = True
+            self._distance = obj_data['z']
+            self._turn_angle = np.degrees(obj_data['direction'])
+            self._decision = obj_data['decision']
+            self._yaw = obj_data['yaw']
 
-    """
-    Keeps the AR tag in view of the camera to avoid losing tag.
-    """
+        return detected
 
-    def track_tag(self):
-        tag_data = self.detect()
-        pan_angle = 5
-        
-        if tag_data == False:
-            self.stop()
-        elif tag_data['x'] < 0:
-            self._turn_camera_left(pan_angle)
-            self.turn()
-        elif tag_data['x'] > 0:
-            self._turn_camera_right(pan_angle)
-            self.turn()
-        
+
     """
     Follow an ARTag if one is found.
-
     If an ARTag is detected, the follower vehicle will turn towards it and
     manage speed to avoid collisions. If an ARTag is not detected, the vehicle
     will stop.
     """
-
     def follow(self):
         if self.detect():
             self.drive()
             self.turn()
         else:
-            self.track_tag()
+            self.stop()
 
 def main():
     follower = Follower()
     while True:
         follower.follow()
-
 
 if __name__ == '__main__':
     main()
