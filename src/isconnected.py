@@ -6,8 +6,8 @@ The method is_connected is called with one arguement, the bluetooth address of t
 """
 def is_connected(BluetoothAddress):
     BTADDR = BluetoothAddress
-    # This calls the bt_check and gets a return value based on 
-    # the exit value in bt_check.sh
+    # This calls the isconnected.sh and gets a return value based on 
+    # the exit value in isconnected.sh
     if subprocess.call(['./isconnected.sh', BTADDR]) == 1:
         return True
     else:
