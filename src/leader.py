@@ -4,7 +4,6 @@ sys.path.append("../SunFounder_PiCar-V/remote_control/remote_control/driver")
 
 from inputcontroller import InputController
 
-from camera import Camera
 from picar import back_wheels, front_wheels
 import picar
 
@@ -21,10 +20,8 @@ class Leader:
 
 
     def __init__(self):
-        self.controller = InputController()
+        self._controller = InputController()
 
-        camera = Camera()
-        camera.turn_down(120)
         self.db_file = getcwd() + "/../SunFounder_PiCar-V/remote_control/remote_control/driver/config"
         picar.setup()
 
@@ -74,21 +71,22 @@ class Leader:
         else:
             self.turn_straight()
 
+    def lead(self):
+        code, position = self._controller.get_input()
+        if code == 'right_trigger':
+            self.set_speed(position)
+            self.drive()
+        if code == 'left_trigger':
+            self.set_speed(position)
+            self.reverse()
+        if code == 'dpad_left_right':
+            self.turn(position)
+
 
 def main():
     leader = Leader()
-    controller = InputController()
-
     while True:
-        code, position = controller.get_input()
-        if code == 'right_trigger':
-            leader.set_speed(position)
-            leader.drive()
-        if code == 'left_trigger':
-            leader.set_speed(position)
-            leader.reverse()
-        if code == 'dpad_left_right':
-            leader.turn(position)
+        leader.lead()
 
 
 if __name__ == '__main__':

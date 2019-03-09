@@ -7,7 +7,6 @@ from picar import back_wheels, front_wheels
 import picar
 
 from tagrec import TagRecognition
-from math import pi
 import numpy as np
 
 """
@@ -37,6 +36,7 @@ class Follower:
 
         self._camera = Camera()
         self.reset_camera()
+        self.
 
         self._tag = TagRecognition(marker_length=0.025)
         self._speed = 0
@@ -45,6 +45,7 @@ class Follower:
         self._turn_angle = 0
         self._decision = 0
         self._yaw = 0
+
 
     """
     Drives the vehicle forward and avoids collisions with recognized objects.
@@ -72,8 +73,7 @@ class Follower:
 
 
     """
-    Turn the wheels towards the last recognized object.
-    Pans the camera towards the last recognized object.
+    Turn the wheels and pans the camera towards the last recognized object.
     """
     def turn(self):
         self.pan_camera()
@@ -89,8 +89,10 @@ class Follower:
     """
     def pan_camera(self):
         if self._turn_angle < self._distance:
+            camera.cali_left()
             self.turn_camera_left(3)
         elif self._turn_angle > self._distance:
+            camera.cali_right()
             self.turn_camera_right(3)
         else:
             self.reset_camera() 
@@ -98,7 +100,6 @@ class Follower:
 
     """
     Definitions for turning the camera left and right.
-    Parameter: Steps 
     """
     def turn_camera_left(self, step):
         self._camera.turn_left(step)
@@ -109,6 +110,7 @@ class Follower:
 
     """
     Converts the camera's angle scale to the same scale as the wheels.
+
     The camera reports objects directly in front of it as 90 degrees. Everything
     to the left of center is negative ranging from [-45, -90) with -45 being the
     leftmost angle. Everything to the right of center is positive ranging from
@@ -162,7 +164,7 @@ class Follower:
     """
     def follow(self):
         if self.detect():
-            self.drive()
+            #self.drive()
             self.turn()
         else:
             self.stop()
