@@ -83,6 +83,9 @@ class Follower:
 
     """
     Follows the tag by panning camera towards the same direction as the wheels.
+    
+    If the direction of the object is more/less than the distance then set the camera 3 steps 
+    to the left or right. Otherwise reset the camera to 90 degrees or 0 steps. 
     """
     def pan_camera(self):
         if self._turn_angle < self._distance:
@@ -90,11 +93,12 @@ class Follower:
         elif self._turn_angle > self._distance:
             self.turn_camera_right(3)
         else:
-            self.reset_camera()
+            self.reset_camera() 
 
 
     """
-    Definitions for turning the camera left and right
+    Definitions for turning the camera left and right.
+    Parameter: Steps 
     """
     def turn_camera_left(self, step):
         self._camera.turn_left(step)
@@ -158,7 +162,7 @@ class Follower:
     """
     def follow(self):
         if self.detect():
-            #self.drive()
+            self.drive()
             self.turn()
         else:
             self.stop()
