@@ -41,6 +41,7 @@ def main():
 # This loop makes vehicle move and if the vehicle is a leader and sees an ARTag it will become
 # a follower and disconnect from the bluetooth controller
 
+    startTime = time.time()
     while True:
         if isLeader:
             vehicle.lead()
@@ -52,10 +53,9 @@ def main():
 
         else:
             vehicle.follow()
-            if tag.detect() is None:
+            if tag.detect() is not None:
                 startTime = time.time()
-                while (time.time() - startTime) < 5:
-                    vehicle.follow()
+            if (time.time() - startTime) < 5:
                 btToggle('connect', btAddress)     
                 isLeader = True
                 vehicle = Leader()
