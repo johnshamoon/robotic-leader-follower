@@ -2,7 +2,7 @@ import subprocess
 
 """
 The method is_connected takes the output of bt_check.sh and returns a boolean value.
-The method is_connected is called with one arguement, the bluetooth address of the paired device.
+The method is_connected is called with one argument, the bluetooth address of the paired device.
 """
 def is_connected(BluetoothAddress):
     BTADDR = BluetoothAddress
