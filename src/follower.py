@@ -46,10 +46,8 @@ class Follower:
         self._decision = 0
         self._yaw = 0
 
-
     """
     Drives the vehicle forward and avoids collisions with recognized objects.
-
     Manages the wheel speed to avoid collisions depending on the distance to
     the recognized object.
     """
@@ -85,25 +83,32 @@ class Follower:
 
     """
     Follows the tag by panning camera towards the same direction as the wheels.
-    Turns camera in 5 step increments.
     """
     def pan_camera(self):
-        if self._turn_angle < self._decision:
-            self.turn_camera_left(5)
-        elif self._turn_angle > self._decision:
-            self.turn_camera_right(5)
+        if self._turn_angle < self._distance:
+            self.turn_camera_left(3)
+        elif self._turn_angle > self._distance:
+            self.turn_camera_right(3)
         else:
             self.reset_camera()
 
 
     """
-    Converts the camera's angle scale to the same scale as the wheels.
+    Definitions for turning the camera left and right
+    """
+    def turn_camera_left(self, step):
+        self._camera.turn_left(step)
+    
+    def turn_camera_right(self, step):
+        self._camera.turn_right(step)
 
+
+    """
+    Converts the camera's angle scale to the same scale as the wheels.
     The camera reports objects directly in front of it as 90 degrees. Everything
     to the left of center is negative ranging from [-45, -90) with -45 being the
     leftmost angle. Everything to the right of center is positive ranging from
     (90, 135] with 135 being the rightmost angle.
-
     The wheels turn on a range of [45, 135] with 45 being the rightmost, 135
     being the leftmost, and 90 being center.
     """
@@ -118,7 +123,7 @@ class Follower:
 
     """
     Resets the camera to the default position.
-    The default position is panned to 90 degrees.
+    The default position is tilted to 120 degrees and panned to 90 degrees.
     """
     def reset_camera(self):
         self._camera.turn_down(120)
@@ -126,18 +131,7 @@ class Follower:
 
 
     """
-    Definitions for turning the camera left and right
-    """
-    def turn_camera_left(self, step):
-        self._camera.turn_left(step)
-
-    def turn_camera_right(self, step):
-        self._camera.turn_right(step)
-    
-
-    """
     Detects an ARTag and gets the object's data.
-
     If an ARTag is detected, the object's distance and turning angle will be
     updated and detect() will return True. If an ARTag is not detected, detect()
     will return False.
@@ -164,15 +158,17 @@ class Follower:
     """
     def follow(self):
         if self.detect():
-            self.drive()
+            #self.drive()
             self.turn()
         else:
             self.stop()
+
 
 def main():
     follower = Follower()
     while True:
         follower.follow()
+
 
 if __name__ == '__main__':
     main()
