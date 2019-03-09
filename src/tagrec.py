@@ -7,8 +7,8 @@ import cv2.aruco as ar
 '''
 Tag Recognition class.
 
-Takes input from the camera to look for an ARTag
-Used to return useful information about the tag
+Takes input from the camera to look for an ARTag.
+Returns useful information about the tag.
 '''
 class TagRecognition():
 
@@ -71,7 +71,8 @@ class TagRecognition():
                 'x': 0,
                 'z': 0,
                 'direction': 0,
-                'decision': 0
+                'decision': 0,
+                'yaw': 0
         }
 
 
@@ -89,8 +90,8 @@ class TagRecognition():
 
     '''
     Makes a decision based on the tag's angle position.
-    Input: Tag's direction
-    Output: Vehicle Decision
+    Input: Tag's direction.
+    Output: Vehicle Decision.
 
     Signal definitions:
      -1: Turn left
@@ -109,9 +110,9 @@ class TagRecognition():
     
 
     '''
-    Detect an AR Tag
-    Returns a dictionary with useful tag data
-    Returns None if camera doesn't recognize a tag
+    Detect an AR Tag.
+    Returns a dictionary with useful tag data.
+    Returns None if camera doesn't recognize a tag.
     '''
     def detect(self):
         self._ret, self._frame = self._cap.read()
@@ -121,6 +122,7 @@ class TagRecognition():
         self._corners, ids, rejected_img_points = ar.detectMarkers(
             self._picture, self._AR_DICT, parameters=self._PARAMETERS)
 
+        # If no corners found, return an empty object.
         if len(self._corners) == 0:
             return None
 
@@ -133,10 +135,33 @@ class TagRecognition():
 
         decision = self.make_decision(direction)
 
+        # Get the rotation matrix of the tag
+        # This will help us find the yaw angle
+        rotation_matrix = np.zeros(shape=(3,3))
+        cv2.Rodrigues(rvec[0][0], rotation_matrix, jacobian=0)
+
+        # Decompose the rotation matrix into three rotation matrices
+        # For Pitch, Yaw, Roll 
+        pyr = cv2.RQDecomp3x3(rotation_matrix)
+
+        '''
+        The rotation matrix of the yaw is as follows:
+        [cos(th)  0 sin(th)]
+        [   0     1    0   ]
+        [-sin(th) 0 cos(th)]
+        
+        We take the first cos result and feed it into the arccos function
+        to get the yaw angle.
+        '''
+        yaw_matrix = pyr[4]
+        yaw_angle = np.arccos(yaw_matrix[0][0])
+        yaw_angle = np.degrees(yaw_angle)
+
         self._tag_data['x'] = object_x
         self._tag_data['z'] = object_z
         self._tag_data['direction'] = direction
         self._tag_data['decision'] = decision
+        self._tag_data['yaw'] = yaw_angle
 
         return self._tag_data
 
