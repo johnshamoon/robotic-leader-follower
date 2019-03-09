@@ -11,4 +11,3 @@ if echo info $address | sudo bluetoothctl | grep -q 'Connected: yes'; then
 else
 	exit 0
 fi	 
-
