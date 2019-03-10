@@ -36,7 +36,7 @@ class Follower:
 
         self._camera = Camera()
         self.reset_camera()
-        self.
+        self.pan_offset = 0
 
         self._tag = TagRecognition(marker_length=0.025)
         self._speed = 0
@@ -86,13 +86,15 @@ class Follower:
     
     If the direction of the object is more/less than the distance then set the camera 3 steps 
     to the left or right. Otherwise reset the camera to 90 degrees or 0 steps. 
+
+    Steps are the Sunfounder units for the camera, equivalent to degrees for wheel angles.
     """
     def pan_camera(self):
         if self._turn_angle < self._distance:
-            camera.cali_left()
+            self.pan_offset += 1
             self.turn_camera_left(3)
         elif self._turn_angle > self._distance:
-            camera.cali_right()
+            self.pan_offset += 1
             self.turn_camera_right(3)
         else:
             self.reset_camera() 
