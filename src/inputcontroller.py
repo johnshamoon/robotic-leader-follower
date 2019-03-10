@@ -148,9 +148,7 @@ class InputController:
 def main():
     controller = InputController()
     while True:
-        code, position = controller.get_input()
-        if code == 'left_stick_x':
-            print (position)
+        controller.get_input()
 
 if __name__ == '__main__':
     main()
