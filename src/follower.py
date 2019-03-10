@@ -45,7 +45,9 @@ class Follower:
         self._turn_angle = 0
         self._decision = 0
         self._yaw = 0
-        
+        self.turn_angles = [75, 85, 95, 105, 115, 125, 135]
+        self.last_angle = 3
+
 
     """
     Drives the vehicle forward and avoids collisions with recognized objects.
@@ -78,24 +80,29 @@ class Follower:
     def turn(self):
         self.pan_camera()
         self.convert_camera_angle()
-        self._fw.turn(self._turn_angle)
+        #self._fw.turn(self._turn_angle)
 
 
     """
     Follows the tag by panning camera towards the same direction as the wheels.
-    
-    If the direction of the object is more/less than the distance then set the camera 3 steps 
-    to the left or right. Otherwise reset the camera to 90 degrees or 0 steps. 
-
-    Steps are the Sunfounder units for the camera, equivalent to degrees for wheel angles.
     """
     def pan_camera(self):
-        if self._turn_angle < self._distance:
+        if self._turn_angle < -1:
             self.pan_offset += 1
-            self.turn_camera_left(3)
-        elif self._turn_angle > self._distance:
-            self.pan_offset += 1
-            self.turn_camera_right(3)
+            if self.last_angle == 0:
+              self.last_angle == 0
+            else:
+              self.last_angle -= 1
+              self._fw.turn(self.turn_angles[self.last_angle])
+              self.turn_camera_left(6)
+        elif self._turn_angle > 1:
+            self.pan_offset -= 1
+            if self.last_angle == 6:
+              self.last_angle == 6
+            else:
+              self.last_angle += 1
+              self._fw.turn(self.turn_angles[self.last_angle])
+              self.turn_camera_right(6)
         else:
             self.reset_camera() 
 
@@ -166,7 +173,7 @@ class Follower:
     """
     def follow(self):
         if self.detect():
-            #self.drive()
+            self.drive()
             self.turn()
         else:
             self.stop()
