@@ -62,6 +62,11 @@ class Leader:
     def turn_straight(self):
         self.fw.turn(self.STRAIGHT_ANGLE)
 
+    def set_turn_angle(self,position):
+        self.fw.turn(self.STRAIGHT_ANGLE + 45  * position)
+    
+    def left_stick_turn(self,position):
+        self.set_turn_angle(position)
 
     def turn(self,position):
         if position == -1:
@@ -81,6 +86,8 @@ class Leader:
             self.reverse()
         if code == 'dpad_left_right':
             self.turn(position)
+        if code == 'left_stick_x':
+            self.left_stick_turn(position)
 
 
 def main():
