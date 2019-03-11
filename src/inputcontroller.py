@@ -146,7 +146,7 @@ class InputController:
 
 
 def main():
-    controller = InputController()
+    controller = InputController(debug=True)
     while True:
         controller.get_input()
 
