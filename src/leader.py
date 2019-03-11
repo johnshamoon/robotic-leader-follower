@@ -17,7 +17,7 @@ the left trigger.
 """
 class Leader:
     STRAIGHT_ANGLE = 89
-
+    MAX_TURN_ANGLE = 45
 
     def __init__(self):
         self._controller = InputController()
@@ -63,11 +63,11 @@ class Leader:
         self.fw.turn(self.STRAIGHT_ANGLE)
 
 
-    def set_turn_angle(self,position):
-        self.fw.turn(89 + (45  * position))
+    def set_turn_angle(self, position):
+        self.fw.turn(self.STRAIGHT_ANGLE + (self.MAX_TURN_ANGLE  * position))
 
     
-    def turn(self,position,code):
+    def turn(self, position, code):
         if code == 'dpad_left_right':
             if position == -1:
                 self.turn_left()

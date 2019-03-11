@@ -1,6 +1,4 @@
 """
-Written By: Zein Youssef and Steven Dropiewski
-
 Script to determine leader and follower roles.
 
 Takes input from the camera to determine if the current vehicle
@@ -12,10 +10,10 @@ If an ARTag does not exist, the vehicle will become the leader vehicle.
 """
 
 
-
 from follower import Follower
 from leader import Leader
 from tagrec import TagRecognition
+
 import subprocess
 import time
 
@@ -34,16 +32,15 @@ def main():
     if tag.detect() is not None:
         bt_toggle('disconnect', bt_address)
         is_leader = False
-        vehicle = Follower()
-    
+        vehicle = Follower()    
     else:
         bt_toggle('connect', bt_address)
         is_leader = True
         vehicle = Leader()
 
-# This loop makes vehicle move and if the vehicle is a leader and sees an ARTag it will become
-# a follower and disconnect from the bluetooth controller
-
+    # This loop makes vehicle move and if the vehicle is a 
+    # leader and sees an ARTag it will become a follower and
+    # disconnect from the bluetooth controller
     start_time = time.time()
     while True:
         if is_leader:
@@ -52,7 +49,6 @@ def main():
                 bt_toggle('disconnect', bt_address)
                 is_leader = False
                 vehicle = Follower()
-
         else:
             vehicle.follow()
             if tag.detect() is not None:
