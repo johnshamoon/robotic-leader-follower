@@ -36,7 +36,6 @@ class Follower:
 
         self._camera = Camera()
         self.reset_camera()
-        self.pan_offset = 0
 
         self._tag = TagRecognition(marker_length=0.025)
         self._speed = 0
@@ -45,8 +44,6 @@ class Follower:
         self._turn_angle = 0
         self._decision = 0
         self._yaw = 0
-        self.turn_angles = [75, 85, 95, 105, 115, 125, 135]
-        self.last_angle = 3
 
 
     """
@@ -80,29 +77,18 @@ class Follower:
     def turn(self):
         self.pan_camera()
         self.convert_camera_angle()
-        #self._fw.turn(self._turn_angle)
 
 
     """
     Follows the tag by panning camera towards the same direction as the wheels.
     """
     def pan_camera(self):
-        if self._turn_angle < -1:
-            self.pan_offset += 1
-            if self.last_angle == 0:
-              self.last_angle == 0
-            else:
-              self.last_angle -= 1
-              self._fw.turn(self.turn_angles[self.last_angle])
-              self.turn_camera_left(6)
-        elif self._turn_angle > 1:
-            self.pan_offset -= 1
-            if self.last_angle == 6:
-              self.last_angle == 6
-            else:
-              self.last_angle += 1
-              self._fw.turn(self.turn_angles[self.last_angle])
-              self.turn_camera_right(6)
+        if self._tag._tag_data['x'] < 0:
+            self.turn_camera_left(self._turn_angle)
+            self._fw.turn(self._turn_angle)
+        elif self._tag._tag_data['x'] > 0:
+            self.turn_camera_right(self._turn_angle)
+            self._fw.turn(self._turn_angle)
         else:
             self.reset_camera() 
 
@@ -111,10 +97,18 @@ class Follower:
     Definitions for turning the camera left and right.
     """
     def turn_camera_left(self, step):
-        self._camera.turn_left(step)
+        self._camera.turn_left(self.convert_angle_steps(self._turn_angle))
     
     def turn_camera_right(self, step):
-        self._camera.turn_right(step)
+        self._camera.turn_right(self.convert_angle_steps(self._turn_angle))
+
+    
+    """
+    Definition for converting angles to steps.
+    """
+    def convert_angle_steps(self, angle):
+        steps = np.abs(self._turn_angle/self._camera.PAN_STEP)
+        return steps
 
 
     """
@@ -173,7 +167,7 @@ class Follower:
     """
     def follow(self):
         if self.detect():
-            self.drive()
+            #self.drive()
             self.turn()
         else:
             self.stop()
