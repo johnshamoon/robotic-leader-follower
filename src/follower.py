@@ -77,37 +77,41 @@ class Follower:
     def turn(self):
         self.pan_camera()
         self.convert_camera_angle()
-        self._fw.turn(self._turn_angle)
+        
+        if self._turn_angle < 0:
+            self._fw.turn(self._turn_angle - self._yaw)
+        elif self._turn_angle > 0:
+            self._fw.turn(self._turn_angle + self._yaw)
 
 
     """
     Follows the tag by panning camera towards the same direction as the wheels.
     """
     def pan_camera(self):
-        if self._tag._tag_data['x'] < 0:
-            self.turn_camera_left()
-        elif self._tag._tag_data['x'] > 0:
-            self.turn_camera_right()
+        if self._turn_angle < 0:
+            self.turn_camera_left(self._turn_angle)
+        elif self._turn_angle > 0:
+            self.turn_camera_right(self._turn_angle)
         else:
             self.reset_camera() 
 
 
     """
-    Turn the camera left and right.
+    Definitions for turning the camera left and right.
     Turn Left/Right functions from the Camera class only takes Steps.
     """
-    def turn_camera_left(self):
-        self._camera.turn_left(self.angle_to_steps())
+    def turn_camera_left(self, angle):
+        self._camera.turn_left(self.angle_to_step())
     
-    def turn_camera_right(self):
-        self._camera.turn_right(self.angle_to_steps())
+    def turn_camera_right(self, angle):
+        self._camera.turn_right(self.angle_to_step())
 
     
     """
-    Convert angles to steps.
-    Takes the angle property and converts into steps where 1 step is 15 degrees.
+    Definition for converting angles to steps and vice versa.
+    Takes the angle property and converts into steps where 1 step is 5 degrees.
     """
-    def angle_to_steps(self):
+    def angle_to_step(self):
         steps = np.abs(self._turn_angle/self._camera.PAN_STEP)
         return steps
 
