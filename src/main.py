@@ -5,9 +5,10 @@ from leader import Leader
 from tagrec import TagRecognition
 
 """
-Returns whether or not a Bluetooth joystick is connected.
+Determines if a Bluetooth controller is connected. Returns a boolean value true for connected
+and false for disconnected.
 """
-def is_connected():
+def is_controller_connected():
     return os.path.exists('/dev/input/js0')
 
 
