@@ -7,7 +7,7 @@ from tagrec import TagRecognition
 """
 Determines if a Bluetooth controller is connected. 
 
-Returns true if a device is connected and false if not
+Returns true if a device is connected and false if not.
 """
 def is_controller_connected():
     return os.path.exists('/dev/input/js0')
