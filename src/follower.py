@@ -37,13 +37,15 @@ class Follower:
         self._camera = Camera()
         self.reset_camera()
 
-        self._tag = TagRecognition(marker_length=0.025)
+        self._tag = TagRecognition(marker_length=0.60)
         self._speed = 0
 
         self._distance = 0
         self._turn_angle = 0
         self._decision = 0
         self._yaw = 0
+
+        self.prev_angles = [0]
 
 
     """
@@ -76,22 +78,27 @@ class Follower:
     """
     def turn(self):
         self.pan_camera()
-        self.convert_camera_angle()
-        
-        if self._turn_angle < 0:
-            self._fw.turn(self._turn_angle - self._yaw)
-        elif self._turn_angle > 0:
-            self._fw.turn(self._turn_angle + self._yaw)
-
+        self.prev_angles.append(abs(int(self._turn_angle)))
+        if len(self.prev_angles) > 10:
+          self.prev_angles.pop(0)
+          print(self.prev_angles[0], self.prev_angles[-1])
+        if self._turn_angle < -1 and (self.prev_angles[0] - 5 <= self.prev_angles[-1] <= self.prev_angles[0] + 5):
+            print('left')
+            self._fw.turn(20)
+        elif self._turn_angle > 1 and (self.prev_angles[0] - 5 <= self.prev_angles[-1] <= self.prev_angles[0] + 5):
+            self._fw.turn(90)
+            print('right')
 
     """
     Follows the tag by panning camera towards the same direction as the wheels.
     """
     def pan_camera(self):
-        if self._turn_angle < 0:
+        if self._turn_angle < -1:
+            print('cameraL', self._turn_angle)
             self.turn_camera_left(self._turn_angle)
-        elif self._turn_angle > 0:
+        elif self._turn_angle > 1:
             self.turn_camera_right(self._turn_angle)
+            print('cameraR', self._turn_angle)
         else:
             self.reset_camera() 
 
@@ -172,7 +179,7 @@ class Follower:
     """
     def follow(self):
         if self.detect():
-            self.drive()
+            #self.drive()
             self.turn()
         else:
             self.stop()
