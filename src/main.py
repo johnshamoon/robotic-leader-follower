@@ -9,13 +9,22 @@ If an ARTag exists, the vehicle will become a follower vehicle.
 If an ARTag does not exist, the vehicle will become the leader vehicle.
 """
 
-
 from follower import Follower
 from leader import Leader
 from tagrec import TagRecognition
 
+import os
 import subprocess
 import time
+
+"""
+Determines if a Bluetooth controller is connected. 
+
+Returns true if a device is connected and false if not.
+"""
+def is_controller_connected():
+    return os.path.exists('/dev/input/js0')
+
 
 """
 This function calls the ./bt_toggle script with the specified
