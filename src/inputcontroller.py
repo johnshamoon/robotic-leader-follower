@@ -18,6 +18,8 @@ Recognized Buttons:
     6) A, B, X, and Y
     7) Start/Select Buttons
     8) Left and Right Stick Buttons
+
+Author: John Shamoon
 """
 class InputController:
     # Linux input codes from input-event-codes.h

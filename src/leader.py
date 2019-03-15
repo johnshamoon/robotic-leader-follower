@@ -18,6 +18,8 @@ Leader vehicle class.
 Takes input from /dev/input/js0 and directs the vehicle. To turn left or right,
 use the d-pad. To drive forward, use the right trigger. To drive backwards, use
 the left trigger.
+
+Author: John Shamoon
 """
 class Leader:
     STRAIGHT_ANGLE = 89

@@ -18,6 +18,8 @@ Autonomous follower vehicle to follow another vehicle.
 
 Takes input from camera and autonomously follows another vehicle with an ARTag
 mounted at the rear-center of the leader vehicle.
+
+Author: John Shamoon
 """
 class Follower:
     def __init__(self):
