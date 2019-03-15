@@ -116,12 +116,12 @@ Wayne State University Senior Capstone Project to develop a semi-autonomous robo
 > ```
 
 ### Compiling and Installing OpenCV
-Installing OpenCV on Raspbian requires compiling it yourself. Here's are the steps to compile and link OpenCV to Python:
+Installing OpenCV on Raspbian requires manual compilation. Here's are the steps to compile and link OpenCV to Python:
 1. Update package lists.
 > ```shell
 > sudo apt-get update
 > ```
-2. Update installed pacakges.
+2. Update installed packages.
 > ```shell
 > sudo apt-get upgrade
 > ```
@@ -173,7 +173,7 @@ Installing OpenCV on Raspbian requires compiling it yourself. Here's are the ste
 > ```
 12. Build OpenCV.
     * Using more jobs will cause compilation to fail.
-    * This will likely require more virtual (swap) memory. View that section for instructions.
+    * This will likely require more virtual (swap) memory. View [Adding Virtual Memory](#adding-virtual-memory) for instructions.
 > ```shell
 > make -j1
 > ```
@@ -187,7 +187,7 @@ Installing OpenCV on Raspbian requires compiling it yourself. Here's are the ste
 > ```
 
 ### Adding Virtual Memory
-Compiling OpenCV will most likely require more RAM than the Pi has. We can solve this by adding more virtual (swap) memory. Here are the steps to do that:
+Compiling OpenCV will most likely require more RAM than the Pi has. This can be solved by adding more virtual (swap) memory. Here are the steps to do that:
 1. Check if the system has any swap memory configured.
 > ```shell
 > free -m
