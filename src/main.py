@@ -36,33 +36,31 @@ def bt_toggle(command, address):
 
 def main():
     tag = TagRecognition()
-    bt_address = '5C:BA:37:26:6D:9A'
+    BT_ADDRESS = '5C:BA:37:26:6D:9A'
 
-    # If an ARTag is detected, the vehicle will try to disconnect from a bluetooth controller and
-    # if it is not connected to one it will follow. If an ARTag is not detected, the vehicle will
-    # will try to connect to the bluetooth controller and if succeful, the vehicle will be a leader.
+    # If an ARTag is detected, the vehicle will disconnect from a bluetooth
+    # controller. If an ARTag is not detected, the vehicle will connect to
+    # a bluetooth controller.
     if tag.detect():
-        bt_toggle('disconnect', bt_address)
+        bt_toggle('disconnect', BT_ADDRESS)
+        time.sleep(1)
     else:
-        bt_toggle('connect', bt_address)
+        bt_toggle('connect', BT_ADDRESS)
+        time.sleep(1)
     if is_controller_connected():
         vehicle = Leader()
     else:
         vehicle = Follower()
 
-    # This loop makes vehicle move. If the vehicle is a leader and sees an ARTag
-    # it will attempt to disconnect from the bluetooth controller, if done
-    # successfully it will become a follower vehicle. If the vehicle is a follower
-    # and does not see an ARTag for more than 5 seconds, the it will try to connect
-    # to the bluetooth controller. If done successfully it will become a leader, otherwise
-    # it will continue as a follower and reset the 5 second timer before trying to
-    # connect to the bluetooth controller again.
+    # This loop makes the vehicle move. If the vehicle sees an ARTag then
+    # it is a follower vehicle, otherwise it is a leader vehicle.
     start_time = time.time()
     while True:
         if isinstance(vehicle, Leader):
             vehicle.lead()
             if tag.detect():
-                bt_toggle('disconnect', bt_address)
+                bt_toggle('disconnect', BT_ADDRESS)
+                time.sleep(1)
                 if not is_controller_connected():
                     vehicle = Follower()
         else:
@@ -70,7 +68,8 @@ def main():
             if tag.detect():
                 start_time = time.time()
             if (time.time() - start_time) > 5:
-                bt_toggle('connect', bt_address)     
+                bt_toggle('connect', BT_ADDRESS)
+                time.sleep(1)
                 if is_controller_connected():
                     vehicle = Leader()
                 else:
