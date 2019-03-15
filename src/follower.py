@@ -37,7 +37,7 @@ class Follower:
         self._camera = Camera()
         self.reset_camera()
 
-        self._tag = TagRecognition(marker_length=0.60)
+        self._tag = TagRecognition(marker_length=0.025)
         self._speed = 0
 
         self._distance = 0
