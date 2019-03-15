@@ -9,6 +9,8 @@ Tag Recognition class.
 
 Takes input from the camera to look for an ARTag.
 Returns useful information about the tag.
+
+Author: Wisam Bunni
 '''
 class TagRecognition():
 

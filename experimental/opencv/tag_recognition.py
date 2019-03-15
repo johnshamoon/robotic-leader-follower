@@ -1,4 +1,5 @@
 # This script is used to detect an AR tag through Webcam in real time.
+# Author: Wisam Bunni
 import numpy as np
 import cv2
 import cv2.aruco as ar

@@ -2,6 +2,7 @@
 # It displays two plots:
 # One to visualize the corners of the tag.
 # One to visualize the pose of the tag (pitch, yaw, roll).
+# Author: Wisam Bunni
 import numpy as np
 import cv2
 import cv2.aruco as ar
