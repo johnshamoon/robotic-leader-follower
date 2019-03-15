@@ -11,7 +11,6 @@ import numpy as np
 
 """
 Autonomous follower vehicle to follow another vehicle.
-
 Takes input from camera and autonomously follows another vehicle with an ARTag
 mounted at the rear-center of the leader vehicle.
 """
@@ -45,7 +44,8 @@ class Follower:
         self._decision = 0
         self._yaw = 0
 
-        self.DEADZONE = 80
+        self.DEADZONE_LEFT = 85
+        self.DEADZONE_RIGHT = 75
 
 
     """
@@ -80,10 +80,10 @@ class Follower:
         self.pan_camera()
         self.convert_camera_angle()
         
-        if 45 < self._turn_angle < self.DEADZONE:
-            self._fw.turn(self._turn_angle - self._yaw)
-        elif self.DEADZONE < self._turn_angle < 135:
+        if self.DEADZONE_LEFT < self._turn_angle < 135:
             self._fw.turn(self._turn_angle + self._yaw)
+        elif 45 < self._turn_angle < self.DEADZONE_RIGHT:
+            self._fw.turn(self._turn_angle - self._yaw)
         else:
             self._fw.turn_straight()
 
@@ -93,9 +93,9 @@ class Follower:
     """
     def pan_camera(self):
         
-        if 45 < self._turn_angle < self.DEADZONE:
+        if self._turn_angle < 0:
             self.turn_camera_left(self._turn_angle)
-        elif self.DEADZONE < self._turn_angle < 135:
+        elif self._turn_angle > 0:
             self.turn_camera_right(self._turn_angle)
         else:
             self.reset_camera() 
@@ -123,7 +123,6 @@ class Follower:
 
     """
     Converts the camera's angle scale to the same scale as the wheels.
-
     The camera reports objects directly in front of it as 90 degrees. Everything
     to the left of center is negative ranging from [-45, -90) with -45 being the
     leftmost angle. Everything to the right of center is positive ranging from
