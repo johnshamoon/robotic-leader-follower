@@ -44,8 +44,7 @@ class Follower:
         self._decision = 0
         self._yaw = 0
 
-        self.DEADZONE_LEFT = 85
-        self.DEADZONE_RIGHT = 75
+        self.camera_angle = 0
 
 
     """
@@ -80,10 +79,10 @@ class Follower:
         self.pan_camera()
         self.convert_camera_angle()
         
-        if self.DEADZONE_LEFT < self._turn_angle < 135:
-            self._fw.turn(self._turn_angle + self._yaw)
-        elif 45 < self._turn_angle < self.DEADZONE_RIGHT:
-            self._fw.turn(self._turn_angle - self._yaw)
+        if self._turn_angle < 90:
+            self._fw.turn(self._turn_angle - self.camera_angle)
+        elif self._turn_angle > 90:
+            self._fw.turn(self._turn_angle + self.camera_angle)
         else:
             self._fw.turn_straight()
 
@@ -92,11 +91,12 @@ class Follower:
     Follows the tag by panning camera towards the same direction as the wheels.
     """
     def pan_camera(self):
-        
-        if self._turn_angle < 0:
+        if self._turn_angle < -1:
             self.turn_camera_left(self._turn_angle)
-        elif self._turn_angle > 0:
+            self.camera_angle = np.abs(self._turn_angle)
+        elif self._turn_angle > 1:
             self.turn_camera_right(self._turn_angle)
+            self.camera_angle = np.abs(self._turn_angle)
         else:
             self.reset_camera() 
 
@@ -113,7 +113,7 @@ class Follower:
 
     
     """
-    Definition for converting angles to steps and vice versa.
+    Definition for converting angles to steps.
     Takes the angle property and converts into steps where 1 step is 5 degrees.
     """
     def angle_to_step(self):
