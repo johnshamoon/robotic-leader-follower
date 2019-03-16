@@ -18,6 +18,7 @@ the left trigger.
 class Leader:
     STRAIGHT_ANGLE = 89
 
+
     def __init__(self):
         self._controller = InputController()
 
@@ -69,7 +70,6 @@ class Leader:
             self.turn_right()
         else:
             self.turn_straight()
-
 
     def lead(self):
         code, position = self._controller.get_input()
