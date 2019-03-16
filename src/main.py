@@ -38,9 +38,9 @@ def main():
     tag = TagRecognition()
     BT_ADDRESS = '5C:BA:37:26:6D:9A'
 
-    # If an ARTag is detected, the vehicle will disconnect from a bluetooth
+    # If an ARTag is detected, the vehicle will disconnect from a Bluetooth
     # controller. If an ARTag is not detected, the vehicle will connect to
-    # a bluetooth controller.
+    # a Bluetooth controller.
     if tag.detect():
         bt_toggle('disconnect', BT_ADDRESS)
         time.sleep(1)
@@ -68,7 +68,7 @@ def main():
             vehicle.follow()
             if tag.detect():
                 timer_set = False
-            elif not tag.detect() and timer_set == False:
+            elif not tag.detect() and not timer_set:
                 start_time = time.time()
                 timer_set = True
             if (time.time() - start_time) > 5 and timer_set:
