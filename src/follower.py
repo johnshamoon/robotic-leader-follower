@@ -91,12 +91,12 @@ class Follower:
     Follows the tag by panning camera towards the same direction as the wheels.
     """
     def pan_camera(self):
-        if self._turn_angle < -1:
+        if np.abs(self._turn_angle) < 90:
             self.turn_camera_left(self._turn_angle)
-            self.camera_angle = np.abs(self._turn_angle)
-        elif self._turn_angle > 1:
+            self.camera_angle = 90 - np.abs(self._turn_angle)
+        elif np.abs(self._turn_angle) > 90:
             self.turn_camera_right(self._turn_angle)
-            self.camera_angle = np.abs(self._turn_angle)
+            self.camera_angle = 90 - np.abs(self._turn_angle)
         else:
             self.reset_camera() 
 
