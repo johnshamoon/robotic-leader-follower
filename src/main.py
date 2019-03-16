@@ -55,6 +55,7 @@ def main():
     # This loop makes the vehicle move. If the vehicle sees an ARTag then
     # it is a follower vehicle, otherwise it is a leader vehicle.
     timer_set = False
+    start_time = time.time()
     while True:
         if isinstance(vehicle, Leader):
             vehicle.lead()
@@ -67,10 +68,11 @@ def main():
             vehicle.follow()
             if tag.detect():
                 timer_set = False
-            elif tag.detect() is None and timer_set == False:
+            elif not tag.detect() and timer_set == False:
                 start_time = time.time()
                 timer_set = True
-            if (time.time() - start_time) > 5:
+            if (time.time() - start_time) > 5 and timer_set:
+                timer_set = False
                 bt_toggle('connect', BT_ADDRESS)
                 time.sleep(1)
                 if is_controller_connected():
