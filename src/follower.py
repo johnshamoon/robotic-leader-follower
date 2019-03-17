@@ -1,5 +1,6 @@
 import sys
 from os import getcwd
+from time import time
 sys.path.append("../SunFounder_PiCar-V/remote_control/remote_control/driver")
 
 from camera import Camera
@@ -22,6 +23,7 @@ class Follower:
         self.MIN_DISTANCE = self.MAX_DISTANCE / 3
         self.FOLLOWER_MAX_SPEED = 100
         self.LEADER_MAX_SPEED = self.FOLLOWER_MAX_SPEED - 25
+        self.CYCLE_TIME = 0.1
 
         picar.setup()
 
@@ -45,6 +47,9 @@ class Follower:
         self._decision = 0
         self._yaw = 0
 
+        self._tag_lost_time = 0
+        self._speed_cycle_time = time()
+
 
     """
     Drives the vehicle forward and avoids collisions with recognized objects.
@@ -53,12 +58,21 @@ class Follower:
     the recognized object.
     """
     def drive(self):
-        if self._distance < self.MIN_DISTANCE:
+        # If the vehicle is too close to the object, significantly decreese
+        # speed.
+        if self._distance <= self.MIN_DISTANCE:
             self._speed = 0
-        elif self._distance >= self.MAX_DISTANCE:
-            self._speed = self.FOLLOWER_MAX_SPEED
-        else:
+        elif self.MIN_DISTANCE < self._distance <= (self.MIN_DISTANCE * 2):
+            # If we are in range of the leader vehicle, match the leader
+            # vehicle's speed.This will keep the distance between the ego
+            # vehicle and the leader vehicle.
             self._speed = self.LEADER_MAX_SPEED
+        elif (((time() - self._speed_cycle_time) > self.CYCLE_TIME)
+              and (self._speed + 1 <= self.FOLLOWER_MAX_SPEED)):
+                # If the ego vehicle is not in the minimum distance for
+                # CYCLE_TIME, increase the speed and reset the timer.
+                self._speed += 1
+                self._speed_cycle_time = time()
 
         self._bw.speed = self._speed
         self._bw.forward()
@@ -141,8 +155,12 @@ class Follower:
         if self.detect():
             self.drive()
             self.turn()
+            self._tag_lost_time = 0
         else:
-            self.stop()
+            if not self._tag_lost_time:
+                self._tag_lost_time = time()
+            elif (time() - self._tag_lost_time) >= self.CYCLE_TIME:
+                self.stop()
 
 
 def main():
