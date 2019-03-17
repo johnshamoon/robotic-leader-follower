@@ -76,31 +76,26 @@ class Follower:
     Turn the wheels and pans the camera towards the last recognized object.
     """
     def turn(self):
-        self.pan_camera()
         self.convert_camera_angle()
+        self.pan_camera()
         
         if self._turn_angle < 90:
-            self._fw.turn(self._turn_angle - self.camera_angle)
+            self._fw.turn(self._turn_angle + self.camera_angle_offset)
         elif self._turn_angle > 90:
-            self._fw.turn(self._turn_angle + self.camera_angle)
-        else:
-            self._fw.turn_straight()
+            self._fw.turn(self._turn_angle - self.camera_angle_offset)
 
 
     """
     Follows the tag by panning camera towards the same direction as the wheels.
     """
     def pan_camera(self):
-        turn_angle = np.abs(self._turn_angle)
-
-        if turn_angle < 90:
+        increase_camera_offset = 0.5
+        if self._turn_angle < 90:
             self.turn_camera_left(self._turn_angle)
-            self.camera_angle = 90 - turn_angle
-        elif turn_angle > 90:
+            self.camera_angle_offset = (90 - self._turn_angle)*increase_camera_offset
+        elif self._turn_angle > 90:
             self.turn_camera_right(self._turn_angle)
-            self.camera_angle = 90 - turn_angle
-        else:
-            self.reset_camera() 
+            self.camera_angle_offset = (90 - self._turn_angle)*increase_camera_offset
 
 
     """
@@ -119,14 +114,14 @@ class Follower:
     Takes the angle property and converts into steps where 1 step is 5 degrees.
     """
     def angle_to_step(self):
-        steps = np.abs(self._turn_angle/self._camera.PAN_STEP)
+        steps = self._turn_angle/self._camera.PAN_STEP
         return steps
 
 
     """
     Converts the camera's angle scale to the same scale as the wheels.
     The camera reports objects directly in front of it as 90 degrees. Everything
-    to the left of center is negative ranging from [-45, -90) with -45 being the
+    to the left of center is negative ranging from [-45, 90) with -45 being the
     leftmost angle. Everything to the right of center is positive ranging from
     (90, 135] with 135 being the rightmost angle.
     The wheels turn on a range of [45, 135] with 45 being the rightmost, 135
