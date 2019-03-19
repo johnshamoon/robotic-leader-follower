@@ -28,7 +28,8 @@ def main():
 
     # If an ARTag is detected, there is a vehicle ahead of this vehicle so it will follow.
     # If an ARTag is not detected, no vehicle is present so this vehicle will be a leader.
-    if tag.detect() is not None:
+    if tag.detect():
+        tag = None
         follower = Follower()
         while True:
             follower.follow()
