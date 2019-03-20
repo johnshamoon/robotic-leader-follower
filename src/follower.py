@@ -1,5 +1,6 @@
 import sys
 from os import getcwd
+from time import time
 sys.path.append("../SunFounder_PiCar-V/remote_control/remote_control/driver")
 
 from camera import Camera
@@ -21,6 +22,8 @@ class Follower:
         self.MIN_DISTANCE = self.MAX_DISTANCE / 3
         self.FOLLOWER_MAX_SPEED = 100
         self.LEADER_MAX_SPEED = self.FOLLOWER_MAX_SPEED - 25
+        self.MAX_TAG_LOSS_TIME = 0.5
+        self.INCREASE_SPEED_CYCLE_TIME = 0.1
 
         picar.setup()
 
@@ -43,6 +46,11 @@ class Follower:
         self._turn_angle = 0
         self._decision = 0
         self._yaw = 0
+
+        self.camera_angle_offset = 0
+
+        self.wheel_min = 45
+        self.wheel_max = 135
 
 
     """
@@ -76,23 +84,29 @@ class Follower:
     def turn(self):
         self.convert_camera_angle()
         self.pan_camera()
-        if self._turn_angle < 90:
-            self._fw.turn(self._turn_angle - self.camera_angle_offset)
-        elif self._turn_angle > 90:
+
+        if self._turn_angle < 90 and self._turn_angle > self.wheel_min:
+            self._fw.turn(self._turn_angle - self.camera_angle_offset) 
+        elif self._turn_angle < self.wheel_min:
+            self._turn_angle = self.wheel_min
+            self._fw.turn(self._turn_angle)
+        elif self._turn_angle > 90 and self._turn_angle < self.wheel_max:
             self._fw.turn(self._turn_angle + self.camera_angle_offset)
+        elif self._turn_angle > self.wheel_max:
+            self._turn_angle = self.wheel_max
+            self._fw.turn(self._turn_angle)
 
 
     """
     Follows the tag by panning camera towards the same direction as the wheels.
     """
     def pan_camera(self):
-        increase_camera_offset = 9
         if self._turn_angle < 90:
             self.turn_camera_left(self._turn_angle)
-            self.camera_angle_offset = (90 - self._turn_angle) - increase_camera_offset
+            self.camera_angle_offset = (90 - self._turn_angle)
         elif self._turn_angle > 90:
             self.turn_camera_right(self._turn_angle)
-            self.camera_angle_offset = (90 - self._turn_angle) + increase_camera_offset
+            self.camera_angle_offset = (180 - self._turn_angle) 
 
 
     """
@@ -118,7 +132,7 @@ class Follower:
     """
     Converts the camera's angle scale to the same scale as the wheels.
     The camera reports objects directly in front of it as 90 degrees. Everything
-    to the left of center is negative ranging from [-45, 90) with -45 being the
+    to the left of center is negative ranging from [-45, -90) with -45 being the
     leftmost angle. Everything to the right of center is positive ranging from
     (90, 135] with 135 being the rightmost angle.
     The wheels turn on a range of [45, 135] with 45 being the rightmost, 135
