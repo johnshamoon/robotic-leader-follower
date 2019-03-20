@@ -97,29 +97,46 @@ class Follower:
         self.convert_camera_angle()
         self.pan_camera()
 
-        if self._turn_angle > 90 and self._turn_angle < self.wheel_max:
-            self._fw.turn(self._turn_angle + self.camera_angle_offset) 
-        elif self._turn_angle > self.wheel_max:
-            self._turn_angle = self.wheel_max
+        if self.STRAIGHT_ANGLE > self._turn_angle:
+            self._fw.turn(self._turn_angle - self.camera_angle_offset) 
+            print("offr", self.camera_angle_offset)
+            print("wr", self._turn_angle)
+        elif self._turn_angle > self.WHEEL_MAX:
+            self._turn_angle = self.WHEEL_MAX
             self._fw.turn(self._turn_angle)
-        elif self._turn_angle < 90 and self._turn_angle > self.wheel_min:
-            self._fw.turn(self._turn_angle - self.camera_angle_offset)
-        elif self._turn_angle < self.wheel_min:
-            self._turn_angle = self.wheel_min
-            self._fw.turn(self._turn_angle)
+
+        elif self.STRAIGHT_ANGLE < self._turn_angle:
+            self._fw.turn(self._turn_angle + self.camera_angle_offset)
+            print("offl", self.camera_angle_offset)
+            print("wl", self._turn_angle)
+        elif self._turn_angle < self.WHEEL_MIN:
+           self._turn_angle = self.WHEEL_MIN
+           self._fw.turn(self._turn_angle)
         
     
-
     """
     Follows the tag by panning camera towards the same direction as the wheels.
     """
     def pan_camera(self):
-        if self._turn_angle < 90:
+        self.convert_camera_to_wheel_angle()
+
+        if self._turn_angle > self.STRAIGHT_ANGLE:
             self.turn_camera_left(self._turn_angle)
-            self.camera_angle_offset = (90 - self._turn_angle)
-        elif self._turn_angle > 90:
+            self.camera_angle_offset = (self._turn_angle - self.STRAIGHT_ANGLE)
+        elif self._turn_angle < self.STRAIGHT_ANGLE:
             self.turn_camera_right(self._turn_angle)
-            self.camera_angle_offset = (self._turn_angle - 90) 
+            self.camera_angle_offset = (self.STRAIGHT_ANGLE - self._turn_angle) 
+
+
+    """
+    Converts camera scale [0, 180] with 0 being the leftmost angle and 180 the rightmost angle to the same scale as the 
+    wheels [135, 45] with 135 being the leftmost angle and 135 the rightmost
+    """
+    def convert_camera_to_wheel_angle(self):
+        if self._turn_angle < self.STRAIGHT_ANGLE:
+            self._turn_angle = (self.STRAIGHT_ANGLE - self._turn_angle) + self.STRAIGHT_ANGLE
+        elif self._turn_angle > self.STRAIGHT_ANGLE:
+            self._turn_angle = self.STRAIGHT_ANGLE - (self._turn_angle - self.STRAIGHT_ANGLE)
 
 
     """
