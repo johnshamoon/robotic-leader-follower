@@ -22,8 +22,6 @@ class Follower:
         self.MIN_DISTANCE = self.MAX_DISTANCE / 3
         self.FOLLOWER_MAX_SPEED = 100
         self.LEADER_MAX_SPEED = self.FOLLOWER_MAX_SPEED - 25
-        self.MAX_TAG_LOSS_TIME = 0.5
-        self.INCREASE_SPEED_CYCLE_TIME = 0.1
 
         picar.setup()
 
@@ -106,7 +104,7 @@ class Follower:
             self.camera_angle_offset = (90 - self._turn_angle)
         elif self._turn_angle > 90:
             self.turn_camera_right(self._turn_angle)
-            self.camera_angle_offset = (180 - self._turn_angle) 
+            self.camera_angle_offset = (self._turn_angle - 90) 
 
 
     """
