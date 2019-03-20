@@ -1,6 +1,16 @@
+import os
+
 from follower import Follower
 from leader import Leader
 from tagrec import TagRecognition
+
+"""
+Determines if a Bluetooth controller is connected. 
+
+Returns true if a device is connected and false if not.
+"""
+def is_controller_connected():
+    return os.path.exists('/dev/input/js0')
 
 
 """
@@ -18,7 +28,8 @@ def main():
 
     # If an ARTag is detected, there is a vehicle ahead of this vehicle so it will follow.
     # If an ARTag is not detected, no vehicle is present so this vehicle will be a leader.
-    if tag.detect() is not None:
+    if tag.detect():
+        tag = None
         follower = Follower()
         while True:
             follower.follow()
