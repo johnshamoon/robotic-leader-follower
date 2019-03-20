@@ -100,16 +100,12 @@ class Follower:
 
         if self.STRAIGHT_ANGLE > self._turn_angle:
             self._fw.turn(self._turn_angle - self.camera_angle_offset) 
-            print("offr", self.camera_angle_offset)
-            print("wr", self._turn_angle)
         elif self._turn_angle > self.WHEEL_MAX:
             self._turn_angle = self.WHEEL_MAX
             self._fw.turn(self._turn_angle)
 
         elif self.STRAIGHT_ANGLE < self._turn_angle:
             self._fw.turn(self._turn_angle + self.camera_angle_offset)
-            print("offl", self.camera_angle_offset)
-            print("wl", self._turn_angle)
         elif self._turn_angle < self.WHEEL_MIN:
            self._turn_angle = self.WHEEL_MIN
            self._fw.turn(self._turn_angle)
