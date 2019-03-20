@@ -83,17 +83,18 @@ class Follower:
         self.convert_camera_angle()
         self.pan_camera()
 
-        if self._turn_angle < 90 and self._turn_angle > self.wheel_min:
-            self._fw.turn(self._turn_angle - self.camera_angle_offset) 
-        elif self._turn_angle < self.wheel_min:
-            self._turn_angle = self.wheel_min
-            self._fw.turn(self._turn_angle)
-        elif self._turn_angle > 90 and self._turn_angle < self.wheel_max:
-            self._fw.turn(self._turn_angle + self.camera_angle_offset)
+        if self._turn_angle > 90 and self._turn_angle < self.wheel_max:
+            self._fw.turn(self._turn_angle + self.camera_angle_offset) 
         elif self._turn_angle > self.wheel_max:
             self._turn_angle = self.wheel_max
             self._fw.turn(self._turn_angle)
-
+        elif self._turn_angle < 90 and self._turn_angle > self.wheel_min:
+            self._fw.turn(self._turn_angle - self.camera_angle_offset)
+        elif self._turn_angle < self.wheel_min:
+            self._turn_angle = self.wheel_min
+            self._fw.turn(self._turn_angle)
+        
+    
 
     """
     Follows the tag by panning camera towards the same direction as the wheels.
