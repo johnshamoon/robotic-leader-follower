@@ -49,8 +49,9 @@ class Follower:
 
         self.camera_angle_offset = 0
 
-        self.wheel_min = 45
-        self.wheel_max = 135
+        self.WHEEL_MIN = 45
+        self.WHEEL_MAX = 135
+        self.STRAIGHT_ANGLE = 90
 
         self._tag_lost_time = 0
         self._speed_cycle_time = time()
