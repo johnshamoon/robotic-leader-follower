@@ -22,7 +22,8 @@ class Follower:
         self.MIN_DISTANCE = self.MAX_DISTANCE / 3
         self.FOLLOWER_MAX_SPEED = 100
         self.LEADER_MAX_SPEED = self.FOLLOWER_MAX_SPEED - 25
-        self.CYCLE_TIME = 0.1
+        self.MAX_TAG_LOSS_TIME = 0.5
+        self.INCREASE_SPEED_CYCLE_TIME = 0.1
 
         picar.setup()
 
@@ -46,15 +47,14 @@ class Follower:
         self._decision = 0
         self._yaw = 0
 
+        self._tag_lost_time = 0
+        self._speed_cycle_time = time()
 
         self.camera_angle_offset = 0
 
         self.WHEEL_MIN = 45
         self.WHEEL_MAX = 135
         self.STRAIGHT_ANGLE = 90
-
-        self._tag_lost_time = 0
-        self._speed_cycle_time = time()
 
 
     """
@@ -72,10 +72,12 @@ class Follower:
             # vehicle's speed.This will keep the distance between the ego
             # vehicle and the leader vehicle.
             self._speed = self.LEADER_MAX_SPEED
-        elif (((time() - self._speed_cycle_time) > self.CYCLE_TIME)
-              and (self._speed + 1 <= self.FOLLOWER_MAX_SPEED)):
+        else:
+            if (((time() - self._speed_cycle_time) > self.INCREASE_SPEED_CYCLE_TIME)
+                and (self._speed + 1 <= self.FOLLOWER_MAX_SPEED)):
                 # If the ego vehicle is not in the minimum distance for
-                # CYCLE_TIME, increase the speed and reset the timer.
+                # INCREASE_SPEED_CYCLE_TIME, increase the speed and reset the
+                # timer.
                 self._speed += 1
                 self._speed_cycle_time = time()
 
@@ -96,44 +98,36 @@ class Follower:
     """
     def turn(self):
         self.convert_camera_angle()
+
+        if self.STRAIGHT_ANGLE < self._turn_angle:
+            self._fw.turn(self._turn_angle + self.camera_angle_offset) 
+        elif self.STRAIGHT_ANGLE > self._turn_angle:
+            self._fw.turn(self._turn_angle - self.camera_angle_offset)
+
         self.pan_camera()
 
-        if self.STRAIGHT_ANGLE > self._turn_angle:
-            self._fw.turn(self._turn_angle - self.camera_angle_offset) 
-        elif self._turn_angle > self.WHEEL_MAX:
-            self._turn_angle = self.WHEEL_MAX
-            self._fw.turn(self._turn_angle)
-
-        elif self.STRAIGHT_ANGLE < self._turn_angle:
-            self._fw.turn(self._turn_angle + self.camera_angle_offset)
-        elif self._turn_angle < self.WHEEL_MIN:
-           self._turn_angle = self.WHEEL_MIN
-           self._fw.turn(self._turn_angle)
-        
     
     """
     Follows the tag by panning camera towards the same direction as the wheels.
     """
     def pan_camera(self):
-        self.convert_camera_to_wheel_angle()
 
-        if self._turn_angle > self.STRAIGHT_ANGLE:
+        if self.WHEEL_MIN < self._turn_angle < self.STRAIGHT_ANGLE:
             self.turn_camera_left(self._turn_angle)
-            self.camera_angle_offset = (self._turn_angle - self.STRAIGHT_ANGLE)
-        elif self._turn_angle < self.STRAIGHT_ANGLE:
+            self.step_to_angle()
+            self.camera_angle_offset = (self.STRAIGHT_ANGLE + self._turn_angle)
+
+        elif self.WHEEL_MAX > self._turn_angle > self.STRAIGHT_ANGLE:
             self.turn_camera_right(self._turn_angle)
-            self.camera_angle_offset = (self.STRAIGHT_ANGLE - self._turn_angle) 
+            self.step_to_angle()
+            self.camera_angle_offset = (self._turn_angle - self.STRAIGHT_ANGLE) 
 
 
     """
-    Converts camera scale [0, 180] with 0 being the leftmost angle and 180 the rightmost angle to the same scale as the 
-    wheels [135, 45] with 135 being the leftmost angle and 135 the rightmost
+    Converts steps into angles.
     """
-    def convert_camera_to_wheel_angle(self):
-        if self._turn_angle < self.STRAIGHT_ANGLE:
-            self._turn_angle = (self.STRAIGHT_ANGLE - self._turn_angle) + self.STRAIGHT_ANGLE
-        elif self._turn_angle > self.STRAIGHT_ANGLE:
-            self._turn_angle = self.STRAIGHT_ANGLE - (self._turn_angle - self.STRAIGHT_ANGLE)
+    def step_to_angle(self):
+        return self._turn_angle * self._camera.PAN_STEP
 
 
     """
@@ -152,8 +146,7 @@ class Follower:
     Takes the angle property and converts into steps where 1 step is 5 degrees.
     """
     def angle_to_step(self):
-        steps = self._turn_angle/self._camera.PAN_STEP
-        return steps
+        return self._turn_angle/self._camera.PAN_STEP
 
 
     """
@@ -217,7 +210,7 @@ class Follower:
         else:
             if not self._tag_lost_time:
                 self._tag_lost_time = time()
-            elif (time() - self._tag_lost_time) >= self.CYCLE_TIME:
+            elif self._tag_lost_time >= self.MAX_TAG_LOSS_TIME:
                 self.stop()
 
 
