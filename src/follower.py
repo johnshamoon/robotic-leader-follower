@@ -1,14 +1,17 @@
-import sys
-from os import getcwd
+from os import path
 from time import time
-sys.path.append("../SunFounder_PiCar-V/remote_control/remote_control/driver")
+import numpy as np
+import sys
+
+FILE_PATH = path.dirname(path.realpath(__file__))
+SUNFOUNDER_PATH = "SunFounder_PiCar-V/remote_control/remote_control/driver"
+sys.path.append(FILE_PATH + "/../" + SUNFOUNDER_PATH)
 
 from camera import Camera
 from picar import back_wheels, front_wheels
 import picar
 
 from tagrec import TagRecognition
-import numpy as np
 
 """
 Autonomous follower vehicle to follow another vehicle.
@@ -27,7 +30,7 @@ class Follower:
 
         picar.setup()
 
-        db_file = getcwd() + "/../SunFounder_PiCar-V/remote_control/remote_control/driver/config"
+        db_file = FILE_PATH + "/../" + SUNFOUNDER_PATH + "/config"
         self._fw = front_wheels.Front_Wheels(debug=False, db=db_file)
         self._bw = back_wheels.Back_Wheels(debug=False, db=db_file)
 
