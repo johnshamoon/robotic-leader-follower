@@ -237,7 +237,7 @@ The following packages are required:
 The system can start as soon as the Raspberry Pi powers on.
 1. Add
 ```shell
-python main.py &
+sudo python main.py &
 ```
 to /etc/rc.local (before the exit 0).
 > sudo vim /etc/rc.local
