@@ -98,13 +98,13 @@ class Follower:
     """
     def turn(self):
         self.convert_camera_angle()
+        self.pan_camera()
 
         if self.STRAIGHT_ANGLE < self._turn_angle:
-            self._fw.turn(self._turn_angle + self.camera_angle_offset) 
-        elif self.STRAIGHT_ANGLE > self._turn_angle:
-            self._fw.turn(self._turn_angle - self.camera_angle_offset)
+          self._fw.turn(self._turn_angle + self.camera_angle_offset) 
 
-        self.pan_camera()
+        elif self.STRAIGHT_ANGLE > self._turn_angle:
+          self._fw.turn(self._turn_angle - self.camera_angle_offset)
 
     
     """
@@ -115,7 +115,7 @@ class Follower:
         if self.WHEEL_MIN < self._turn_angle < self.STRAIGHT_ANGLE:
             self.turn_camera_left(self._turn_angle)
             self.step_to_angle()
-            self.camera_angle_offset = (self.STRAIGHT_ANGLE + self._turn_angle)
+            self.camera_angle_offset = (self.STRAIGHT_ANGLE - self._turn_angle) 
 
         elif self.WHEEL_MAX > self._turn_angle > self.STRAIGHT_ANGLE:
             self.turn_camera_right(self._turn_angle)
@@ -127,8 +127,10 @@ class Follower:
     Converts steps into angles.
     """
     def step_to_angle(self):
-        return self._turn_angle * self._camera.PAN_STEP
-
+        self._turn_angle = self.angle_to_step()
+        self._turn_angle = self._turn_angle * self._camera.PAN_STEP + 1
+        return self._turn_angle
+        
 
     """
     Definitions for turning the camera left and right.
@@ -146,7 +148,8 @@ class Follower:
     Takes the angle property and converts into steps where 1 step is 5 degrees.
     """
     def angle_to_step(self):
-        return self._turn_angle/self._camera.PAN_STEP
+        steps = self._turn_angle/self._camera.PAN_STEP - 1
+        return steps
 
 
     """
