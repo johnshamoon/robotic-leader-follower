@@ -1,6 +1,8 @@
 # Robotic Leader Follower Capstone Project
 Wayne State University Senior Capstone Project to develop a semi-autonomous robotic vehicle.
 
+View the module documentation at https://johnshamoon.github.io/robotic-leader-follower/
+
 ## Preparing a Raspberry Pi For Leader/Follower
 ### Setting Up SSH
 1. Connect the Pi to a monitor and power source.
