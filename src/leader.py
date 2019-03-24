@@ -16,6 +16,9 @@ from inputcontroller import InputController
 from picar import back_wheels, front_wheels
 import picar
 
+MAX_SPEED = 75
+"""The maximum speed of the leader vehicle."""
+
 
 class Leader:
     """
@@ -26,10 +29,8 @@ class Leader:
     backward, use the left trigger.
     """
 
-    STRAIGHT_ANGLE = 89
+    STRAIGHT_ANGLE = 90
     """The angle that the hardware associates as straight."""
-    MAX_TURN_ANGLE = 45
-    """The maximum turn angle of the vehicle."""
 
 
     def __init__(self):
@@ -52,7 +53,7 @@ class Leader:
         Sets the speed of the vehicle based on controller input.
 
         If position is -1, the speed will be 0. If the position is not -1, it
-        will be 75.
+        will be Leader.MAX_SPEED.
 
         :param position: The value of the button input.
         :type position: int
@@ -60,7 +61,7 @@ class Leader:
         if position == -1:
             speed = 0
         else:
-            speed = 75
+            speed = self.MAX_SPEED
         self.bw.speed = speed
 
 
@@ -130,7 +131,7 @@ class Leader:
             else:
                 self.turn_straight()
         elif code == 'left_stick_x':
-            self.fw.turn(self.STRAIGHT_ANGLE + (self.MAX_TURN_ANGLE * position))
+            self.fw.turn(self.STRAIGHT_ANGLE + (self.fw.turning_max * position))
 
 
     def lead(self):

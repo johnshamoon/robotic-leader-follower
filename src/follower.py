@@ -16,6 +16,7 @@ from camera import Camera
 from picar import back_wheels, front_wheels
 import picar
 
+from leader import MAX_SPEED as LEADER_MAX_SPEED
 from tagrec import TagRecognition
 
 class Follower:
@@ -31,8 +32,6 @@ class Follower:
     MIN_DISTANCE = MAX_DISTANCE / 3
     """One third of the length of a car from a SunFounder PiCar-V kit (in meters)."""
     FOLLOWER_MAX_SPEED = 100
-    """The max speed of a car from a SunFounder PiCar-V kit."""
-    LEADER_MAX_SPEED = FOLLOWER_MAX_SPEED - 25
     """
     The max speed of the leader vehicle. The leader is slower than the follower
     to allow the follower to catch up.
@@ -87,7 +86,7 @@ class Follower:
             # If we are in range of the leader vehicle, match the leader
             # vehicle's speed.This will keep the distance between the ego
             # vehicle and the leader vehicle.
-            self._speed = self.LEADER_MAX_SPEED
+            self._speed = LEADER_MAX_SPEED
         elif (((time() - self._speed_cycle_time) > self.CYCLE_TIME)
               and (self._speed + 1 <= self.FOLLOWER_MAX_SPEED)):
                 # If the ego vehicle is not in the minimum distance for
