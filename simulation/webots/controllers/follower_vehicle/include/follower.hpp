@@ -13,6 +13,8 @@
  * Inherits from webots::Driver to provide the vehicle control API. Requires
  * that a vehicle be equipped with a camera mounted at the front of the
  * vehicle.
+ *
+ * Author: John Shamoon
  */
 class Follower : public webots::Driver {
   public:

@@ -12,3 +12,4 @@ settings.json
 *.wbproj
 
 SunFounder_PiCar
+_build

@@ -7,8 +7,9 @@ in front of the vehicle.
 
 If an ARTag exists, the vehicle will become a follower vehicle.
 If an ARTag does not exist, the vehicle will become the leader vehicle.
-"""
 
+Authors: Zein Youssef and Steven Dropiewski
+"""
 from follower import Follower
 from leader import Leader
 from tagrec import TagRecognition
@@ -16,6 +17,7 @@ from tagrec import TagRecognition
 import os
 import subprocess
 import time
+
 
 """
 Determines if a Bluetooth controller is connected. 

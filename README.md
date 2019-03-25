@@ -229,3 +229,15 @@ Compiling OpenCV will most likely require more RAM than the Pi has. This can be 
 This system uses Python 2.7 as is required by the SunFounder APIs.
 The following packages are required:
 > numpy>=1.15.1
+
+
+### Starting The System On Boot
+The system can start as soon as the Raspberry Pi powers on.
+1. Add
+```shell
+python main.py &
+```
+to /etc/rc.local (before the exit 0).
+> sudo vim /etc/rc.local
+2. Append to the .bashrc so that the system stops during development or installation.
+> sudo kill $(pidof python)
