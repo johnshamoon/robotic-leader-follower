@@ -38,6 +38,7 @@ class TagRecognition():
     }
     """Pre-set resolutions."""
 
+    _cap = cv2.VideoCapture(0)
 
     def __init__(self, resolution=90, dead_zone=1.45, marker_length=0.06):
         self._RESOLUTION = resolution
@@ -53,7 +54,6 @@ class TagRecognition():
             self._DEADZONE_RIGHT = abs(dead_zone)
             self._DEADZONE_LEFT = -self._DEADZONE_RIGHT
 
-        self._cap = cv2.VideoCapture(0)
 
         self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.RESOLUTIONS[self._RESOLUTION][0])
         self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.RESOLUTIONS[self._RESOLUTION][1])
