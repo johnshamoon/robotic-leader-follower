@@ -40,6 +40,7 @@ class TagRecognition():
 
     _cap = cv2.VideoCapture(0)
 
+
     def __init__(self, resolution=90, dead_zone=1.45, marker_length=0.06):
         self._RESOLUTION = resolution
         """The resolution of the camera feed."""
