@@ -165,14 +165,14 @@ class Follower:
         return detected
 
 
-    """
-    Follow an ARTag if one is found.
-
-    If an ARTag is detected, the follower vehicle will turn towards it and
-    manage speed to avoid collisions. If an ARTag is not detected, the vehicle
-    will stop.
-    """
     def follow(self):
+        """
+        Follow an ARTag if one is found.
+
+        If an ARTag is detected, the follower vehicle will turn towards it and
+        manage speed to avoid collisions. If an ARTag is not detected, the vehicle
+        will stop.
+        """
         if self.detect():
             self.drive()
             self.turn()
