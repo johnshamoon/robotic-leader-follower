@@ -53,6 +53,7 @@ class Follower:
         self.camera_angle_offset = 0
 
         self.STRAIGHT_ANGLE = 90
+        self.DEADZONE = 7
 
 
     """
@@ -91,7 +92,7 @@ class Follower:
         self._bw.forward()
 
 
-    """
+  """
     Turn the wheels and pans the camera towards the last recognized object.
     """
     def turn(self):
