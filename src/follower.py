@@ -53,7 +53,8 @@ class Follower:
         self.camera_angle_offset = 0
 
         self.STRAIGHT_ANGLE = 90
-        self.DEADZONE = 7
+        self.DEADZONE_WHEEL = 7
+        self.DEADZONE_CAMERA = 5
 
 
     """
@@ -92,16 +93,16 @@ class Follower:
         self._bw.forward()
 
 
-  """
+    """
     Turn the wheels and pans the camera towards the last recognized object.
     """
     def turn(self):
         self.convert_camera_angle()
         self.pan_camera()
 
-        if self.STRAIGHT_ANGLE - self.DEADZONE < self._turn_angle:
+        if self.STRAIGHT_ANGLE - self.DEADZONE_WHEEL < self._turn_angle:
             self._fw.turn(self._turn_angle + self.camera_angle_offset) 
-        elif self.STRAIGHT_ANGLE + self.DEADZONE > self._turn_angle:
+        elif self.STRAIGHT_ANGLE + self.DEADZONE_WHEEL > self._turn_angle:
             self._fw.turn(self._turn_angle - self.camera_angle_offset)
 
     
@@ -110,11 +111,11 @@ class Follower:
     """
     def pan_camera(self):
 
-        if self._turn_angle < self.STRAIGHT_ANGLE - self.DEADZONE:
+        if self._turn_angle < self.STRAIGHT_ANGLE - self.DEADZONE_CAMERA:
             self.turn_camera_left(self._turn_angle)
             self.camera_angle_offset = self._camera.current_pan - 90
 
-        elif self._turn_angle > self.STRAIGHT_ANGLE + self.DEADZONE:
+        elif self._turn_angle > self.STRAIGHT_ANGLE + self.DEADZONE_CAMERA:
             self.turn_camera_right(self._turn_angle)
             self.camera_angle_offset = np.abs(self._camera.current_pan - 90)
  
@@ -136,7 +137,6 @@ class Follower:
     """
     def angle_to_step(self):
         return (self._turn_angle/self._camera.PAN_STEP)
-
 
     """
     Converts the camera's angle scale to the same scale as the wheels.
