@@ -1,3 +1,8 @@
+"""
+Webots controller to manually drive a car using the arrow keys.
+
+Authors: John Shamoon and Wisam Bunni
+"""
 from numpy import pi
 from controller import Keyboard
 from vehicle import Driver

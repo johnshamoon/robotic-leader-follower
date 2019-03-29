@@ -1,6 +1,8 @@
 # Robotic Leader Follower Capstone Project
 Wayne State University Senior Capstone Project to develop a semi-autonomous robotic vehicle.
 
+View the module documentation at https://johnshamoon.github.io/robotic-leader-follower/
+
 ## Preparing a Raspberry Pi For Leader/Follower
 ### Setting Up SSH
 1. Connect the Pi to a monitor and power source.
@@ -229,3 +231,15 @@ Compiling OpenCV will most likely require more RAM than the Pi has. This can be 
 This system uses Python 2.7 as is required by the SunFounder APIs.
 The following packages are required:
 > numpy>=1.15.1
+
+
+### Starting The System On Boot
+The system can start as soon as the Raspberry Pi powers on.
+1. Add
+```shell
+python main.py &
+```
+to /etc/rc.local (before the exit 0).
+> sudo vim /etc/rc.local
+2. Append to the .bashrc so that the system stops during development or installation.
+> sudo kill $(pidof python)

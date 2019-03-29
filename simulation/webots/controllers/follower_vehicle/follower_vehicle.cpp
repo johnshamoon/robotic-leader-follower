@@ -1,3 +1,5 @@
+// Webots controller for a follower vehicle.
+// Author: John Shamoon
 #include "include/follower.hpp"
 #include <memory>
 

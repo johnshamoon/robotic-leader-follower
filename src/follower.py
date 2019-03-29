@@ -1,33 +1,49 @@
-import sys
-from os import getcwd
+"""
+follower
+
+Author: John Shamoon
+"""
+from os import path
 from time import time
-sys.path.append("../SunFounder_PiCar-V/remote_control/remote_control/driver")
+import numpy as np
+import sys
+
+FILE_PATH = path.dirname(path.realpath(__file__))
+SUNFOUNDER_PATH = "SunFounder_PiCar-V/remote_control/remote_control/driver"
+sys.path.append(FILE_PATH + "/../" + SUNFOUNDER_PATH)
 
 from camera import Camera
 from picar import back_wheels, front_wheels
 import picar
 
 from tagrec import TagRecognition
-import numpy as np
 
-"""
-Autonomous follower vehicle to follow another vehicle.
-Takes input from camera and autonomously follows another vehicle with an ARTag
-mounted at the rear-center of the leader vehicle.
-"""
 class Follower:
-    def __init__(self):
-        # Car length
-        self.MAX_DISTANCE = 0.28
-        self.MIN_DISTANCE = self.MAX_DISTANCE / 3
-        self.FOLLOWER_MAX_SPEED = 100
-        self.LEADER_MAX_SPEED = self.FOLLOWER_MAX_SPEED - 25
-        self.MAX_TAG_LOSS_TIME = 0.5
-        self.INCREASE_SPEED_CYCLE_TIME = 0.1
+    """
+    Autonomous follower vehicle to follow another vehicle.
 
+    Takes input from camera and autonomously follows another vehicle with an
+    ARTag mounted at the rear-center of the leader vehicle.
+    """
+
+    MAX_DISTANCE = 0.28
+    """Length of a car from a SunFounder PiCar-V kit (in meters)."""
+    MIN_DISTANCE = MAX_DISTANCE / 3
+    """One third of the length of a car from a SunFounder PiCar-V kit (in meters)."""
+    FOLLOWER_MAX_SPEED = 100
+    """The max speed of a car from a SunFounder PiCar-V kit."""
+    LEADER_MAX_SPEED = FOLLOWER_MAX_SPEED - 25
+    """
+    The max speed of the leader vehicle. The leader is slower than the follower
+    to allow the follower to catch up.
+    """
+    CYCLE_TIME = 0.1
+    """The cycle time of the system."""
+
+    def __init__(self):
         picar.setup()
 
-        db_file = getcwd() + "/../SunFounder_PiCar-V/remote_control/remote_control/driver/config"
+        db_file = FILE_PATH + "/../" + SUNFOUNDER_PATH + "/config"
         self._fw = front_wheels.Front_Wheels(debug=False, db=db_file)
         self._bw = back_wheels.Back_Wheels(debug=False, db=db_file)
 
@@ -57,12 +73,18 @@ class Follower:
         self.DEADZONE_CAMERA = 5
 
 
-    """
-    Drives the vehicle forward and avoids collisions with recognized objects.
-    Manages the wheel speed to avoid collisions depending on the distance to
-    the recognized object.
-    """
     def drive(self):
+        """
+        Drives forward and avoids forward collisions with recognized objects.
+
+        Manages the speed to avoid collisions depending on the distance to the
+        recognized object. If the recognized object is within MIN_DISTANCE, the
+        speed will be set to 0. If the recognized object is outside of the
+        MAX_DISTANCE, the speed will be set to FOLLOWER_MAX_SPEED. If the
+        vehicle is within [MIN_DISTANCE, MAX_DISTANCE), the vehicle will match
+        the leader vehicle's speed.
+        """
+
         # If the vehicle is too close to the object, significantly decreese
         # speed.
         if self._distance <= self.MIN_DISTANCE:
@@ -85,18 +107,14 @@ class Follower:
         self._bw.forward()
 
 
-    """
-    Stops the vehicle.
-    """
     def stop(self):
+        """Stops the vehicle."""
         self._bw.speed = 0
         self._bw.forward()
 
 
-    """
-    Turn the wheels and pans the camera towards the last recognized object.
-    """
     def turn(self):
+        """Turn the wheels towards the last recognized object."""
         self.convert_camera_angle()
         self.pan_camera()
 
@@ -138,16 +156,20 @@ class Follower:
     def angle_to_step(self):
         return (self._turn_angle/self._camera.PAN_STEP)
 
-    """
-    Converts the camera's angle scale to the same scale as the wheels.
-    The camera reports objects directly in front of it as 90 degrees. Everything
-    to the left of center is negative ranging from [-45, -90) with -45 being the
-    leftmost angle. Everything to the right of center is positive ranging from
-    (90, 135] with 135 being the rightmost angle.
-    The wheels turn on a range of [45, 135] with 45 being the rightmost, 135
-    being the leftmost, and 90 being center.
-    """
+    
     def convert_camera_angle(self):
+        """
+        Converts the camera's angle scale to the same scale as the wheels.
+
+        The camera reports objects directly in front of it as 90 degrees.
+        Everything to the left of center is negative ranging from [-45, -90)
+        with -45 being the leftmost angle. Everything to the right of center is
+        positive ranging from (90, 135] with 135 being the rightmost angle.
+
+        The wheels turn on a range of [45, 135] with 45 being the rightmost, 135
+        being the leftmost, and 90 being center.
+        """
+
         if self._decision == -1:
             self._turn_angle = np.abs(self._yaw - 90)
         elif self._decision == 1:
@@ -156,22 +178,27 @@ class Follower:
             self._turn_angle = 90
 
 
-    """
-    Resets the camera to the default position.
-    The default position is tilted to 120 degrees and panned to 90 degrees.
-    """
     def reset_camera(self):
+        """
+        Resets the camera to the default position.
+
+        The default position is tilted to 120 degrees and panned to 90 degrees.
+        """
         self._camera.turn_down(120)
         self._camera.pan_servo.write(90)
 
 
-    """
-    Detects an ARTag and gets the object's data.
-    If an ARTag is detected, the object's distance and turning angle will be
-    updated and detect() will return True. If an ARTag is not detected, detect()
-    will return False.
-    """
     def detect(self):
+        """
+        Detects an ARTag and gets the object's data.
+
+        If an ARTag is detected, the object's distance and turning angle will be
+        updated and detect() will return True. If an ARTag is not detected,
+        detect() will return False.
+
+        :return: True if an ARTag is detected, False otherwise.
+        :rtype: Boolean
+        """
         obj_data = self._tag.detect()
         detected = False
 
@@ -185,13 +212,14 @@ class Follower:
         return detected
 
 
-    """
-    Follow an ARTag if one is found.
-    If an ARTag is detected, the follower vehicle will turn towards it and
-    manage speed to avoid collisions. If an ARTag is not detected, the vehicle
-    will stop.
-    """
     def follow(self):
+        """
+        Follow an ARTag if one is found.
+
+        If an ARTag is detected, the follower vehicle will turn towards it and
+        manage speed to avoid collisions. If an ARTag is not detected, the vehicle
+        will stop.
+        """
         if self.detect():
             self.drive()
             self.turn()
@@ -204,6 +232,7 @@ class Follower:
 
 
 def main():
+    """Instantiates a Follower object and continously calls Follower.follow()."""
     follower = Follower()
     while True:
         follower.follow()

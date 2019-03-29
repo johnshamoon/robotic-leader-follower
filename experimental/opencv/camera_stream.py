@@ -1,3 +1,5 @@
+# Script to view the live output of the camera.
+# Author: John Shamoon
 import numpy as np
 import cv2
 

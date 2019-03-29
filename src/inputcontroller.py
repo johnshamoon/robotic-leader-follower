@@ -1,26 +1,33 @@
-from __future__ import print_function
+"""
+inputcontroller
+
+Author: John Shamoon
+"""
 from fcntl import ioctl
 import array
 import struct
 
 
-"""
-Module used to get input from an Xbox One S controller.
-
-Assumes the device is /dev/input/js0.
-
-Recognized Buttons:
-    1) Left Stick X and Y
-    2) Right Stick Z and Rotation Z
-    3) Left and Right Triggers
-    4) Left and Right Buttons
-    5) D-Pad Up, Left, Down, and Right
-    6) A, B, X, and Y
-    7) Start/Select Buttons
-    8) Left and Right Stick Buttons
-"""
 class InputController:
-    # Linux input codes from input-event-codes.h
+    """
+    Module used to get input from an Xbox One S controller.
+
+    Assumes the device is /dev/input/js0.
+
+    Recognized Buttons:
+        1) Left Stick X and Y
+        2) Right Stick Z and Rotation Z
+        3) Left and Right Triggers
+        4) Left and Right Buttons
+        5) D-Pad Up, Left, Down, and Right
+        6) A, B, X, and Y
+        7) Start/Select Buttons
+        8) Left and Right Stick Buttons
+
+    :param debug: Enabling debug causes get_input() to print values.
+    :type debug: bool
+    """
+
     AXIS_CODES = {
         0x00 : 'left_stick_x',
         0x01 : 'left_stick_y',
@@ -31,6 +38,7 @@ class InputController:
         0x10 : 'dpad_left_right',
         0x11 : 'dpad_up_down',
     }
+    """Linux axis codes from input-event-codes.h."""
 
     BUTTON_CODES = {
         0x130 : 'a',
@@ -44,19 +52,33 @@ class InputController:
         0x138 : 'left_stick_button',
         0x139 : 'right_stick_button',
     }
+    """Linux button codes from input-event-codes.h."""
 
     JSIOCGNAME = 0x80006a13
+    """Gets the device's identifier string."""
     JSIOCGAXES = 0x80016a11
+    """Gets the device's number of axes."""
     JSIOCGBUTTONS = 0x80016a12
+    """Gets the device's number of buttons."""
     JSIOCGAXMAP = 0x80406a32
+    """Gets the device's axis mapping."""
     JSIOCGBTNMAP = 0x80406a34
-    FORMAT = 'IhBB'  # unsigned int, short, unsigned short * 2
+    """Gets the device's button mapping."""
+    FORMAT = "IhBB"
+    """
+    Format to unpack a struct. Unsigned int, short, unsigned short, unsigned
+    short.
+    """
 
     EV_KEY = 0x01
+    """Button event type."""
     EV_REL = 0x02
+    """Axis event type."""
 
     AXIS_CALIBRATION = 32767.0
+    """Calibrates axes to be in (-32767.0, 32767.0)"""
     DEVICE_NAME_MAX_LENGTH = 0x64
+    """Device name can be at most 64 bytes."""
     DEVICE_NAME_BUFFER = 0x10000
     AXIS_MAP_BUFFER = 0x40
     BUTTON_MAP_BUFFER = 0x200
@@ -105,16 +127,24 @@ class InputController:
             self.button_states[button_name] = 0
 
 
-    """
-    Takes input from /dev/input/js0 and returns a pair of (code, value).
-
-    If a button is being pressed, value is 1. When the button stops being
-    pressed, state is 0. If a button is not being pressed, the code will be -1.
-
-    If an axis is being used, the value will be in [-1, 1]. When the input on
-    the axis stops, the code is -1 and the position is -2.
-    """
     def get_input(self):
+        """
+        Takes input from /dev/input/js0 and returns a pair of (code, value).
+
+        If a button is being pressed, value is 1. When the button stops being
+        pressed, state is 0. If a button is not being pressed, the code will be
+        -1.
+
+        If an axis is being used, the value will be in [-1, 1]. When the input
+        on the axis stops, the code is -1 and the position is -2.
+
+        :return: A code and a value representing the linux
+                             button/axis code and its value.
+        :rtype: string, float
+
+        :return: A code when the input button/axis is not being used anymore.
+        :rtype: int, int
+        """
         # Read 8 bytes: 2 for the type, 2 for the code, 4 for the value.
         event = self.js.read(8)
         if event:
@@ -126,9 +156,9 @@ class InputController:
                     self.button_states[button] = type
                 if self.debug:
                     if type:
-                        print("%s pressed" % (button))
+                        print "%s pressed" % (button)
                     else:
-                        print("%s released" % (button))
+                        print "%s released" % (button)
                 else:
                     return button, 1
             # Axes
@@ -138,7 +168,7 @@ class InputController:
                     axis_position = type / self.AXIS_CALIBRATION
                     self.axis_states[axis] = axis_position
                     if self.debug:
-                        print("%s: %.3f" % (axis, axis_position))
+                        print "%s: %.3f" % (axis, axis_position)
                     else:
                         return axis, axis_position
             else:
@@ -146,6 +176,10 @@ class InputController:
 
 
 def main():
+    """
+    Instantiates an InputController object with debugging enabled and
+    continuously calls InputController.get_input().
+    """
     controller = InputController(debug=True)
     while True:
         controller.get_input()

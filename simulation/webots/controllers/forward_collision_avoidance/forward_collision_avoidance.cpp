@@ -1,3 +1,5 @@
+// Webots controller to avoid forward collisions.
+// Author: John Shamoon
 #include <webots/DistanceSensor.hpp>
 #include <webots/vehicle/Driver.hpp>
 

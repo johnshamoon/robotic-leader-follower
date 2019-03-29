@@ -1,4 +1,5 @@
 # This script is used to generate a new AR tag
+# Author: Wisam Bunni
 import numpy as np
 import cv2
 import cv2.aruco as ar

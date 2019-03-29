@@ -1,3 +1,4 @@
+// Author: John Shamoon
 #include "include/follower.hpp"
 
 Follower::Follower() : Follower("camera", true) {}
