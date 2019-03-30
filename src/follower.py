@@ -69,14 +69,14 @@ class Follower:
         self.camera_angle_offset = 0
 
         self.STRAIGHT_ANGLE = 90
-        self.DEADZONE_WHEEL = 7
-        self.DEADZONE_CAMERA = 5
+        self.WHEEL_MAX = 135
+        self.WHEEL_MIN = 45
+        self.DEADZONE = 7
 
 
     def drive(self):
         """
         Drives forward and avoids forward collisions with recognized objects.
-
         Manages the speed to avoid collisions depending on the distance to the
         recognized object. If the recognized object is within MIN_DISTANCE, the
         speed will be set to 0. If the recognized object is outside of the
@@ -94,12 +94,10 @@ class Follower:
             # vehicle's speed.This will keep the distance between the ego
             # vehicle and the leader vehicle.
             self._speed = self.LEADER_MAX_SPEED
-        else:
-            if (((time() - self._speed_cycle_time) > self.INCREASE_SPEED_CYCLE_TIME)
-                and (self._speed + 1 <= self.FOLLOWER_MAX_SPEED)):
+        elif (((time() - self._speed_cycle_time) > self.CYCLE_TIME)
+              and (self._speed + 1 <= self.FOLLOWER_MAX_SPEED)):
                 # If the ego vehicle is not in the minimum distance for
-                # INCREASE_SPEED_CYCLE_TIME, increase the speed and reset the
-                # timer.
+                # CYCLE_TIME, increase the speed and reset the timer.
                 self._speed += 1
                 self._speed_cycle_time = time()
 
@@ -114,46 +112,67 @@ class Follower:
 
 
     def turn(self):
-        """Turn the wheels towards the last recognized object."""
+        """
+        Turn the wheels towards the last recognized object.
+        """
         self.convert_camera_angle()
         self.pan_camera()
 
-        if self.STRAIGHT_ANGLE - self.DEADZONE_WHEEL < self._turn_angle:
+        if self.STRAIGHT_ANGLE + self.DEADZONE < self._turn_angle:
+            # Left condition: when the turn angle is between 90 + deadzone and 135, turn the wheels at that angle plus the offset. 
+            # If the turn angle is over the maximum wheel turn angle, set the turn angle to the wheel max.
             self._fw.turn(self._turn_angle + self.camera_angle_offset) 
-        elif self.STRAIGHT_ANGLE + self.DEADZONE_WHEEL > self._turn_angle:
+            if self._turn_angle + self.camera_angle_offset > self.WHEEL_MAX:
+              self._fw.turn(self.WHEEL_MAX)
+
+        elif self.STRAIGHT_ANGLE - self.DEADZONE > self._turn_angle:
+            # Right condition: when the turn angle is between 90 - deadzone and 45, turn the wheels at that angle minus the offset. 
+            # If the turn angle is under the minimum wheel turn angle, set the turn angle to the wheel min.
             self._fw.turn(self._turn_angle - self.camera_angle_offset)
+            if self._turn_angle - self.camera_angle_offset < self.WHEEL_MIN:
+              self._fw.turn(self.WHEEL_MIN)
 
-    
-    """
-    Follows the tag by panning camera towards the same direction as the wheels.
-    """
+
     def pan_camera(self):
-
-        if self._turn_angle < self.STRAIGHT_ANGLE - self.DEADZONE_CAMERA:
+        """
+        Follows the tag by panning camera towards the same direction as the wheels.
+        """
+        if self._turn_angle < self.STRAIGHT_ANGLE - self.DEADZONE:
+            # Left condition: If the turn angle is less than 90 - deadzone, turn the camera left. 
+            # The offset is 90 - the current angle.
             self.turn_camera_left(self._turn_angle)
-            self.camera_angle_offset = self._camera.current_pan - 90
+            self.camera_angle_offset = np.abs(90 - self._camera.current_pan)
 
-        elif self._turn_angle > self.STRAIGHT_ANGLE + self.DEADZONE_CAMERA:
+        elif self._turn_angle > self.STRAIGHT_ANGLE + self.DEADZONE:
+            # Right condition: If the turn angle is greater than 90 + deadzone, turn the camera right. 
+            # The offset is the current angle - 90.
             self.turn_camera_right(self._turn_angle)
             self.camera_angle_offset = np.abs(self._camera.current_pan - 90)
+
+        if self.camera_angle_offset == self.STRAIGHT_ANGLE or self.camera_angle_offset == self.WHEEL_MIN:
+            # If the offset of the right or left offsets are equal to 90 or 45 respectively, turn the camera straight since the wheels will be straight.
+            self._camera.current_pan = self.STRAIGHT_ANGLE
+            self._camera.pan_servo.write(self._camera.current_pan)
  
 
-    """
-    Definitions for turning the camera left and right.
-    Turn Left/Right functions from the Camera class only takes Steps.
-    """
     def turn_camera_left(self, angle):
+        """
+        Turns camera left. Camera API turn left function only takes steps.
+        """
         self._camera.turn_left(self.angle_to_step())
     
     def turn_camera_right(self, angle):
+        """
+        Turns camera right. Camera API turn right function only takes steps.
+        """
         self._camera.turn_right(self.angle_to_step())
 
     
-    """
-    Definition for converting angles to steps.
-    Takes the angle property and converts into steps where 1 step is 5 degrees.
-    """
     def angle_to_step(self):
+        """
+        Definition for converting angles to steps. 
+        Takes the angle property and converts into steps where 1 step is 5 degrees.
+        """
         return (self._turn_angle/self._camera.PAN_STEP)
 
     
@@ -169,7 +188,6 @@ class Follower:
         The wheels turn on a range of [45, 135] with 45 being the rightmost, 135
         being the leftmost, and 90 being center.
         """
-
         if self._decision == -1:
             self._turn_angle = np.abs(self._yaw - 90)
         elif self._decision == 1:
@@ -215,7 +233,6 @@ class Follower:
     def follow(self):
         """
         Follow an ARTag if one is found.
-
         If an ARTag is detected, the follower vehicle will turn towards it and
         manage speed to avoid collisions. If an ARTag is not detected, the vehicle
         will stop.
@@ -227,7 +244,7 @@ class Follower:
         else:
             if not self._tag_lost_time:
                 self._tag_lost_time = time()
-            elif self._tag_lost_time >= self.MAX_TAG_LOSS_TIME:
+            elif (time() - self._tag_lost_time) >= self.CYCLE_TIME:
                 self.stop()
 
 
