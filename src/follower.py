@@ -72,7 +72,7 @@ class Follower:
         self.WHEEL_MAX = 135
         self.WHEEL_MIN = 45
         self.DEADZONE_CAMERA = 7
-        self.DEADZONE_WHEELS = 12
+        self.DEADZONE_WHEELS = 10
 
 
     def drive(self):
@@ -123,6 +123,7 @@ class Follower:
             # Left condition: when the turn angle is between 90 + deadzone and 135, turn the wheels at that angle plus the offset. 
             # If the turn angle is over the maximum wheel turn angle, set the turn angle to the wheel max.
             self._fw.turn(self._turn_angle + self.camera_angle_offset) 
+            print("left", self._turn_angle + self.camera_angle_offset)
             if self._turn_angle + self.camera_angle_offset > self.WHEEL_MAX:
               self._fw.turn(self.WHEEL_MAX)
 
@@ -130,6 +131,7 @@ class Follower:
             # Right condition: when the turn angle is between 90 - deadzone and 45, turn the wheels at that angle minus the offset. 
             # If the turn angle is under the minimum wheel turn angle, set the turn angle to the wheel min.
             self._fw.turn(self._turn_angle - self.camera_angle_offset)
+            print("right", self._turn_angle - self.camera_angle_offset)
             if self._turn_angle - self.camera_angle_offset < self.WHEEL_MIN:
               self._fw.turn(self.WHEEL_MIN)
 
@@ -143,18 +145,22 @@ class Follower:
             # The offset is 90 - the current angle.
             self.turn_camera_left(self._turn_angle)
             self.camera_angle_offset = np.abs(90 - self._camera.current_pan)
+            print("current pan L", self._camera.current_pan )
+            print("offset left", self.camera_angle_offset )
 
         elif self._turn_angle > self.STRAIGHT_ANGLE + self.DEADZONE_CAMERA:
             # Right condition: If the turn angle is greater than 90 + deadzone, turn the camera right. 
             # The offset is the current angle - 90.
             self.turn_camera_right(self._turn_angle)
             self.camera_angle_offset = np.abs(self._camera.current_pan - 90)
-            
+            print("offset right", self.camera_angle_offset )
+
         if self.camera_angle_offset == self.STRAIGHT_ANGLE or self.camera_angle_offset == self.WHEEL_MIN:
             # If the offset of the right or left offsets are equal to 90 or 45 respectively, turn the camera straight since the wheels will be straight.
             self._camera.current_pan = self.STRAIGHT_ANGLE
             self._camera.pan_servo.write(self._camera.current_pan)
             self._fw.turn(self._camera.current_pan)
+            print("straight", self._camera.current_pan)
  
 
     def turn_camera_left(self, angle):
@@ -175,7 +181,7 @@ class Follower:
         Definition for converting angles to steps. 
         Takes the angle property and converts into steps where 1 step is 5 degrees.
         """
-        return (self._turn_angle/self._camera.PAN_STEP) + 3
+        return (self._turn_angle/self._camera.PAN_STEP) + 4
 
     
     def convert_camera_angle(self):
