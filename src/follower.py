@@ -85,7 +85,7 @@ class Follower:
         the leader vehicle's speed.
         """
 
-        # If the vehicle is too close to the object, significantly decreese
+        # If the vehicle is too close to the object, significantly decrease
         # speed.
         if self._distance <= self.MIN_DISTANCE:
             self._speed = 0
@@ -121,15 +121,16 @@ class Follower:
         if self.STRAIGHT_ANGLE + self.DEADZONE < self._turn_angle:
             # Left condition: when the turn angle is between 90 + deadzone and 135, turn the wheels at that angle plus the offset. 
             # If the turn angle is over the maximum wheel turn angle, set the turn angle to the wheel max.
-            self._fw.turn(self._turn_angle + self.camera_angle_offset) 
+            self._fw.turn(self._turn_angle - self.camera_angle_offset) 
+            print("left", self._turn_angle - self.camera_angle_offset)
             if self._turn_angle + self.camera_angle_offset > self.WHEEL_MAX:
               self._fw.turn(self.WHEEL_MAX)
 
         elif self.STRAIGHT_ANGLE - self.DEADZONE > self._turn_angle:
             # Right condition: when the turn angle is between 90 - deadzone and 45, turn the wheels at that angle minus the offset. 
             # If the turn angle is under the minimum wheel turn angle, set the turn angle to the wheel min.
-            self._fw.turn(self._turn_angle - self.camera_angle_offset)
-            if self._turn_angle - self.camera_angle_offset < self.WHEEL_MIN:
+            self._fw.turn(self._turn_angle + self.camera_angle_offset)
+            if self._turn_angle + self.camera_angle_offset < self.WHEEL_MIN:
               self._fw.turn(self.WHEEL_MIN)
 
 
