@@ -3,209 +3,244 @@ camera
 
 Author: Steven Dropiewski
 """
-from os import path
-import sys
+import numpy as np
 import time
 
-FILE_PATH = path.dirname(path.realpath(__file__))
-SUNFOUNDER_PATH = "SunFounder_PiCar-V/remote_control/remote_control/driver"
-sys.path.append(FILE_PATH + "/../" + SUNFOUNDER_PATH)
+ABSOLUTE = 1
+RELATIVE = 0
 
-from picar.SunFounder_PCA9685 import Servo
 from picar import filedb
+from picar.SunFounder_PCA9685 import Servo
 import picar
+
 
 class Camera:
     """
-    Camera class to control panning and tilting.
+    Creates a camera object that can be panned and tilted.
 
-    Creates camera object that can be operated on using set_pan and set_tilt.
-    set_pan operates [0,180] degrees. set_tilt operates [0,150] degrees. The 
-    current values for pan and tilt in degrees can be returned using the get_pan
-    and get_tilt methods. To change the offset you can may use calibrate_pan
-    and calibrate_tilt methods. The methods will automatically update the values
-    in the config file. All method parameters take absolute degrees.
-    
-    :param bus_number: The bus number the hat connects to.
+    The camera can pan in [0, 180] degrees and can tilt in [0, 150] degrees.
+    The camera operates in absolute degrees default, but can be specified to
+    work in realtive degrees on object creation.
+
+    :param bus_number: The bus number of the servos.
     :type bus_number: int
+
+    :param pan_channel: Pan servo's I2C channel.
+    :type pan_channel: int
+
+    :param tilt_channel: Tilt servo's I2C channel.
+    :type tilt_channel: int
+
+    :param camera_type: Does the camera function in absolute or relative angles.
+    :type camera_type: int
     """
 
-    PAN_CHANNEL = 1
-    """Channel on PiCar HATS that connects to pan servo."""
-    TILT_CHANNEL = 2
-    """Channel on PiCar HATS that connects to tilt servo."""
     MAX_PAN_DEGREE = 180
-    """The maximum value to be written to pan servo (in degrees)."""
+    """The maximum value to be written to pan servo."""
     MAX_TILT_DEGREE = 150
-    """The maximum value to be written to tilt servo (in degrees)."""
+    """The maximum value to be written to tilt servo."""
     MIN_DEGREE = 0
-    """The minimum value to be written to both pan and tilt servo (in degrees)."""
-    MAX_CALI_DEGREE = 180
-    """The maximum value to calibrate pan and tilt (in degrees)."""
-    MIN_CALI_DEGREE = -180
-    """The minimum value to calibrate pan or tilt (in degrees."""
-    OFFSET_TO_SERVO = 0
-    """The offset value passed to the servo object."""
+    """The minimum value to be written to both pan and tilt servo."""
+    MAX_PAN_CALI_DEGREE = 180
+    """The maximum value to calibrate pan."""
+    MAX_TILT_CALI_DEGREE = 150
+    """The maximum value to calibrate tilt."""
+    MIN_PAN_CALI_DEGREE = -180
+    """The minimum value to calibrate pan."""
+    MIN_TILT_CALI_DEGREE = -150
+    """The minimum value to calibrate tilt."""
 
-    def __init__(self, bus_number=1):
-        picar.setup()
 
-        self._DB = filedb.fileDB(FILE_PATH + "/../" + SUNFOUNDER_PATH + "/config")
+    def __init__(self, bus_number=1, pan_channel=1, tilt_channel=2,
+                                                    camera_type=ABSOLUTE):
+        offset = 0
 
-        self._pan_offset = float(self._DB.get('pan_offset', default_value=0))
-        self._tilt_offset = float(self._DB.get('tilt_offset', default_value=0))
+        self._db = filedb.fileDB("config")
+        self._pan_offset = int(self._db.get('pan_offset', default_value=0))
+        self._tilt_offset = int(self._db.get('tilt_offset', default_value=0))
 
-        self._pan_servo = Servo.Servo(self.PAN_CHANNEL,  
-                                      bus_number=bus_number, 
-                                      offset=self.OFFSET_TO_SERVO)
-        self._tilt_servo = Servo.Servo(self.TILT_CHANNEL, 
-                                       bus_number=bus_number, 
-                                       offset=self.OFFSET_TO_SERVO)
+        self._pan_servo = Servo.Servo(pan_channel, bus_number=bus_number,
+                                                   offset=offset)
+        self._tilt_servo = Servo.Servo(tilt_channel, bus_number=bus_number,
+                                                     offset=offset)
 
-        self._current_pan_angle = 0
+        self._camera_type = ABSOLUTE if camera_type is not RELATIVE else RELATIVE
+
+        self._current_pan_angle = 90
         self._current_tilt_angle = 0
 
 
-    def set_pan(self, degree):
+    def pan(self, degree):
         """
         Pans the camera.
 
-        Controls the horizontal movement of the camera in [0, 180] degrees. 
-        0 refers to the vehicle's right while 180 refers to the vehicle's left. 
+        Controls the horizontal movement of the camera in [0, 180] degrees.
+        0 refers to the vehicle's right while 180 refers to the vehicle's left.
+        The degrees will be clamped to [0, 180].
 
-        :param degree: The degree to set the pan servo to.
-        :type degree: float
+        :param degree: The number of degrees.
+        :type degree: int
         """
-        self._current_pan_angle = self.validate_degree(degree, 
+        if self._camera_type == ABSOLUTE:
+            self._current_pan_angle = np.clip(degree, self.MIN_DEGREE,
+                                                      self.MAX_PAN_DEGREE)
+
+        else:
+            self._current_pan_angle = np.clip(degree + self._current_pan_angle,
                                                        self.MIN_DEGREE,
                                                        self.MAX_PAN_DEGREE)
-        self._pan_servo.write(self.validate_degree(self._current_pan_angle + 
-                                                   self._pan_offset,
-                                                   self.MIN_DEGREE,
-                                                   self.MAX_PAN_DEGREE))
+
+        self._pan_servo.write(np.clip(self._current_pan_angle +
+                                      self._pan_offset,
+                                      self.MIN_DEGREE,
+                                      self.MAX_PAN_DEGREE))
 
 
     def calibrate_pan(self, degree):
         """
-        Calibrates camera pan.
+        Calibrates the camera's panning servo.
 
-        Controls offset in [-180, 180] degrees for pan. Writes new offset value to
-        'SunFounder_PiCar-V/remote_control/remote_control/driver/config' 
-        to 'pan_offset'. 
+        Writes a new pan offset value to the config file and changes the current
+        pan offset. The calibration value can be negative.
 
-        :param degree: The amount of degrees to add or subtract for calibration.
-        :type degree: float
+        :param degree: The number of degrees.
+        :type degree: int
         """
-        self._pan_offset = self.validate_degree(degree, self.MIN_CALI_DEGREE,
-                                                        self.MAX_CALI_DEGREE)
-        self._DB.set('pan_offset', self._pan_offset)
+        if self._camera_type == ABSOLUTE:
+            self._pan_offset = int(np.clip(degree, self.MIN_PAN_CALI_DEGREE,
+                                                   self.MAX_PAN_CALI_DEGREE))
+        else:
+            self._pan_offset = int(np.clip(degree + self._pan_offset,
+                                                    self.MIN_PAN_CALI_DEGREE,
+                                                    self.MAX_PAN_CALI_DEGREE))
+
+        self._db.set('pan_offset', self._pan_offset)
 
 
-    def get_pan(self):
+    def get_pan_angle(self):
         """
+        Gets the current pan angle of the camera.
+
         :return: The current pan angle (in degrees).
-        :rtype: float
+        :rtype: int
         """
         return self._current_pan_angle
 
 
-    def set_tilt(self, degree):
+    def tilt(self, degree):
         """
         Tilts the camera.
 
-        Controls the vertical movement of the camera in [0, 150] degrees. 
-        0 refers to frontfacing while 150 refers to 60 degrees past vertical
-        rotating upward. 
+        Controls the vertical movement of the camera in [0, 150] degrees.
+        0 is directly in front of the car, 90 faces upwards, and 150 faces the
+        Raspberry Pi. The degrees will be clamped to [0, 150].
 
-        :param degree: The degree to set the tilt servo to.
-        :type degree: float
+        :param degree: The number of degrees.
+        :type degree: int
         """
-        self._current_tilt_angle = self.validate_degree(degree,
+        if self._camera_type == ABSOLUTE:
+            self._current_tilt_angle = np.clip(degree, self.MIN_DEGREE,
+                                                       self.MAX_TILT_DEGREE)
+        else:
+            self._current_tilt_angle = np.clip(degree + self._current_tilt_angle,
                                                         self.MIN_DEGREE,
                                                         self.MAX_TILT_DEGREE)
-        self._tilt_servo.write(self.validate_degree(self._current_tilt_angle +
-                                                    self._tilt_offset,
-                                                    self.MIN_DEGREE,
-                                                    self.MAX_TILT_DEGREE))
+
+        self._tilt_servo.write(np.clip(self._current_tilt_angle +
+                                       self._tilt_offset,
+                                       self.MIN_DEGREE,
+                                       self.MAX_TILT_DEGREE))
 
 
     def calibrate_tilt(self, degree):
         """
-        Calibrates camera tilt.
+        Calibrates the camera's tilting servo.
 
-        Controls offset in [-180, 180] degrees for tilt. Writes new offset value to
-        'SunFounder_PiCar-V/remote_control/remote_control/driver/config'
-        to 'tilt_offset'.
+        Writes a new tilt offset value to the config file and changes the current
+        tilt offset. The calibration value can be negative.
 
-        :param degree: The amount of degrees to add or subtract for calibration.
-        :type degree: float
+        :param degree: The number of degrees.
+        :type degree: int
         """
-        self._tilt_offset = self.validate_degree(degree, self.MIN_CALI_DEGREE,
-                                                         self.MAX_CALI_DEGREE)
-        self._DB.set('tilt_offset', self._tilt_offset)
+        if self._camera_type == ABSOLUTE:
+            self._tilt_offset = int(np.clip(degree, self.MIN_TILT_CALI_DEGREE,
+                                                    self.MAX_TILT_CALI_DEGREE))
+        else:
+            self._tilt_offset = int(np.clip(degree + self._tilt_offset,
+                                                     self.MIN_TILT_CALI_DEGREE,
+                                                     self.MAX_TILT_CALI_DEGREE))
+
+        self._db.set('tilt_offset', self._tilt_offset)
 
 
-    def get_tilt(self):
+    def get_tilt_angle(self):
         """
+        Gets the current tilt angle of the camera.
+
         :return: The current tilt angle (in degrees).
-        :rtype: float
+        :rtype: int
         """
         return self._current_tilt_angle
 
 
-    def validate_degree(self, degree, min_degree, max_degree):
-        """
-        Takes input and restricts to specifcied min and max.
-
-        Returns the value in the degree parameter that is bounded by the 
-        min_degree and max_degree parameters.
-
-        :param degree: The value to be bounded between min and max degree.
-        :type degree: float
-
-        :param min_degree: The lower bound of the validation.
-        :type min_degree: float
-
-        :param max_degree: the upper bound of the validation.
-        :type max_degree: float
-
-        :return: The value of degree bounded between the min and max parameters.
-        :rtype: float
-        """
-        return max(min(max_degree, degree), min_degree)
-
-
-    def test_pan(self):
-        """
-        Tests the panning of the camera
-
-        sets the camera to 90 degrees then to right most value at 0 degrees. 
-        Then pans the camera from right to left giving over the maximum
-        values showing validation function working as intended, ending at 180 
-        degrees. Then pans the camera from left to right ending at 0 degrees.
-        resets the camera to 90 degrees.
-        """
-        self.set_pan(90)
-        time.sleep(.2)
-        self.set_pan(0)
-        time.sleep(.2)
-        print ("panning from right to left")
-        for i in range (-20, 200, 2):
-            self.set_pan(i)
-            time.sleep(.04)
-
-        print ("panning from left to right")
-        for i in range (200, -20, -2):
-            self.set_pan(i)
-            time.sleep(.04)
-        
-        time.sleep(.2)
-        self.set_pan(90)
-
-
 def main():
-    cam = Camera()
-    cam.test_pan()
+    """
+    Demonstrates the camera's panning and tilting functionality.
+
+    Creates a camera object and pans from 0 to 180, then from 180 to 0. The
+    camera then tilts from 0 to 150, then 150 to 0.
+    """
+    camera_smoothing = 0.05
+    picar.setup()
+    camera = Camera()
+
+    # Tests camera pan.
+    print "Panning left."
+    for i in range(0, 181, 2):
+        camera.pan(i)
+        time.sleep(camera_smoothing)
+
+    print "Panning right."
+    for i in range(180, -1, -2):
+        camera.pan(i)
+        time.sleep(camera_smoothing)
+
+    # Resetting Pan.
+    camera.pan(90)
+    time.sleep(camera_smoothing)
+
+    # Tests camera tilt.
+    print "Tilting up."
+    for i in range(0, 151, 2):
+        camera.tilt(i)
+        time.sleep(camera_smoothing)
+
+    print "Tilting down."
+    for i in range(150, -1, -2):
+        camera.tilt(i)
+        time.sleep(camera_smoothing)
+
+    # Resetting camera for relative pan.
+    cam.pan(0)
+    time.sleep(camera_smoothing)
+
+    # Remaking object in relative style.
+    camera = None
+    camera = Camera(camera_type = RELATIVE)
+
+    print "Testing relative pan left."
+    for i in range(0, 90, 1):
+        camera.pan(2)
+        time.sleep(camera_smoothing)
+
+    print "Testing relative pan right."
+    for i in range(0, 90, 1):
+        camera.pan(-2)
+        time.sleep(camera_smoothing)
+
+    # Return camera to the center.
+    camera.pan(-90)
+    time.sleep(camera_smoothing)
 
 if __name__ == '__main__':
     main()

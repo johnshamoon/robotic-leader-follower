@@ -9,3 +9,4 @@ src
    leader
    main
    tagrec
+   camera

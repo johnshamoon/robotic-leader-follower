@@ -12,3 +12,4 @@ vehicle. Below are the four main modules of the system.
    inputcontroller
    leader
    tagrec
+   camera
