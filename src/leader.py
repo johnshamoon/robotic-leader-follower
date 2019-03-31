@@ -58,10 +58,12 @@ class Leader:
         :param position: The value of the button input.
         :type position: int
         """
+        percent_top_speed = (position + 1)/2
+
         if position == -1:
             speed = 0
         else:
-            speed = self.MAX_SPEED
+            speed = self.MAX_SPEED * percent_top_speed
         self.bw.speed = speed
 
 
