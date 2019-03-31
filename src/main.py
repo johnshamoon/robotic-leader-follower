@@ -10,13 +10,11 @@ If an ARTag does not exist, the vehicle will become the leader vehicle.
 
 Authors: Zein Youssef and Steven Dropiewski
 """
+import os
+
 from follower import Follower
 from leader import Leader
 from tagrec import TagRecognition
-
-import os
-import subprocess
-import time
 
 
 """
@@ -28,24 +26,9 @@ def is_controller_connected():
     return os.path.exists('/dev/input/js0')
 
 
-"""
-This function calls the ./bt_toggle script with the specified
-command and address
-"""
-def bt_toggle(command, address):
-    subprocess.call(['./bt_toggle.sh', command, address])
-
-
 def main():
     tag = TagRecognition()
-    BT_ADDRESS = '5C:BA:37:26:6D:9A'
 
-    # If an ARTag is detected, the vehicle will disconnect from a Bluetooth
-    # controller. If an ARTag is not detected, the vehicle will connect to
-    # a Bluetooth controller.
-    if tag.detect():
-        bt_toggle('disconnect', BT_ADDRESS)
-        time.sleep(1)
     # If an ARTag is detected, there is a vehicle ahead of this vehicle so it will follow.
     # If an ARTag is not detected, no vehicle is present so this vehicle will be a leader.
     if tag.detect():
@@ -53,40 +36,9 @@ def main():
         while True:
             follower.follow()
     else:
-        bt_toggle('connect', BT_ADDRESS)
-        time.sleep(1)
-    if is_controller_connected():
-        vehicle = Leader()
-    else:
-        vehicle = Follower()
-
-    # This loop makes the vehicle move. If the vehicle sees an ARTag then
-    # it is a follower vehicle, otherwise it is a leader vehicle.
-    timer_set = False
-    start_time = time.time()
-    while True:
-        if isinstance(vehicle, Leader):
-            vehicle.lead()
-            if tag.detect():
-                bt_toggle('disconnect', BT_ADDRESS)
-                time.sleep(1)
-                if not is_controller_connected():
-                    vehicle = Follower()
-        else:
-            vehicle.follow()
-            if tag.detect():
-                timer_set = False
-            elif not tag.detect() and not timer_set:
-                start_time = time.time()
-                timer_set = True
-            if (time.time() - start_time) > 5 and timer_set:
-                timer_set = False
-                bt_toggle('connect', BT_ADDRESS)
-                time.sleep(1)
-                if is_controller_connected():
-                    vehicle = Leader()
-                else:
-                    start_time = time.time()
+        leader = Leader()
+        while True:
+            leader.lead()
 
 
 if __name__ == '__main__':
