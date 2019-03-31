@@ -16,7 +16,7 @@ from inputcontroller import InputController
 from picar import back_wheels, front_wheels
 import picar
 
-MAX_SPEED = 75
+MAX_SPEED = 50
 """The maximum speed of the leader vehicle."""
 
 
