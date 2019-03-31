@@ -71,8 +71,8 @@ class Follower:
         self.STRAIGHT_ANGLE = 90
         self.WHEEL_MAX_TURN_ANGLE = 135
         self.WHEEL_MIN_TURN_ANGLE = 45
-        self.DEADZONE_FOR_CAMERA = 7
-        self.DEADZONE_FOR_WHEELS = 10
+        self.DEADZONE_FOR_CAMERA = 6
+        self.DEADZONE_FOR_WHEELS = 12
 
 
     def drive(self):
@@ -135,16 +135,13 @@ class Follower:
             else:
               self._fw.turn(self._turn_angle - self._cam_angle_offset)
 
-        if self._cam_angle_offset == self.STRAIGHT_ANGLE or self._cam_angle_offset == self.WHEEL_MIN_TURN_ANGLE:
-            # If the offset of the right or left offsets are equal to 90 or 45 respectively, turn the camera straight since the wheels will be straight.
-            self._camera.pan_servo.write(self.STRAIGHT_ANGLE)
-            self._fw.turn(self.STRAIGHT_ANGLE)
-
 
     def pan_camera(self):
         """
         Follows the tag by panning camera towards the same direction as the wheels.
         """
+        self._cam_angle_offset = 0
+        
         if self._turn_angle < self.STRAIGHT_ANGLE - self.DEADZONE_FOR_CAMERA:
             # Left condition: If the turn angle is less than 90 - deadzone, turn the camera left. 
             # The offset is 90 - the current angle.
@@ -156,6 +153,11 @@ class Follower:
             # The offset is the current angle - 90.
             self.turn_camera_right(self._turn_angle)
             self._cam_angle_offset = np.abs(self._camera.current_pan - 90)
+
+        if self._cam_angle_offset == self.STRAIGHT_ANGLE or self._cam_angle_offset == self.WHEEL_MIN_TURN_ANGLE:
+            # If the offset of the right or left offsets are equal to 90 or 45 respectively, turn the camera straight since the wheels will be straight.
+            self._camera.pan_servo.write(self.STRAIGHT_ANGLE)
+            self._fw.turn(self.STRAIGHT_ANGLE)
 
 
     def turn_camera_left(self, angle):
