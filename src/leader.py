@@ -52,8 +52,9 @@ class Leader:
         """
         Sets the speed of the vehicle based on controller input.
 
-        If position is -1, the speed will be 0. If the position is not -1, it
-        will be Leader.MAX_SPEED.
+        If the position is -1, the speed will be 0. If position is between (-1,1),
+        the speed will increase as the position goes to 1. If the position is 1,
+        the speed will be LEADER.MAX_SPEED.
 
         :param position: The value of the button input.
         :type position: int
@@ -61,7 +62,7 @@ class Leader:
         if position == -1:
             speed = 0
         else:
-            speed = self.MAX_SPEED
+            speed = int(MAX_SPEED * ((position + 1)/2))
         self.bw.speed = speed
 
 
