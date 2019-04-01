@@ -31,7 +31,7 @@ class Follower:
     """Length of a car from a SunFounder PiCar-V kit (in meters)."""
     MIN_DISTANCE = MAX_DISTANCE / 3
     """One third of the length of a car from a SunFounder PiCar-V kit (in meters)."""
-    FOLLOWER_MAX_SPEED = 100
+    FOLLOWER_MAX_SPEED = 75
     """
     The max speed of the leader vehicle. The leader is slower than the follower
     to allow the follower to catch up.
