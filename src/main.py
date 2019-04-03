@@ -33,7 +33,7 @@ def disconnect_and_remove_device(bt, bt_addr):
     """
     Disconnects and removes a controller from Bluetooth.
 
-    :param bt: The object used to send Bluetooth commandss.
+    :param bt: The object used to send Bluetooth commands.
     :type bt: Bluetoothctl
 
     :param bt_addr: The Bluetooth address of the device to disconnect from
