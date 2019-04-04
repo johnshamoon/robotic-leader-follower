@@ -12,6 +12,7 @@ SUNFOUNDER_PATH = "SunFounder_PiCar-V/remote_control/remote_control/driver"
 sys.path.append(FILE_PATH + "/../" + SUNFOUNDER_PATH)
 
 from inputcontroller import InputController
+from log import Log
 
 from picar import back_wheels, front_wheels
 import picar
@@ -157,8 +158,10 @@ def main():
     Instantiates a Leader object and continuously calls Leader.lead().
     """
     leader = Leader()
+    log = Log()
     while True:
         leader.lead()
+        log.log_vehicle_data(leader)
 
 
 if __name__ == '__main__':
