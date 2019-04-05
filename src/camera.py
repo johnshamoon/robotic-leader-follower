@@ -6,12 +6,14 @@ Author: Steven Dropiewski
 import numpy as np
 import time
 
-ABSOLUTE = 1
-RELATIVE = 0
-
 from picar import filedb
 from picar.SunFounder_PCA9685 import Servo
 import picar
+
+ABSOLUTE = 1
+"""The value set to identify absolute degrees."""
+RELATIVE = 0
+"""The value set to identify relative degrees."""
 
 
 class Camera:
@@ -19,8 +21,8 @@ class Camera:
     Creates a camera object that can be panned and tilted.
 
     The camera can pan in [0, 180] degrees and can tilt in [0, 150] degrees.
-    The camera operates in absolute degrees default, but can be specified to
-    work in realtive degrees on object creation.
+    The camera operates in absolute degrees by default, but can be specified to
+    work in realtive degrees during object creation.
 
     :param bus_number: The bus number of the servos.
     :type bus_number: int
@@ -31,16 +33,16 @@ class Camera:
     :param tilt_channel: Tilt servo's I2C channel.
     :type tilt_channel: int
 
-    :param camera_type: Does the camera function in absolute or relative angles.
+    :param camera_type: Camera.ABSOLUTE or Camera.RELATIVE angles.
     :type camera_type: int
     """
 
     MAX_PAN_DEGREE = 180
-    """The maximum value to be written to pan servo."""
+    """The maximum value that the camera can pan."""
     MAX_TILT_DEGREE = 150
-    """The maximum value to be written to tilt servo."""
-    MIN_DEGREE = 0
-    """The minimum value to be written to both pan and tilt servo."""
+    """The maximum value that the camera can tilt."""
+    MIN_PAN_TILT_DEGREE = 0
+    """The minimum value that the camera can pan and tilt."""
     MAX_PAN_CALI_DEGREE = 180
     """The maximum value to calibrate pan."""
     MAX_TILT_CALI_DEGREE = 150
@@ -53,6 +55,7 @@ class Camera:
 
     def __init__(self, bus_number=1, pan_channel=1, tilt_channel=2,
                                                     camera_type=ABSOLUTE):
+        # The value to set Servo object offset to.
         offset = 0
 
         self._db = filedb.fileDB("config")
@@ -64,7 +67,7 @@ class Camera:
         self._tilt_servo = Servo.Servo(tilt_channel, bus_number=bus_number,
                                                      offset=offset)
 
-        self._camera_type = ABSOLUTE if camera_type is not RELATIVE else RELATIVE
+        self._camera_type = RELATIVE if camera_type is RELATIVE else ABSOLUTE
 
         self._current_pan_angle = 90
         self._current_tilt_angle = 0
@@ -82,17 +85,17 @@ class Camera:
         :type degree: int
         """
         if self._camera_type == ABSOLUTE:
-            self._current_pan_angle = np.clip(degree, self.MIN_DEGREE,
+            self._current_pan_angle = np.clip(degree, self.MIN_PAN_TILT_DEGREE,
                                                       self.MAX_PAN_DEGREE)
 
         else:
             self._current_pan_angle = np.clip(degree + self._current_pan_angle,
-                                                       self.MIN_DEGREE,
+                                                       self.MIN_PAN_TILT_DEGREE,
                                                        self.MAX_PAN_DEGREE)
 
-        self._pan_servo.write(np.clip(self._current_pan_angle +
-                                      self._pan_offset,
-                                      self.MIN_DEGREE,
+        self._pan_servo.write(np.clip(self._current_pan_angle
+                                      + self._pan_offset,
+                                      self.MIN_PAN_TILT_DEGREE,
                                       self.MAX_PAN_DEGREE))
 
 
@@ -139,16 +142,16 @@ class Camera:
         :type degree: int
         """
         if self._camera_type == ABSOLUTE:
-            self._current_tilt_angle = np.clip(degree, self.MIN_DEGREE,
+            self._current_tilt_angle = np.clip(degree, self.MIN_PAN_TILT_DEGREE,
                                                        self.MAX_TILT_DEGREE)
         else:
             self._current_tilt_angle = np.clip(degree + self._current_tilt_angle,
-                                                        self.MIN_DEGREE,
+                                                        self.MIN_PAN_TILT_DEGREE,
                                                         self.MAX_TILT_DEGREE)
 
-        self._tilt_servo.write(np.clip(self._current_tilt_angle +
-                                       self._tilt_offset,
-                                       self.MIN_DEGREE,
+        self._tilt_servo.write(np.clip(self._current_tilt_angle
+                                       + self._tilt_offset,
+                                       self.MIN_PAN_TILT_DEGREE,
                                        self.MAX_TILT_DEGREE))
 
 
@@ -190,57 +193,71 @@ def main():
     Creates a camera object and pans from 0 to 180, then from 180 to 0. The
     camera then tilts from 0 to 150, then 150 to 0.
     """
-    camera_smoothing = 0.05
+    camera_delay = 0.05
     picar.setup()
+
+    # Creates a Camera object with absolute degrees (default).
     camera = Camera()
 
-    # Tests camera pan.
+    print "Testing absolute camera degrees."
     print "Panning left."
     for i in range(0, 181, 2):
         camera.pan(i)
-        time.sleep(camera_smoothing)
+        time.sleep(camera_delay)
 
     print "Panning right."
     for i in range(180, -1, -2):
         camera.pan(i)
-        time.sleep(camera_smoothing)
+        time.sleep(camera_delay)
 
-    # Resetting Pan.
+    # Moving the camera to the center for tilting.
     camera.pan(90)
-    time.sleep(camera_smoothing)
+    time.sleep(camera_delay)
 
-    # Tests camera tilt.
     print "Tilting up."
     for i in range(0, 151, 2):
         camera.tilt(i)
-        time.sleep(camera_smoothing)
+        time.sleep(camera_delay)
 
     print "Tilting down."
     for i in range(150, -1, -2):
         camera.tilt(i)
-        time.sleep(camera_smoothing)
+        time.sleep(camera_delay)
 
-    # Resetting camera for relative pan.
-    cam.pan(0)
-    time.sleep(camera_smoothing)
+    # Resetting camera for relative panning and tilting.
+    camera.pan(0)
+    time.sleep(camera_delay)
 
-    # Remaking object in relative style.
-    camera = None
-    camera = Camera(camera_type = RELATIVE)
+    # Creates a Camera object with relative degrees.
+    camera = Camera(camera_type=RELATIVE)
+    print "Testing relative camera degrees."
 
-    print "Testing relative pan left."
-    for i in range(0, 90, 1):
+    # Moving the camera to the far right before panning left.
+    camera.pan(-90)
+
+    print "Panning left."
+    for i in range(90):
         camera.pan(2)
-        time.sleep(camera_smoothing)
+        time.sleep(camera_delay)
 
-    print "Testing relative pan right."
-    for i in range(0, 90, 1):
+    print "Panning right."
+    for i in range(90):
         camera.pan(-2)
-        time.sleep(camera_smoothing)
+        time.sleep(camera_delay)
 
     # Return camera to the center.
-    camera.pan(-90)
-    time.sleep(camera_smoothing)
+    camera.pan(90)
+    time.sleep(camera_delay)
+
+    print "Tilting up."
+    for i in range(75):
+        camera.tilt(2)
+        time.sleep(camera_delay)
+
+    print "Tilting down."
+    for i in range(75):
+        camera.tilt(-2)
+        time.sleep(camera_delay)
 
 if __name__ == '__main__':
     main()
