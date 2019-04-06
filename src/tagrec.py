@@ -25,6 +25,12 @@ class TagRecognition():
 
     :param marker_length: The square length of the ARTag in meters.
     :type marker_length: float
+
+    :param contrast: The contrast multiplier
+    :type contrast: int
+
+    :param brightness: The brightness value
+    :type brightness: int
     """
 
     RESOLUTIONS = {
@@ -41,11 +47,18 @@ class TagRecognition():
     _cap = cv2.VideoCapture(0)
 
 
-    def __init__(self, resolution=90, dead_zone=1.45, marker_length=0.06):
+    def __init__(self, resolution=90, dead_zone=1.45, marker_length=0.06,
+            contrast=10, brightness=10):
         self._RESOLUTION = resolution
         """The resolution of the camera feed."""
         self._MARKER_LENGTH = marker_length
         """The length of the ARTag in meters."""
+
+        self._CONTRAST = contrast
+        """The camera feed contrast multiplier."""
+
+        self._BRIGHTESS = brightness
+        """The camera feed brightness."""
 
         # Handle a special case where the user requests to have no dead zones.
         if dead_zone == 0:
@@ -56,8 +69,10 @@ class TagRecognition():
             self._DEADZONE_LEFT = -self._DEADZONE_RIGHT
 
 
-        self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.RESOLUTIONS[self._RESOLUTION][0])
-        self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.RESOLUTIONS[self._RESOLUTION][1])
+        self._cap.set(cv2.CAP_PROP_FRAME_WIDTH,
+                self.RESOLUTIONS[self._RESOLUTION][0])
+        self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT,
+                self.RESOLUTIONS[self._RESOLUTION][1])
 
         self._corners = np.array([[0,0]] * 4)
 
@@ -71,7 +86,7 @@ class TagRecognition():
         self._DIST_COEFFS = self._CALIBRATION_PARAMS.getNode('distCoeffs').mat()
 
         self._ret, self._frame = self._cap.read()
-        self._size = self._frame.shape 
+        self._size = self._frame.shape
 
         self._FOCAL_LENGTH = self._size[1]
         self._CENTER = (self._size[1]/2, self._size[0]/2)
@@ -147,6 +162,9 @@ class TagRecognition():
         self._ret, self._frame = self._cap.read()
 
         self._picture = cv2.cvtColor(self._frame, cv2.COLOR_BGR2GRAY)
+
+        self._picture = cv2.addWeighted(self._picture, self._CONTRAST,
+                self._picture, 0, self._BRIGHTESS)
 
         self._corners, ids, rejected_img_points = ar.detectMarkers(
             self._picture, self._AR_DICT, parameters=self._PARAMETERS)
