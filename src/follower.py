@@ -18,6 +18,7 @@ import picar
 
 from leader import MAX_SPEED as LEADER_MAX_SPEED
 from tagrec import TagRecognition
+import write_log as log
 
 class Follower:
     """
@@ -188,7 +189,7 @@ def main():
     follower = Follower()
     while True:
         follower.follow()
-
+        log.start_log(follower)
 
 if __name__ == '__main__':
     main()
