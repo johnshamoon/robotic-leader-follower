@@ -22,6 +22,3 @@ def read_file():
   for string in string_arr:
     dictionary = json.loads(string)
     array_dict.append(dictionary)
-
-  for dictionary in array_dict:
-    print(dictionary)
