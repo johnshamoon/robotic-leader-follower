@@ -143,45 +143,16 @@ class Leader:
         Moves the leader vehicle based on controller input.
         """
         code, position = self._controller.get_input()
-        if code == 'left_trigger' or code == 'right_trigger':
-            self._mode = 'normal'
+        if code == ''
 
-        elif code == 'x':
-            if self._mode == 'demo 1':
-                self._mode = 'normal'
-            else:
-                self._mode = 'demo 1'
-
-        elif code == 'y':
-            if self._mode == 'demo 2':
-                self._mode = 'normal'
-            else:
-                self._mode = 'demo 2'
-
-        elif code == 'b':
-            if self._mode == 'demo 3':
-                self._mode = 'normal'
-            else:
-                self._mode = 'demo 3'
-
-        if self._mode == 'normal':
-            if code == 'right_trigger':
-                self.set_speed(position)
-                self.drive()
-            if code == 'left_trigger':
-                self.set_speed(position)
-                self.reverse()
-            if code == 'dpad_left_right' or code == 'left_stick_x':
-                self.turn(code, position)
-
-        if self._mode == 'demo 1':
-            self.demo1()
-
-        if self._mode == 'demo 2':
-            self.demo2()
-
-        if self._mode == 'demo 3':
-            self.demo3()
+        if code == 'right_trigger':
+            self.set_speed(position)
+            self.drive()
+        if code == 'left_trigger':
+            self.set_speed(position)
+            self.reverse()
+        if code == 'dpad_left_right' or code == 'left_stick_x':
+            self.turn(code, position)
 
 
 def main():
