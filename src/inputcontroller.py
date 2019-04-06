@@ -148,24 +148,24 @@ class InputController:
         # Read 8 bytes: 2 for the type, 2 for the code, 4 for the value.
         event = self.js.read(8)
         if event:
-            time, type, code, value = struct.unpack(self.FORMAT, event)
+            time, position, code, value = struct.unpack(self.FORMAT, event)
             # Buttons
             if code == self.EV_KEY:
                 button = self.button_map[value]
                 if button:
-                    self.button_states[button] = type
+                    self.button_states[button] = position
                 if self.debug:
-                    if type:
+                    if position:
                         print "%s pressed" % (button)
                     else:
                         print "%s released" % (button)
                 else:
-                    return button, 1
+                    return button, position
             # Axes
             elif code == self.EV_REL:
                 axis = self.axis_map[value]
                 if axis:
-                    axis_position = type / self.AXIS_CALIBRATION
+                    axis_position = position / self.AXIS_CALIBRATION
                     self.axis_states[axis] = axis_position
                     if self.debug:
                         print "%s: %.3f" % (axis, axis_position)
