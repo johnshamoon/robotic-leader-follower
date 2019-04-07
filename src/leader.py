@@ -146,19 +146,19 @@ class Leader:
         if code == 'left_trigger' or code == 'right_trigger':
             self._mode = 'normal'
 
-        elif code == 'x':
+        elif code == 'x' and position == 1:
             if self._mode == 'demo 1':
                 self._mode = 'normal'
             else:
                 self._mode = 'demo 1'
 
-        elif code == 'y':
+        elif code == 'y' and position == 1:
             if self._mode == 'demo 2':
                 self._mode = 'normal'
             else:
                 self._mode = 'demo 2'
 
-        elif code == 'b':
+        elif code == 'b' and position == 1:
             if self._mode == 'demo 3':
                 self._mode = 'normal'
             else:
