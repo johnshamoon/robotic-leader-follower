@@ -125,7 +125,6 @@ class Bluetoothctl:
                     attribute_list = info_string[device_position:].split(" ", 2)
                     device = {
                         "bt_address": attribute_list[1],
-                        "mac_address": attribute_list[1],
                         "name": attribute_list[2]
                     }
 
@@ -334,10 +333,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    print(bl.get_discoverable_devices())
-
-
-
-
-
-
