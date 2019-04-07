@@ -4,6 +4,7 @@ leader
 Author: John Shamoon
 """
 from os import path
+from time import time
 import numpy as np
 import sys
 
@@ -31,6 +32,8 @@ class Leader:
 
     STRAIGHT_ANGLE = 90
     """The angle that the hardware associates as straight."""
+    DEMO_TURN_TIME = 1
+    """The length of time the vehicle turns in the demo functions."""
 
 
     def __init__(self):
@@ -46,6 +49,9 @@ class Leader:
         self.fw.ready()
 
         self.fw.calibration()
+
+        self.demo_stop_flag = False
+        self.demo_stop_count = 0
 
 
     def set_speed(self, position):
@@ -150,6 +156,56 @@ class Leader:
             self.reverse()
         if code == 'dpad_left_right' or code == 'left_stick_x':
             self.turn(code, position)
+
+
+    def stop(self):
+        """Stops the vehicle."""
+        self.bw.speed(0)
+        self.bw.forward()
+        self.fw.turn(90)
+
+
+    def demo_turn_wait(self):
+        """
+        Waits for the vehicle to turn.
+
+        Waits for the amount of time (in seconds) specified in DEMO_TURN_TIME,
+        """
+        turn_timer = time()
+        while time() - turn_timer < self.DEMO_TURN_TIME:
+                pass
+
+
+    def drive_in_circle(self):
+        """Drives in a circle."""
+        self.bw.speed(MAX_SPEED)
+        self.bw.forward()
+
+        self.turn_left()
+
+
+    def drive_wide_winding(self):
+        """Drives in a wide, snake-like pattern."""
+        self.bw.speed(MAX_SPEED)
+        self.bw.forward()
+
+        self.turn_right()
+        self.demo_turn_wait()
+
+        self.turn_left()
+        self.demo_turn_wait()
+
+
+    def drive_winding(self):
+        """Drives in a snake-like pattern."""
+        self.bw.speed(MAX_SPEED)
+        self.bw.forward()
+
+        self.fw.turn(110)
+        self.demo_turn_wait()
+
+        self.fw.turn(70)
+        self.demo_turn_wait()
 
 
 def main():
