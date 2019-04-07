@@ -26,10 +26,12 @@ class TagRecognition():
     :param marker_length: The square length of the ARTag in meters.
     :type marker_length: float
 
-    :param contrast: The contrast multiplier
-    :type contrast: int
+    :param contrast: The contrast multiplier.
+                     A value in (0, 1) lowers the contrast and
+                     a value in [1, 100] increases the contrast.
+    :type contrast: float
 
-    :param brightness: The brightness value
+    :param brightness: The brightness value in (-127, 127).
     :type brightness: int
     """
 
@@ -49,25 +51,22 @@ class TagRecognition():
 
     def __init__(self, resolution=90, dead_zone=1.45, marker_length=0.06,
             contrast=10, brightness=10):
-        self._RESOLUTION = resolution
+        self._RESOLUTION = resolution if resolution in RESOLUTIONS else 90
         """The resolution of the camera feed."""
-        self._MARKER_LENGTH = marker_length
+        self._MARKER_LENGTH = np.clip(marker_length, 0.01, 1)
         """The length of the ARTag in meters."""
-
-        self._CONTRAST = contrast
+        self._CONTRAST = np.clip(contrast, 0, 100)
         """The camera feed contrast multiplier."""
-
-        self._BRIGHTESS = brightness
+        self._BRIGHTESS = np.clip(brightness, -127, 127)
         """The camera feed brightness."""
 
         # Handle a special case where the user requests to have no dead zones.
-        if dead_zone == 0:
+        if dead_zone <= 0:
             self._DEADZONE_RIGHT = sys.maxsize
             self._DEADZONE_LEFT = -sys.maxsize
         else:
             self._DEADZONE_RIGHT = abs(dead_zone)
             self._DEADZONE_LEFT = -self._DEADZONE_RIGHT
-
 
         self._cap.set(cv2.CAP_PROP_FRAME_WIDTH,
                 self.RESOLUTIONS[self._RESOLUTION][0])
