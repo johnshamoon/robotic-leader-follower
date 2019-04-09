@@ -59,10 +59,12 @@ class Leader:
         :param position: The value of the button input.
         :type position: int
         """
-        if position == -1:
+        try:
+            position = int(position)
+            np.clip(position, -1, 1)
+            speed = int(MAX_SPEED * ((position + 1) / 2))
+        except (ValueError, TypeError), e:
             speed = 0
-        else:
-            speed = int(MAX_SPEED * ((position + 1)/2))
         self.bw.speed = speed
 
 
@@ -124,15 +126,13 @@ class Leader:
         :param position: The value returned from InputController.get_input().
         :type position: float
         """
-        if code == 'dpad_left_right':
-            if position == -1:
-                self.turn_left()
-            elif position == 1:
-                self.turn_right()
-            else:
-                self.turn_straight()
-        elif code == 'left_stick_x':
+        try:
+            position = float(position)
+            np.clip(position, -1.0, 1.0)
             self.fw.turn(self.STRAIGHT_ANGLE + (self.fw.turning_max * position))
+        except (ValueError, TypeError), e:
+            # Ignore if the input isn't a float or an int.
+            pass
 
 
     def lead(self):
