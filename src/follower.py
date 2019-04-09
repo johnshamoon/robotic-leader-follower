@@ -52,7 +52,6 @@ class Follower:
         self._fw.calibration()
 
         self._camera = Camera()
-        self.reset_camera()
 
         self._tag = TagRecognition(marker_length=0.025)
         self._speed = 0
@@ -135,16 +134,6 @@ class Follower:
             turn_angle = 90
 
         return turn_angle
-
-
-    def reset_camera(self):
-        """
-        Resets the camera to the default position.
-
-        The default position is tilted to 120 degrees and panned to 90 degrees.
-        """
-        self._camera.turn_down(120)
-        self._camera.pan_servo.write(90)
 
 
     def detect(self):
