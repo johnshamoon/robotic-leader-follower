@@ -3,8 +3,8 @@ camera
 
 Author: Steven Dropiewski
 """
+from time import sleep
 import numpy as np
-import time
 
 from picar import filedb
 from picar.SunFounder_PCA9685 import Servo
@@ -22,7 +22,7 @@ class Camera:
 
     The camera can pan in [0, 180] degrees and can tilt in [0, 150] degrees.
     The camera operates in absolute degrees by default, but can be specified to
-    work in realtive degrees during object creation.
+    work in relative degrees during object creation.
 
     :param bus_number: The bus number of the servos.
     :type bus_number: int
@@ -186,78 +186,104 @@ class Camera:
         return self._current_tilt_angle
 
 
+    def reset_camera(self):
+        """
+        Resets the camera to default position.
+
+        Sets the camera pan to 90 and the tilt to 0.
+        """
+        self._current_pan_angle = 90
+        self._current_tilt_angle = 0
+
+        self._pan_servo.write(np.clip(self._current_pan_angle
+                                      + self._pan_offset,
+                                      self.MIN_PAN_TILT_DEGREE,
+                                      self.MAX_PAN_DEGREE))
+        self._tilt_servo.write(np.clip(self._current_tilt_angle
+                                       + self._tilt_offset,
+                                       self.MIN_PAN_TILT_DEGREE,
+                                       self.MAX_TILT_DEGREE))
+
+
 def main():
     """
     Demonstrates the camera's panning and tilting functionality.
 
-    Creates a camera object and pans from 0 to 180, then from 180 to 0. The
-    camera then tilts from 0 to 150, then 150 to 0.
+    Creates a camera object using absolute degrees and pans from 0 to 180, then
+    from 180 to 0. The camera then tilts from 0 to 150, then 150 to 0.
+    Then creates a camera object using relavtive degrees and pans from 0 to 180,
+    then from 180 to 0. The camera then tilts from 0 to 150, then 150 to 0.
+    camera_delay is used to allow smooth camera movement in small distances.
+    camera_delay_long is used to allow the camera to move long distances fully.
     """
     camera_delay = 0.05
+    camera_delay_long = 0.10
     picar.setup()
 
     # Creates a Camera object with absolute degrees (default).
     camera = Camera()
-
     print "Testing absolute camera degrees."
+
+    # Moves the camera to the right for panning.
+    camera.pan(0)
+    sleep(camera_delay_long)
+
     print "Panning left."
     for i in range(0, 181, 2):
         camera.pan(i)
-        time.sleep(camera_delay)
+        sleep(camera_delay)
 
     print "Panning right."
     for i in range(180, -1, -2):
         camera.pan(i)
-        time.sleep(camera_delay)
+        sleep(camera_delay)
 
-    # Moving the camera to the center for tilting.
-    camera.pan(90)
-    time.sleep(camera_delay)
+    # Moves the camera to the center for tilting.
+    camera.reset_camera()
+    sleep(camera_delay_long)
 
     print "Tilting up."
     for i in range(0, 151, 2):
         camera.tilt(i)
-        time.sleep(camera_delay)
+        sleep(camera_delay)
 
     print "Tilting down."
     for i in range(150, -1, -2):
         camera.tilt(i)
-        time.sleep(camera_delay)
-
-    # Resetting camera for relative panning and tilting.
-    camera.pan(0)
-    time.sleep(camera_delay)
+        sleep(camera_delay)
 
     # Creates a Camera object with relative degrees.
     camera = Camera(camera_type=RELATIVE)
     print "Testing relative camera degrees."
 
-    # Moving the camera to the far right before panning left.
+    # Moves the camera to the right for panning.
     camera.pan(-90)
+    sleep(camera_delay_long)
 
     print "Panning left."
     for i in range(90):
         camera.pan(2)
-        time.sleep(camera_delay)
+        sleep(camera_delay)
 
     print "Panning right."
     for i in range(90):
         camera.pan(-2)
-        time.sleep(camera_delay)
+        sleep(camera_delay)
 
-    # Return camera to the center.
-    camera.pan(90)
-    time.sleep(camera_delay)
+    # Moves the camera to the center for tilting.
+    camera.reset_camera()
+    sleep(camera_delay_long)
 
     print "Tilting up."
     for i in range(75):
         camera.tilt(2)
-        time.sleep(camera_delay)
+        sleep(camera_delay)
 
     print "Tilting down."
     for i in range(75):
         camera.tilt(-2)
-        time.sleep(camera_delay)
+        sleep(camera_delay)
+
 
 if __name__ == '__main__':
     main()
