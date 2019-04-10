@@ -50,12 +50,12 @@ class TagRecognition():
 
 
     def __init__(self, resolution=90, dead_zone=1.45, marker_length=0.06,
-            contrast=10, brightness=10):
-        self._RESOLUTION = resolution if resolution in RESOLUTIONS else 90
+            contrast=1, brightness=0):
+        self._RESOLUTION = resolution if resolution in self.RESOLUTIONS else 90
         """The resolution of the camera feed."""
-        self._MARKER_LENGTH = np.clip(marker_length, 0.01, 1)
+        self._MARKER_LENGTH = np.clip(marker_length, 0.01905, 0.0381)
         """The length of the ARTag in meters."""
-        self._CONTRAST = np.clip(contrast, 0, 100)
+        self._CONTRAST = np.clip(contrast, 0.1, 100)
         """The camera feed contrast multiplier."""
         self._BRIGHTESS = np.clip(brightness, -127, 127)
         """The camera feed brightness."""
@@ -209,4 +209,20 @@ class TagRecognition():
         self._tag_data['yaw'] = yaw_angle
 
         return self._tag_data
+
+
+def main():
+    """
+    Displays ARTag information.
+
+    Creates a TagRecognition object and prints tag information to the console.
+    """
+    tag = TagRecognition(contrast=10, brightness=10)
+
+    while True:
+        print(tag.detect())
+
+
+if __name__ == '__main__':
+    main()
 
