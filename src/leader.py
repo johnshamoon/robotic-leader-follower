@@ -57,7 +57,7 @@ class Leader:
         the speed will be LEADER.MAX_SPEED.
 
         :param position: The value of the button input.
-        :type position: int
+        :type position: float
         """
         try:
             position = float(position)
