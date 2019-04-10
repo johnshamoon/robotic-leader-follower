@@ -60,7 +60,7 @@ class Leader:
         :type position: int
         """
         try:
-            position = int(position)
+            position = float(position)
             np.clip(position, -1, 1)
             speed = int(MAX_SPEED * ((position + 1) / 2))
         except (ValueError, TypeError), e:
