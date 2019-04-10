@@ -80,7 +80,7 @@ class Follower:
         the leader vehicle's speed.
         """
 
-        # If the vehicle is too close to the object, significantly decreese
+        # If the vehicle is too close to the object, significantly decrease
         # speed.
         if self._tag_data['z'] <= self.MIN_DISTANCE:
             self._speed = 0
@@ -178,7 +178,7 @@ class Follower:
 
 
 def main():
-    """Instantiates a Follower object and continously calls Follower.follow()."""
+    """Instantiates a Follower object and continuously calls follower.follow()."""
     follower = Follower()
     while True:
         follower.follow()
