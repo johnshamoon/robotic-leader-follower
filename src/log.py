@@ -46,7 +46,7 @@ class Log:
             }
             self.write_to_file(follower_dict, role)
         else:
-            #Print error message if role is not accepted or in proper format.
+            # Print error message if role is not accepted or in proper format.
             raise Exception('Role must be either a leader or follower. The role was: {}'.format(role))
 
 
@@ -83,18 +83,21 @@ class Log:
         try:
             log_file = open(file_name, 'r')
         except:
+            # Print error message if there is no log file.
             print('Error: Check that the log file exists.')
-
+            
+        # Creates an array of strings where each string is a line.
         log = log_file.read().strip().split('\n')
-
         for line in log:
             string_arr.append(line)
 
         try:
             for string in string_arr:
+                # Converts a line into a dictionary and appends dictionary to an array.
                 dictionary = json.loads(string)
                 array_dict.append(dictionary)
         except:
+            # Print error message if the log file is empty or corrupted.
             print('Error: Check contents of the log file.')
 
         return array_dict    
