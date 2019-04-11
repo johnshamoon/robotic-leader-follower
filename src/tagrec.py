@@ -96,7 +96,6 @@ class TagRecognition():
             [[self._FOCAL_LENGTH, 0, self._CENTER[0]],
              [0, self._FOCAL_LENGTH, self._CENTER[1]],
              [0, 0, 1]], dtype='double'
-
         )
 
         self._tag_data = {
@@ -121,7 +120,10 @@ class TagRecognition():
         :return: The current turn angle of the ARTag in radians.
         :rtype: float
         """
-        turn_angle = np.arctan(object_z / object_x)
+        try:
+            turn_angle = np.arctan(object_z / object_x)
+        except ZeroDivisionError:
+            turn_angle = 90
 
         return turn_angle
 
