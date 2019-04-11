@@ -7,6 +7,7 @@ import cv2
 import cv2.aruco as ar
 import numpy as np
 import sys
+import os
 
 
 class TagRecognition():
@@ -147,9 +148,14 @@ class TagRecognition():
         return decision
 
 
-    def detect(self):
+    def detect(self, img_src=None):
         """
         Detect an ARTag.
+
+        :param img_src: Used to bypass the camera feed and track ARTags from
+                        images instead. Used primarily for testing purposes.
+                        Disabled by default.
+        :type img_src: str
 
         :return: Dictionary containing the x distance, z distance, direction,
                  decision, and yaw if an ARTag is detected.
@@ -158,7 +164,14 @@ class TagRecognition():
         :return: None if an camera does not recognize an ARTag.
         :rtype: None
         """
-        self._ret, self._frame = self._cap.read()
+        if not img_src:
+            self._ret, self._frame = self._cap.read()
+        else:
+            file_exists = os.path.isfile(img_src)
+            if file_exists:
+                self._frame = cv2.imread(img_src)
+            else:
+                raise FileNotFoundError('File does not exist')
 
         self._picture = cv2.cvtColor(self._frame, cv2.COLOR_BGR2GRAY)
 
