@@ -152,17 +152,19 @@ class TagRecognition():
         """
         Detect an ARTag.
 
-        :param img_src: Used to bypass the camera feed and track ARTags from
-                        images instead. Used primarily for testing purposes.
-                        Disabled by default.
+        :param img_src: Path to an image. Used to bypass the camera feed and
+                        track ARTags from images instead. Used primarily for
+                        testing purposes. Disabled by default.
         :type img_src: str
 
         :return: Dictionary containing the x distance, z distance, direction,
                  decision, and yaw if an ARTag is detected.
         :rtype: float, float, float, int, float
 
-        :return: None if an camera does not recognize an ARTag.
+        :return: None if a camera does not recognize an ARTag.
         :rtype: None
+
+        :raise FileNotFoundError: Thrown if img_src contains an invalid path.
         """
         if not img_src:
             self._ret, self._frame = self._cap.read()
