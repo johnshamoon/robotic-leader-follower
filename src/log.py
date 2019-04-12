@@ -1,9 +1,10 @@
-`"""
+"""
 log
  
 By: Norma Chang
 """
 import json
+import datetime
 import time
  
  
@@ -15,7 +16,10 @@ class Log:
  
     Array of dictionaries is generated when the log file is loaded.
     """
- 
+    def __init__(self):
+        self._start_time = str(datetime.datetime.now())
+
+
     def log_to_file(self, robot_obj, role):
         """
         Logs data from leader or follower.
@@ -62,7 +66,7 @@ class Log:
         :param: file_name: Name of the file which is taken from the role.
         :type: string
         """
-        with open(file_name + time.asctime() + '.log', 'a') as outfile:
+        with open(file_name + self._start_time + '.log', 'a') as outfile:
             json.dump(robot_obj, outfile)
             outfile.write('\n')
  
