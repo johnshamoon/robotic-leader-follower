@@ -44,9 +44,6 @@ def disconnect_and_remove_device(bt, bt_addr):
 
 
 def main():
-    """
-    The main driver program for the robotic leader-follower software.
-    """
     tag = TagRecognition()
     bt = Bluetoothctl()
     BT_ADDR = "5C:BA:37:26:6D:9A"
@@ -54,9 +51,6 @@ def main():
     # If an ARTag is detected, the vehicle will become a follower.
     # If an ARTag is not detected, the vehicle will become a leader.
     if tag.detect():
-        follower = Follower()
-        while True:
-            follower.follow()
         vehicle = Follower()
     else:
         if not is_controller_connected():
@@ -69,9 +63,6 @@ def main():
                 bt.connect(BT_ADDR)
                 sleep(Follower.CYCLE_TIME)
 
-        leader = Leader()
-        while True:
-            leader.lead()
         vehicle = Leader()
 
     # This loop makes the vehicle move. If the vehicle sees an ARTag then
@@ -114,4 +105,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
