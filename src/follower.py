@@ -52,7 +52,6 @@ class Follower:
         self._fw.calibration()
 
         self._camera = Camera()
-        self.reset_camera()
 
         self._tag = TagRecognition(marker_length=0.025)
         self._speed = 0
@@ -109,11 +108,12 @@ class Follower:
 
     def turn(self):
         """Turn the wheels towards the last recognized object."""
-        self._tag_data['direction'] = self.opencv_to_wheels()
-        self._fw.turn(self._tag_data['direction'])
+        turn_angle = self.opencv_to_wheels(self._tag_data['decision'],
+                                           self._tag_data['yaw'])
+        self._fw.turn(turn_angle)
 
 
-    def opencv_to_wheels(self):
+    def opencv_to_wheels(self, turn_decision, yaw):
         """
         Converts OpenCV's angle scale to the same scale as the wheels.
 
@@ -124,27 +124,31 @@ class Follower:
 
         The wheels turn on a range of [45, 135] with 45 being the rightmost, 135
         being the leftmost, and 90 being center.
-        """
-        turn_angle = self._tag_data['direction']
 
-        if self._tag_data['decision'] == -1:
-            turn_angle = np.abs(self._tag_data['yaw'] - 90)
-        elif self._tag_data['decision'] == 1:
-            turn_angle = 90 + self._tag_data['yaw']
-        else:
+        :param turn_decision: Where the leader vehicle is turning. -1 means the
+                              leader is turning left, 1 means the leader is
+                              turning right, and any other value means the
+                              leader is not turning.
+        :type turn_decision: int
+
+        :param yaw: The yaw angle of the tag.
+        :type yaw: float
+
+        :return: The turn angle to the ARTag in [45, 135].
+        """
+        try:
+            turn_decision = int(turn_decision)
+            yaw = float(yaw)
+        except (ValueError, TypeError), e:
             turn_angle = 90
+            turn_decision = 0
 
-        return turn_angle
+        if turn_decision == -1:
+            turn_angle = np.abs(yaw - 90)
+        elif turn_decision == 1:
+            turn_angle = 90 + yaw
 
-
-    def reset_camera(self):
-        """
-        Resets the camera to the default position.
-
-        The default position is tilted to 120 degrees and panned to 90 degrees.
-        """
-        self._camera.turn_down(120)
-        self._camera.pan_servo.write(90)
+        return np.clip(turn_angle, 45, 135)
 
 
     def detect(self):

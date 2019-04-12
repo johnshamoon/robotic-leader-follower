@@ -7,6 +7,7 @@ import cv2
 import cv2.aruco as ar
 import numpy as np
 import sys
+import os
 
 
 class TagRecognition():
@@ -25,6 +26,14 @@ class TagRecognition():
 
     :param marker_length: The square length of the ARTag in meters.
     :type marker_length: float
+
+    :param contrast: The contrast multiplier.
+                     A value in (0, 1) lowers the contrast and
+                     a value in [1, 100] increases the contrast.
+    :type contrast: float
+
+    :param brightness: The brightness value in (-127, 127).
+    :type brightness: int
     """
 
     RESOLUTIONS = {
@@ -41,23 +50,29 @@ class TagRecognition():
     _cap = cv2.VideoCapture(0)
 
 
-    def __init__(self, resolution=90, dead_zone=1.45, marker_length=0.06):
-        self._RESOLUTION = resolution
+    def __init__(self, resolution=90, dead_zone=1.45, marker_length=0.06,
+            contrast=1, brightness=0):
+        self._RESOLUTION = resolution if resolution in self.RESOLUTIONS else 90
         """The resolution of the camera feed."""
-        self._MARKER_LENGTH = marker_length
+        self._MARKER_LENGTH = np.clip(marker_length, 0.01905, 0.0381)
         """The length of the ARTag in meters."""
+        self._CONTRAST = np.clip(contrast, 0.1, 100)
+        """The camera feed contrast multiplier."""
+        self._BRIGHTESS = np.clip(brightness, -127, 127)
+        """The camera feed brightness."""
 
         # Handle a special case where the user requests to have no dead zones.
-        if dead_zone == 0:
+        if dead_zone <= 0:
             self._DEADZONE_RIGHT = sys.maxsize
             self._DEADZONE_LEFT = -sys.maxsize
         else:
             self._DEADZONE_RIGHT = abs(dead_zone)
             self._DEADZONE_LEFT = -self._DEADZONE_RIGHT
 
-
-        self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.RESOLUTIONS[self._RESOLUTION][0])
-        self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.RESOLUTIONS[self._RESOLUTION][1])
+        self._cap.set(cv2.CAP_PROP_FRAME_WIDTH,
+                self.RESOLUTIONS[self._RESOLUTION][0])
+        self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT,
+                self.RESOLUTIONS[self._RESOLUTION][1])
 
         self._corners = np.array([[0,0]] * 4)
 
@@ -71,7 +86,7 @@ class TagRecognition():
         self._DIST_COEFFS = self._CALIBRATION_PARAMS.getNode('distCoeffs').mat()
 
         self._ret, self._frame = self._cap.read()
-        self._size = self._frame.shape 
+        self._size = self._frame.shape
 
         self._FOCAL_LENGTH = self._size[1]
         self._CENTER = (self._size[1]/2, self._size[0]/2)
@@ -82,7 +97,6 @@ class TagRecognition():
             [[self._FOCAL_LENGTH, 0, self._CENTER[0]],
              [0, self._FOCAL_LENGTH, self._CENTER[1]],
              [0, 0, 1]], dtype='double'
-
         )
 
         self._tag_data = {
@@ -107,7 +121,10 @@ class TagRecognition():
         :return: The current turn angle of the ARTag in radians.
         :rtype: float
         """
-        turn_angle = np.arctan(object_z / object_x)
+        try:
+            turn_angle = np.arctan(object_z / object_x)
+        except ZeroDivisionError:
+            turn_angle = 90
 
         return turn_angle
 
@@ -133,20 +150,37 @@ class TagRecognition():
         return decision
 
 
-    def detect(self):
+    def detect(self, img_src=None):
         """
         Detect an ARTag.
+
+        :param img_src: Path to an image. Used to bypass the camera feed and
+                        track ARTags from images instead. Used primarily for
+                        testing purposes. Disabled by default.
+        :type img_src: str
 
         :return: Dictionary containing the x distance, z distance, direction,
                  decision, and yaw if an ARTag is detected.
         :rtype: float, float, float, int, float
 
-        :return: None if an camera does not recognize an ARTag.
+        :return: None if a camera does not recognize an ARTag.
         :rtype: None
+
+        :raise FileNotFoundError: Thrown if img_src contains an invalid path.
         """
-        self._ret, self._frame = self._cap.read()
+        if not img_src:
+            self._ret, self._frame = self._cap.read()
+        else:
+            file_exists = os.path.isfile(img_src)
+            if file_exists:
+                self._frame = cv2.imread(img_src)
+            else:
+                raise FileNotFoundError('File does not exist')
 
         self._picture = cv2.cvtColor(self._frame, cv2.COLOR_BGR2GRAY)
+
+        self._picture = cv2.addWeighted(self._picture, self._CONTRAST,
+                self._picture, 0, self._BRIGHTESS)
 
         self._corners, ids, rejected_img_points = ar.detectMarkers(
             self._picture, self._AR_DICT, parameters=self._PARAMETERS)
@@ -192,4 +226,20 @@ class TagRecognition():
         self._tag_data['yaw'] = yaw_angle
 
         return self._tag_data
+
+
+def main():
+    """
+    Displays ARTag information.
+
+    Creates a TagRecognition object and prints tag information to the console.
+    """
+    tag = TagRecognition(contrast=10, brightness=10)
+
+    while True:
+        print(tag.detect())
+
+
+if __name__ == '__main__':
+    main()
 

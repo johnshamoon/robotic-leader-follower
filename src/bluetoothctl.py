@@ -254,7 +254,6 @@ class Bluetoothctl:
         :return: True if the device was removed, False otherwise.
         :rtype: boolean
         """
-        """Remove paired device by mac address, return success of the operation."""
         try:
             out = self.get_output("remove " + bt_address, 3)
         except BluetoothctlError, e:

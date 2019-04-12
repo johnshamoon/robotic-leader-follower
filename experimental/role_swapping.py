@@ -1,22 +1,19 @@
 """
-Script to determine leader and follower roles.
+Experimental script for role swapping.
 
-Takes input from the camera to determine if the current vehicle
-should lead or follow based on whether or not there exists an ARTag
-in front of the vehicle.
-
-If an ARTag exists, the vehicle will become a follower vehicle.
-If an ARTag does not exist, the vehicle will become the leader vehicle.
-
-Authors: Zein Youssef and Steven Dropiewski
+Authors: Zein Youssef
 """
-from time import sleep
-import os
+FILE_PATH = path.dirname(path.realpath(__file__))
+sys.path.append(FILE_PATH + "/../src")
 
 from bluetoothctl import Bluetoothctl
 from follower import Follower
 from leader import Leader
 from tagrec import TagRecognition
+
+import os
+import subprocess
+from time import sleep
 
 
 def is_controller_connected():
@@ -60,6 +57,7 @@ def main():
         follower = Follower()
         while True:
             follower.follow()
+        vehicle = Follower()
     else:
         if not is_controller_connected():
             # If a controller is not connected, remove it to avoid problems
@@ -74,6 +72,44 @@ def main():
         leader = Leader()
         while True:
             leader.lead()
+        vehicle = Leader()
+
+    # This loop makes the vehicle move. If the vehicle sees an ARTag then
+    # it is a follower vehicle, otherwise it is a leader vehicle.
+    timer_set = False
+    start_time = time.time()
+
+    while True:
+        tag_visible = tag.detect()
+        if isinstance(vehicle, Leader):
+            vehicle.lead()
+
+            if tag_visible:
+                while is_controller_connected():
+                    bt.disconnect('5C:BA:37:26:6D:9A')
+                    sleep(Follower.CYCLE_TIME)
+                vehicle = Follower()
+        else:
+            vehicle.follow()
+            if tag_visible:
+                timer_set = False
+            elif not timer_set:
+                start_time = time.time()
+                timer_set = True
+
+            if (time.time() - start_time) > 5 and timer_set:
+                timer_set = False
+
+                disconnect_and_remove_device(bt,BT_ADDR)
+                bt.start_scan()
+                bt.connect('5C:BA:37:26:6D:9A')
+                sleep(Follower.CYCLE_TIME)
+
+                if is_controller_connected():
+                    vehicle = Leader()
+                else:
+                    start_time = time.time()
+                    timer_set = True
 
 
 if __name__ == '__main__':

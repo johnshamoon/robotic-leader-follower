@@ -58,12 +58,14 @@ class Leader:
         the speed will be LEADER.MAX_SPEED.
 
         :param position: The value of the button input.
-        :type position: int
+        :type position: float
         """
-        if position == -1:
+        try:
+            position = float(position)
+            np.clip(position, -1, 1)
+            speed = int(MAX_SPEED * ((position + 1) / 2))
+        except (ValueError, TypeError), e:
             speed = 0
-        else:
-            speed = int(MAX_SPEED * ((position + 1)/2))
         self.bw.speed = speed
 
 
@@ -125,15 +127,13 @@ class Leader:
         :param position: The value returned from InputController.get_input().
         :type position: float
         """
-        if code == 'dpad_left_right':
-            if position == -1:
-                self.turn_left()
-            elif position == 1:
-                self.turn_right()
-            else:
-                self.turn_straight()
-        elif code == 'left_stick_x':
+        try:
+            position = float(position)
+            np.clip(position, -1.0, 1.0)
             self.fw.turn(self.STRAIGHT_ANGLE + (self.fw.turning_max * position))
+        except (ValueError, TypeError), e:
+            # Ignore if the input isn't a float or an int.
+            pass
 
 
     def lead(self):
@@ -147,22 +147,22 @@ class Leader:
             self._mode = 'normal'
 
         elif code == 'x' and position == 1:
-            if self._mode == 'demo 1':
+            if self._mode == 'drives_in_circle':
                 self._mode = 'normal'
             else:
-                self._mode = 'demo 1'
+                self._mode = 'drives_in_circle'
 
         elif code == 'y' and position == 1:
-            if self._mode == 'demo 2':
+            if self._mode == 'drive_wide_winding':
                 self._mode = 'normal'
             else:
-                self._mode = 'demo 2'
+                self._mode = 'drive_wide_winding'
 
         elif code == 'b' and position == 1:
-            if self._mode == 'demo 3':
+            if self._mode == 'drive_winding':
                 self._mode = 'normal'
             else:
-                self._mode = 'demo 3'
+                self._mode = 'drive_winding'
 
         if self._mode == 'normal':
             if code == 'right_trigger':
@@ -174,14 +174,14 @@ class Leader:
             if code == 'dpad_left_right' or code == 'left_stick_x':
                 self.turn(code, position)
 
-        if self._mode == 'demo 1':
-            self.demo1()
+        if self._mode == 'drives_in_circle':
+            self.drives_in_circle()
 
-        if self._mode == 'demo 2':
-            self.demo2()
+        if self._mode == 'drive_wide_winding':
+            self.drive_wide_winding()
 
-        if self._mode == 'demo 3':
-            self.demo3()
+        if self._mode == 'drive_winding':
+            self.drive_winding()
 
 
 def main():
