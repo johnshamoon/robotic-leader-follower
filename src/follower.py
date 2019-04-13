@@ -187,7 +187,7 @@ class Follower:
 def main():
     """Instantiates a Follower object and continously calls Follower.follow()."""
     follower = Follower()
-    log = log()
+    log = Log()
     while True:
         follower.follow()
         log.log(follower, 'follower')
