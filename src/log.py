@@ -56,7 +56,7 @@ class Log:
             }
             self.write_to_file(follower_dict, role)
         else:
-            raise Exception('Role must be leader or follower.'.format(role))
+            raise FileNotFoundError('File does not exist')
 
 
     def write_to_file(self, robot_obj, file_name):
@@ -94,7 +94,7 @@ class Log:
         try:
             log_file = open(file_name, 'r')
         except:
-            print('Error: Check that the log file exists.')
+            raise FileNotFoundError('File does not exist')
 
         log = json.loads('['+log_file+']')
 
