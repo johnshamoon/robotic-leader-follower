@@ -143,28 +143,15 @@ class Leader:
         Moves the leader vehicle based on controller input.
         """
         code, position = self._controller.get_input()
-        if code == 'left_trigger' or code == 'right_trigger':
-            self._mode = 'normal'
-
-        elif code == 'x' and position == 1:
-            if self._mode == 'drives_in_circle':
-                self._mode = 'normal'
-            else:
-                self._mode = 'drives_in_circle'
-
-        elif code == 'y' and position == 1:
-            if self._mode == 'drive_wide_winding':
-                self._mode = 'normal'
-            else:
-                self._mode = 'drive_wide_winding'
-
-        elif code == 'b' and position == 1:
-            if self._mode == 'drive_winding':
-                self._mode = 'normal'
-            else:
-                self._mode = 'drive_winding'
-
-        if self._mode == 'normal':
+        if code is not None:
+            self._mode = code
+        if self._mode == 'x':
+            self.drives_in_circle()
+        elif self._mode == 'y':
+            self.drive_wide_winding()
+        elif self._mode == 'b':
+            self.drive_winding()
+        else:
             if code == 'right_trigger':
                 self.set_speed(position)
                 self.drive()
@@ -173,15 +160,6 @@ class Leader:
                 self.reverse()
             if code == 'dpad_left_right' or code == 'left_stick_x':
                 self.turn(code, position)
-
-        if self._mode == 'drives_in_circle':
-            self.drives_in_circle()
-
-        if self._mode == 'drive_wide_winding':
-            self.drive_wide_winding()
-
-        if self._mode == 'drive_winding':
-            self.drive_winding()
 
 
 def main():
