@@ -19,7 +19,7 @@ class Log:
     def __init__(self):
         self._start_time = time.strftime('%b %d %Y %H:%M:%S', time.gmtime())
 
-    def log_to_file(self, robot_obj, role):
+    def log_to_file(self, vehicle, role):
         """
         Logs data from leader or follower.
 
@@ -29,10 +29,10 @@ class Log:
         dictionaries. If the role is not an accepted role or not in
         the correct format, an exception is raised.
 
-        :param robot_obj: Where the instance of the class is passed in.
+        :param vehicle: Where the instance of the class is passed in.
                           'follower' for the follower class instance
                           and 'leader' for the leader class instance.
-        :type robot_obj: object
+        :type vehicle: object
 
         :param role: Role of the class instance.
                      'follower' for the follower role
@@ -42,41 +42,41 @@ class Log:
         if role == 'leader':
             leader_dict = {
                 'Time': time.time(),
-                'Input': robot_obj._distance,
-                'Speed': robot_obj._speed,
+                'Input': vehicle._distance,
+                'Speed': vehicle._speed,
             }
             self.write_to_file(leader_dict, role)
         elif role == 'follower':
             follower_dict = {
                 'Time': time.time(),
-                'Distance': robot_obj._distance,
-                'Speed': robot_obj._speed,
-                'Turn Angle': robot_obj._turn_angle,
-                'Yaw': robot_obj._yaw,
+                'Distance': vehicle._distance,
+                'Speed': vehicle._speed,
+                'Turn Angle': vehicle._turn_angle,
+                'Yaw': vehicle._yaw,
             }
             self.write_to_file(follower_dict, role)
         else:
             raise FileNotFoundError('File does not exist')
 
 
-    def write_to_file(self, robot_obj, file_name):
+    def write_to_file(self, vehicle, file_name):
         """
         Write directionary data into text file.
 
         Opens the file where the name of the file is taken from the role
         and data is appended to the file as the program runs.
 
-        :param robot_obj: Where the instance of the class is passed in.
+        :param vehicle: Where the instance of the class is passed in.
                           'follower' for the follower class instance
                           and 'leader' for the leader class instance.
-        :type robot_obj: object
+        :type vehicle: object
 
         :param: file_name: Name of the file which is taken from the role.
         :type: string
         """
         self._start_time = self._start_time.replace(" ", "").replace(":", "")
         with open(file_name + self._start_time + '.log', 'a') as outfile:
-            json.dump(robot_obj, outfile)
+            json.dump(vehicle, outfile)
             outfile.write(',')
 
 
