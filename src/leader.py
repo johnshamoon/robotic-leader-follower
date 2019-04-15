@@ -158,10 +158,10 @@ def main():
     Instantiates a Leader object and continuously calls Leader.lead().
     """
     leader = Leader()
-    log = log()
+    log = Log()
     while True:
         leader.lead()
-        log.log(follower, 'leader')
+        log.log_vehicle_data(leader)
 
 
 if __name__ == '__main__':

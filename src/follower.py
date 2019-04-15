@@ -190,7 +190,7 @@ def main():
     log = Log()
     while True:
         follower.follow()
-        log.log(follower, 'follower')
+        log.log_vehicle_data(follower)
 
 if __name__ == '__main__':
     main()
