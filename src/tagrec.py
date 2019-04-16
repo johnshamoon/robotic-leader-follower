@@ -167,7 +167,7 @@ class TagRecognition():
         :return: None if a camera does not recognize an ARTag.
         :rtype: None
 
-        :raise FileNotFoundError: Thrown if img_src contains an invalid path.
+        :raise IOError: Thrown if img_src contains an invalid path.
         """
         if not img_src:
             self._ret, self._frame = self._cap.read()
@@ -175,8 +175,11 @@ class TagRecognition():
             file_exists = os.path.isfile(img_src)
             if file_exists:
                 self._frame = cv2.imread(img_src)
+                self._frame = cv2.resize(self._frame,
+                        (self.RESOLUTIONS[self._RESOLUTION][0],
+                         self.RESOLUTIONS[self._RESOLUTION][1]))
             else:
-                raise FileNotFoundError('File does not exist')
+                raise IOError('File does not exist')
 
         self._picture = cv2.cvtColor(self._frame, cv2.COLOR_BGR2GRAY)
 
