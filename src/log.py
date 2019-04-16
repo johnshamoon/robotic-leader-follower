@@ -22,14 +22,14 @@ class Log:
         self._start_time = self._start_time.replace(" ", "").replace(":", "")
 
 
-    def isFollower(self, vehicle):
+    def is_follower(self, vehicle):
         if vehicle.__class__.__name__ == 'Follower':
             return True
         else:
             return False
 
 
-    def isLeader(self, vehicle):
+    def is_leader(self, vehicle):
         if vehicle.__class__.__name__ == 'Leader':
             return True
         else:
@@ -41,10 +41,9 @@ class Log:
         Logs vehicle data.
 
         :param vehicle: Instance of a vehicle class.
-        :type vehicle: object
+        :type vehicle: Dictionary
         """
-
-        if self.isFollower(vehicle):
+        if self.is_follower(vehicle):
             self.class_name = vehicle.__class__.__name__
             self.vehicle_dict = {
                 'Time': time.time(),
@@ -53,7 +52,7 @@ class Log:
                 'Turn Angle': vehicle._turn_angle,
                 'Yaw': vehicle._yaw,
             }
-        elif self.isLeader(vehicle):
+        elif self.is_leader(vehicle):
             self.class_name = vehicle.__class__.__name__
             self.vehicle_dict = {
                 'Time': time.time(),
@@ -80,21 +79,15 @@ class Log:
         """
         Reads the log file.
 
-        :param: file_name: File name is generated in log_vehicle_data
-                           after verifying the type of vehicle.
+        :param: file_name: Unique, auto-generated file name.
         :type: string
         """
         if os.path.isfile(file_name):
             log_file = open(file_name, 'r')
         else:
-            raise FileNotFoundError('File does not exist')
-        log = json.loads('['+str(log_file)+']')
+            raise IOError("File does not exist")
+        # Loads the log file and converts strings to
+        # valid JSON format.
+        log = json.loads('['+log_file+']')
 
         return log
-
-def main():
-    log = Log()
-    lol = log.read_log_file('FollowerApr152019022253.log')
-    print(lol)
-
-main()
