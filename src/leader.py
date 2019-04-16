@@ -143,8 +143,8 @@ class Leader:
         Moves the leader vehicle based on controller input.
         """
         code, position = self._controller.get_input()
-        if code is not None:
-            self._mode = code
+        self._mode = code
+
         if self._mode == 'x':
             self.drives_in_circle()
         elif self._mode == 'y':
