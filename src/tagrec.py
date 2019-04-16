@@ -43,6 +43,7 @@ class TagRecognition():
             360: [480, 360],
             240: [426, 240],
             180: [320, 180],
+            144: [176, 144],
             90: [160, 90]
     }
     """Pre-set resolutions."""
@@ -234,7 +235,7 @@ def main():
 
     Creates a TagRecognition object and prints tag information to the console.
     """
-    tag = TagRecognition(contrast=10, brightness=10)
+    tag = TagRecognition(contrast=2)
 
     while True:
         print(tag.detect())
