@@ -4,16 +4,15 @@ log
 By: Norma Chang
 """
 import json
-import time
 import os.path
+import time
 
 
 class Log:
     """
     Logging class.
 
-    Logs data from the properties of an instance of an vehicle class for
-    testing purposes.
+    Logs data from vehicle.
     """
     def __init__(self):
 
@@ -41,7 +40,7 @@ class Log:
         """
         Logs vehicle data.
 
-        :param vehicle: The instance of the vehicle class
+        :param vehicle: Instance of a vehicle class.
         :type vehicle: object
         """
 
