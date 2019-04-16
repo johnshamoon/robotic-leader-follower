@@ -89,6 +89,13 @@ class Log:
             log_file = open(file_name, 'r')
         else:
             raise FileNotFoundError('File does not exist')
-        log = json.loads('['+log_file+']')
+        log = json.loads('['+str(log_file)+']')
 
         return log
+
+def main():
+    log = Log()
+    lol = log.read_log_file('FollowerApr152019022253.log')
+    print(lol)
+
+main()
