@@ -6,6 +6,8 @@ import unittest
 FILE_PATH = path.dirname(path.realpath(__file__))
 sys.path.append(FILE_PATH + "/../../src")
 
+from follower import Follower
+from leader import Leader
 from main import decide_role
 
 class MainTest(unittest.TestCase):
