@@ -59,7 +59,7 @@ class TagRecognition():
         """The length of the ARTag in meters."""
         self._CONTRAST = np.clip(contrast, 0.1, 100)
         """The camera feed contrast multiplier."""
-        self._BRIGHTESS = np.clip(brightness, -127, 127)
+        self._BRIGHTNESS = np.clip(brightness, -127, 127)
         """The camera feed brightness."""
 
         # Handle a special case where the user requests to have no dead zones.
@@ -184,7 +184,7 @@ class TagRecognition():
         self._picture = cv2.cvtColor(self._frame, cv2.COLOR_BGR2GRAY)
 
         self._picture = cv2.addWeighted(self._picture, self._CONTRAST,
-                self._picture, 0, self._BRIGHTESS)
+                self._picture, 0, self._BRIGHTNESS)
 
         self._corners, ids, rejected_img_points = ar.detectMarkers(
             self._picture, self._AR_DICT, parameters=self._PARAMETERS)
