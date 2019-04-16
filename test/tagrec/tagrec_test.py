@@ -188,7 +188,7 @@ class MainTest(unittest.TestCase):
     def test_tag_present(self):
         tag = TagRecognition()
 
-        img_src = self._pictures_dir + "straight_no_turn_third_car_length.png"
+        img_src = self._pictures_dir + "straight_no_turn_third_car_length.jpg"
 
         self.assertNotEqual(tag.detect(img_src=img_src), None)
 
@@ -196,7 +196,7 @@ class MainTest(unittest.TestCase):
     def test_tag_not_present(self):
         tag = TagRecognition()
 
-        img_src = self._pictures_dir + "no_tag.png"
+        img_src = self._pictures_dir + "no_tag.jpg"
 
         self.assertEqual(tag.detect(img_src=img_src), None)
 
@@ -204,7 +204,7 @@ class MainTest(unittest.TestCase):
     def test_tag_x_left_side(self):
         tag = TagRecognition(marker_length=0.025)
 
-        img_src = self._pictures_dir + "left_no_turn_5in.png"
+        img_src = self._pictures_dir + "left_no_turn_5in.jpg"
 
         self.assertAlmostEqual(tag.detect(img_src=img_src)['x'], -0.1, delta=0.06)
 
@@ -212,7 +212,7 @@ class MainTest(unittest.TestCase):
     def test_tag_x_middle(self):
         tag = TagRecognition(marker_length=0.025)
 
-        img_src = self._pictures_dir + "straight_no_turn_3in.png"
+        img_src = self._pictures_dir + "straight_no_turn_3in.jpg"
 
         self.assertAlmostEqual(tag.detect(img_src=img_src)['x'], 0.0, delta=0.06)
 
@@ -220,7 +220,7 @@ class MainTest(unittest.TestCase):
     def test_tag_x_right_side(self):
         tag = TagRecognition(marker_length=0.025)
 
-        img_src = self._pictures_dir + "right_no_turn_5in.png"
+        img_src = self._pictures_dir + "right_no_turn_5in.jpg"
 
         self.assertAlmostEqual(tag.detect(img_src=img_src)['x'], 0.1, delta=0.06)
 
@@ -228,7 +228,7 @@ class MainTest(unittest.TestCase):
     def test_tag_z_close_range(self):
         tag = TagRecognition(marker_length=0.025)
 
-        img_src = self._pictures_dir + "straight_no_turn_3in.png"
+        img_src = self._pictures_dir + "straight_no_turn_3in.jpg"
 
         self.assertAlmostEqual(tag.detect(img_src=img_src)['z'], 0.0762, delta=0.06)
 
@@ -236,7 +236,7 @@ class MainTest(unittest.TestCase):
     def test_tag_z_medium_range(self):
         tag = TagRecognition(marker_length=0.025)
 
-        img_src = self._pictures_dir + "straight_no_turn_5in.png"
+        img_src = self._pictures_dir + "straight_no_turn_5in.jpg"
 
         self.assertAlmostEqual(tag.detect(img_src=img_src)['z'], 0.127, delta=0.06)
 
@@ -244,7 +244,7 @@ class MainTest(unittest.TestCase):
     def test_tag_z_far_range(self):
         tag = TagRecognition(marker_length=0.025)
 
-        img_src = self._pictures_dir + "straight_no_turn_12in.png"
+        img_src = self._pictures_dir + "straight_no_turn_12in.jpg"
 
         self.assertAlmostEqual(tag.detect(img_src=img_src)['z'], 0.3048, delta=0.15)
 
@@ -252,7 +252,7 @@ class MainTest(unittest.TestCase):
     def test_tag_direction_left_angle(self):
         tag = TagRecognition(marker_length=0.025)
 
-        img_src = self._pictures_dir + "left_no_turn_5in.png"
+        img_src = self._pictures_dir + "left_no_turn_5in.jpg"
 
         self.assertAlmostEqual(tag.detect(img_src=img_src)['direction'], -1.25, delta=0.06)
 
@@ -260,7 +260,7 @@ class MainTest(unittest.TestCase):
     def test_tag_direction_center_angle(self):
         tag = TagRecognition(marker_length=0.025)
 
-        img_src = self._pictures_dir + "straight_no_turn_3in.png"
+        img_src = self._pictures_dir + "straight_no_turn_3in.jpg"
 
         self.assertTrue(-1.67 < tag.detect(img_src=img_src)['direction'] < 1.67)
 
@@ -268,7 +268,7 @@ class MainTest(unittest.TestCase):
     def test_tag_direction_right_angle(self):
         tag = TagRecognition(marker_length=0.025)
 
-        img_src = self._pictures_dir + "right_no_turn_5in.png"
+        img_src = self._pictures_dir + "right_no_turn_5in.jpg"
 
         self.assertAlmostEqual(tag.detect(img_src=img_src)['direction'], 1.3, delta=0.06)
 
@@ -276,7 +276,7 @@ class MainTest(unittest.TestCase):
     def test_tag_decision_left(self):
         tag = TagRecognition(marker_length=0.025)
 
-        img_src = self._pictures_dir + "left_no_turn_5in.png"
+        img_src = self._pictures_dir + "left_no_turn_5in.jpg"
 
         self.assertEqual(tag.detect(img_src=img_src)['decision'], -1)
 
@@ -284,7 +284,7 @@ class MainTest(unittest.TestCase):
     def test_tag_decision_center(self):
         tag = TagRecognition(marker_length=0.025)
 
-        img_src = self._pictures_dir + "tag_center.png"
+        img_src = self._pictures_dir + "tag_center.jpg"
 
         self.assertEqual(tag.detect(img_src=img_src)['decision'], 0)
 
@@ -292,7 +292,7 @@ class MainTest(unittest.TestCase):
     def test_tag_decision_right(self):
         tag = TagRecognition(marker_length=0.025)
 
-        img_src = self._pictures_dir + "right_no_turn_5in.png"
+        img_src = self._pictures_dir + "right_no_turn_5in.jpg"
 
         self.assertEqual(tag.detect(img_src=img_src)['decision'], 1)
 
@@ -300,16 +300,15 @@ class MainTest(unittest.TestCase):
     def test_tag_decision_outer_left_with_deadzone(self):
         tag = TagRecognition(marker_length=0.025, dead_zone=1.45)
 
-        img_src = self._pictures_dir + "left_no_turn_5in.png"
+        img_src = self._pictures_dir + "left_no_turn_5in.jpg"
 
         self.assertEqual(tag.detect(img_src=img_src)['decision'], -1)
 
 
     def test_tag_decision_inner_left_with_deadzone(self):
-        #TODO: Take pictures of slightly left position
         tag = TagRecognition(marker_length=0.025, dead_zone=1.45)
 
-        img_src = self._pictures_dir + "left_no_turn_5in.png"
+        img_src = self._pictures_dir + "left_off_center_5in.jpg"
 
         self.assertEqual(tag.detect(img_src=img_src)['decision'], 0)
 
@@ -317,16 +316,15 @@ class MainTest(unittest.TestCase):
     def test_tag_decision_inner_center_with_deadzone(self):
         tag = TagRecognition(marker_length=0.025, dead_zone=1.45)
 
-        img_src = self._pictures_dir + "straight_no_turn_5in.png"
+        img_src = self._pictures_dir + "straight_no_turn_5in.jpg"
 
         self.assertEqual(tag.detect(img_src=img_src)['decision'], 0)
 
 
     def test_tag_decision_inner_right_with_deadzone(self):
-        #TODO: Take pictures of slightly right position
         tag = TagRecognition(marker_length=0.025, dead_zone=1.45)
 
-        img_src = self._pictures_dir + "right_no_turn_5in.png"
+        img_src = self._pictures_dir + "right_off_center_5in.jpg"
 
         self.assertEqual(tag.detect(img_src=img_src)['decision'], 0)
 
@@ -334,7 +332,7 @@ class MainTest(unittest.TestCase):
     def test_tag_decision_outer_right_with_deadzone(self):
         tag = TagRecognition(marker_length=0.025, dead_zone=1.45)
 
-        img_src = self._pictures_dir + "right_no_turn_5in.png"
+        img_src = self._pictures_dir + "right_no_turn_5in.jpg"
 
         self.assertEqual(tag.detect(img_src=img_src)['decision'], 1)
 
@@ -342,7 +340,7 @@ class MainTest(unittest.TestCase):
     def test_tag_yaw_left_side(self):
         tag = TagRecognition(marker_length=0.025)
 
-        img_src = self._pictures_dir + "right_sharp_turn_left_5in.png"
+        img_src = self._pictures_dir + "right_sharp_turn_left_5in.jpg"
 
         self.assertAlmostEqual(tag.detect(img_src=img_src)['yaw'], 15, delta=5)
 
@@ -350,7 +348,7 @@ class MainTest(unittest.TestCase):
     def test_tag_yaw_center(self):
         tag = TagRecognition(marker_length=0.025)
 
-        img_src = self._pictures_dir + "tag_center.png"
+        img_src = self._pictures_dir + "tag_center.jpg"
 
         self.assertAlmostEqual(tag.detect(img_src=img_src)['yaw'], 0, delta=5)
 
@@ -358,7 +356,7 @@ class MainTest(unittest.TestCase):
     def test_tag_yaw_right_side(self):
         tag = TagRecognition(marker_length=0.025)
 
-        img_src = self._pictures_dir + "left_sharp_turn_right_5in.png"
+        img_src = self._pictures_dir + "left_sharp_turn_right_5in.jpg"
 
         self.assertAlmostEqual(tag.detect(img_src=img_src)['yaw'], 5, delta=5)
 
