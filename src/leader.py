@@ -32,8 +32,14 @@ class Leader:
 
     STRAIGHT_ANGLE = 90
     """The angle that the hardware associates as straight."""
-    DEMO_TURN_TIME = 1
-    """The length of time the vehicle turns in the demo functions."""
+    MAX_TURN_ANGLE_WIDE_WINDING = 135
+    """The maximum angle to turn the wheels in the wide winding demo."""
+    MIN_TURN_ANGLE_WIDE_WINDING = 45
+    """The minimum angle to turn the wheels in the wide winding demo."""
+    MAX_TURN_ANGLE_WINDING = 110
+    """The maximum angle to turn the wheels in the winding demo."""
+    MIN_TURN_ANGLE_WINDING = 70
+    """The minimum angle to turn the wheels in the winding demo."""
 
 
     def __init__(self):
@@ -50,9 +56,8 @@ class Leader:
 
         self.fw.calibration()
 
-        self.demo_stop_flag = False
-        self.demo_stop_count = 0
-
+        self._demo_turn_angle = 90
+        self._demo_turn_decision = 'right'
 
     def set_speed(self, position):
         """
@@ -162,19 +167,8 @@ class Leader:
         """Stops the vehicle."""
         self.bw.speed(0)
         self.bw.forward()
+
         self.fw.turn(90)
-
-
-    def demo_turn_wait(self):
-        """
-        Waits for the vehicle to turn.
-
-        Waits for the amount of time (in seconds) specified in DEMO_TURN_TIME,
-        """
-        turn_timer = time()
-        while time() - turn_timer < self.DEMO_TURN_TIME:
-                pass
-
 
     def drive_in_circle(self):
         """Drives in a circle."""
@@ -188,24 +182,47 @@ class Leader:
         """Drives in a wide, snake-like pattern."""
         self.bw.speed(MAX_SPEED)
         self.bw.forward()
+        self.set_demo_turn_angle(MIN_TURN_ANGLE_WIDE_WINDING,
+                                 MAX_TURN_ANGLE_WIDE_WINDING)
 
-        self.turn_right()
-        self.demo_turn_wait()
-
-        self.turn_left()
-        self.demo_turn_wait()
+        self.fw.turn(self._demo_turn_angle)
 
 
     def drive_winding(self):
         """Drives in a snake-like pattern."""
         self.bw.speed(MAX_SPEED)
         self.bw.forward()
+        self.set_demo_turn_angle(MIN_TURN_ANGLE_WINDING,
+                                 MAX_TURN_ANGLE_WINDING)
 
-        self.fw.turn(110)
-        self.demo_turn_wait()
+        self.fw.turn(self._demo_turn_angle)
 
-        self.fw.turn(70)
-        self.demo_turn_wait()
+
+    def set_demo_turn_angle(self, minimum, maximum):
+        """
+        Keeps the value of ._demo_turn_angle between minimum and maximum
+        parameters. If the decision is set to right, the value decreases till it
+        reaches the minimum. If the decision is set to left, the value increases
+        till it reaches the maximum.
+
+        :param minimum: The minimum bound.
+        :type minimum: int
+
+        :param maximum: The maximum bound.
+        :type maximum: int
+        """
+        if self._demo_turn_decision == 'right':
+            if self._demo_turn_angle <= minimum:
+                self._demo_turn_angle = minimum
+                self._demo_turn_decision == 'left'
+            else:
+                self._demo_turn_angle -= 1
+        elif self._demo_turn_decision == 'left':
+            if self._demo_turn_angle >= maximum:
+                self._demo_turn_angle = maximum
+                self._demo_turn_decision == 'right'
+            else:
+                self._demo_turn_angle += 1
 
 
 def main():
