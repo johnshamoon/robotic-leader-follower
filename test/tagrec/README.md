@@ -5,6 +5,6 @@
 2. Correct ARTag size must be specified for any distance related testing.
 
 ## Executing tests
-> '''shell
+> ```shell
 > python -m unittest -v tagrec_test.py
-> '''
+> ```

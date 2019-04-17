@@ -306,7 +306,7 @@ class MainTest(unittest.TestCase):
 
 
     def test_tag_decision_inner_left_with_deadzone(self):
-        tag = TagRecognition(marker_length=0.025, dead_zone=1.45)
+        tag = TagRecognition(marker_length=0.019, dead_zone=1.45)
 
         img_src = self._pictures_dir + "left_off_center_5in.jpg"
 
@@ -322,7 +322,7 @@ class MainTest(unittest.TestCase):
 
 
     def test_tag_decision_inner_right_with_deadzone(self):
-        tag = TagRecognition(marker_length=0.025, dead_zone=1.45)
+        tag = TagRecognition(marker_length=0.019, dead_zone=1.45)
 
         img_src = self._pictures_dir + "right_off_center_5in.jpg"
 
