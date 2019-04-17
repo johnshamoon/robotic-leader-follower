@@ -31,6 +31,11 @@ class Leader:
 
     STRAIGHT_ANGLE = 90
     """The angle that the hardware associates as straight."""
+    FUNCTION_MAP = {
+        'b' : self.drive_winding(),
+        'y' : self.drive_wide_winding(),
+        'x' : self.drives_in_circle() ,
+    }
 
 
     def __init__(self):
@@ -145,12 +150,8 @@ class Leader:
         code, position = self._controller.get_input()
         self._mode = code
 
-        if self._mode == 'x':
-            self.drives_in_circle()
-        elif self._mode == 'y':
-            self.drive_wide_winding()
-        elif self._mode == 'b':
-            self.drive_winding()
+        if self._mode in FUNCTION_MAP:
+            FUNCTION_MAP[self._mode]
         else:
             if code == 'right_trigger':
                 self.set_speed(position)
