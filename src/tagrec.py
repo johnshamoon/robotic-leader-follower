@@ -43,6 +43,7 @@ class TagRecognition():
             360: [480, 360],
             240: [426, 240],
             180: [320, 180],
+            144: [176, 144],
             90: [160, 90]
     }
     """Pre-set resolutions."""
@@ -58,7 +59,7 @@ class TagRecognition():
         """The length of the ARTag in meters."""
         self._CONTRAST = np.clip(contrast, 0.1, 100)
         """The camera feed contrast multiplier."""
-        self._BRIGHTESS = np.clip(brightness, -127, 127)
+        self._BRIGHTNESS = np.clip(brightness, -127, 127)
         """The camera feed brightness."""
 
         # Handle a special case where the user requests to have no dead zones.
@@ -166,7 +167,7 @@ class TagRecognition():
         :return: None if a camera does not recognize an ARTag.
         :rtype: None
 
-        :raise FileNotFoundError: Thrown if img_src contains an invalid path.
+        :raise IOError: Thrown if img_src contains an invalid path.
         """
         if not img_src:
             self._ret, self._frame = self._cap.read()
@@ -174,13 +175,16 @@ class TagRecognition():
             file_exists = os.path.isfile(img_src)
             if file_exists:
                 self._frame = cv2.imread(img_src)
+                self._frame = cv2.resize(self._frame,
+                        (self.RESOLUTIONS[self._RESOLUTION][0],
+                         self.RESOLUTIONS[self._RESOLUTION][1]))
             else:
-                raise FileNotFoundError('File does not exist')
+                raise IOError('File does not exist')
 
         self._picture = cv2.cvtColor(self._frame, cv2.COLOR_BGR2GRAY)
 
         self._picture = cv2.addWeighted(self._picture, self._CONTRAST,
-                self._picture, 0, self._BRIGHTESS)
+                self._picture, 0, self._BRIGHTNESS)
 
         self._corners, ids, rejected_img_points = ar.detectMarkers(
             self._picture, self._AR_DICT, parameters=self._PARAMETERS)
@@ -234,7 +238,7 @@ def main():
 
     Creates a TagRecognition object and prints tag information to the console.
     """
-    tag = TagRecognition(contrast=10, brightness=10)
+    tag = TagRecognition(contrast=2)
 
     while True:
         print(tag.detect())
