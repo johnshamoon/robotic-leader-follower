@@ -53,15 +53,17 @@ class Follower:
         self._fw.calibration()
 
         self._camera = Camera()
-        self.reset_camera()
 
         self._tag = TagRecognition(marker_length=0.025)
         self._speed = 0
 
-        self._distance = 0
-        self._turn_angle = 0
-        self._decision = 0
-        self._yaw = 0
+        self._tag_data = {
+                'x': 0,
+                'z': 0,
+                'direction': 0,
+                'decision': 0,
+                'yaw': 0
+        }
 
         self._tag_lost_time = 0
         self._speed_cycle_time = time()
@@ -81,9 +83,9 @@ class Follower:
 
         # If the vehicle is too close to the object, significantly decreese
         # speed.
-        if self._distance <= self.MIN_DISTANCE:
+        if self._tag_data['z'] <= self.MIN_DISTANCE:
             self._speed = 0
-        elif self.MIN_DISTANCE < self._distance <= (self.MIN_DISTANCE * 2):
+        elif self.MIN_DISTANCE < self._tag_data['z'] <= (self.MIN_DISTANCE * 2):
             # If we are in range of the leader vehicle, match the leader
             # vehicle's speed.This will keep the distance between the ego
             # vehicle and the leader vehicle.
@@ -107,38 +109,47 @@ class Follower:
 
     def turn(self):
         """Turn the wheels towards the last recognized object."""
-        self.convert_camera_angle()
-        self._fw.turn(self._turn_angle)
+        turn_angle = self.opencv_to_wheels(self._tag_data['decision'],
+                                           self._tag_data['yaw'])
+        self._fw.turn(turn_angle)
 
 
-    def convert_camera_angle(self):
+    def opencv_to_wheels(self, turn_decision, yaw):
         """
-        Converts the camera's angle scale to the same scale as the wheels.
+        Converts OpenCV's angle scale to the same scale as the wheels.
 
-        The camera reports objects directly in front of it as 90 degrees.
+        OpenCV reports objects directly in front of it as 90 degrees.
         Everything to the left of center is negative ranging from [-45, -90)
         with -45 being the leftmost angle. Everything to the right of center is
         positive ranging from (90, 135] with 135 being the rightmost angle.
 
         The wheels turn on a range of [45, 135] with 45 being the rightmost, 135
         being the leftmost, and 90 being center.
-        """
-        if self._decision == -1:
-            self._turn_angle = np.abs(self._yaw - 90)
-        elif self._decision == 1:
-            self._turn_angle = 90 + self._yaw
-        else:
-            self._turn_angle = 90
 
+        :param turn_decision: Where the leader vehicle is turning. -1 means the
+                              leader is turning left, 1 means the leader is
+                              turning right, and any other value means the
+                              leader is not turning.
+        :type turn_decision: int
 
-    def reset_camera(self):
-        """
-        Resets the camera to the default position.
+        :param yaw: The yaw angle of the tag.
+        :type yaw: float
 
-        The default position is tilted to 120 degrees and panned to 90 degrees.
+        :return: The turn angle to the ARTag in [45, 135].
         """
-        self._camera.turn_down(120)
-        self._camera.pan_servo.write(90)
+        try:
+            turn_decision = int(turn_decision)
+            yaw = float(yaw)
+        except (ValueError, TypeError), e:
+            turn_angle = 90
+            turn_decision = 0
+
+        if turn_decision == -1:
+            turn_angle = np.abs(yaw - 90)
+        elif turn_decision == 1:
+            turn_angle = 90 + yaw
+
+        return np.clip(turn_angle, 45, 135)
 
 
     def detect(self):
@@ -152,15 +163,13 @@ class Follower:
         :return: True if an ARTag is detected, False otherwise.
         :rtype: Boolean
         """
-        obj_data = self._tag.detect()
+        tag_data = self._tag.detect()
         detected = False
 
-        if obj_data:
+        if tag_data:
             detected = True
-            self._distance = obj_data['z']
-            self._turn_angle = np.degrees(obj_data['direction'])
-            self._decision = obj_data['decision']
-            self._yaw = obj_data['yaw']
+            self._tag_data = tag_data
+            self._tag_data['direction'] = np.degrees(self._tag_data['direction'])
 
         return detected
 
