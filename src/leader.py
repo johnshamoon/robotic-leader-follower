@@ -3,13 +3,7 @@ leader
 
 Author: John Shamoon
 """
-from os import path
 import numpy as np
-import sys
-
-FILE_PATH = path.dirname(path.realpath(__file__))
-SUNFOUNDER_PATH = "SunFounder_PiCar-V/remote_control/remote_control/driver"
-sys.path.append(FILE_PATH + "/../" + SUNFOUNDER_PATH)
 
 from inputcontroller import InputController
 
@@ -36,7 +30,7 @@ class Leader:
     def __init__(self):
         self._controller = InputController()
 
-        db_file = FILE_PATH + "/../" + SUNFOUNDER_PATH + "/config"
+        db_file = "config"
         picar.setup()
 
         self.fw = front_wheels.Front_Wheels(debug=False, db=db_file)
