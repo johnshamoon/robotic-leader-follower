@@ -152,13 +152,13 @@ class Leader:
         """
         code, position = self._controller.get_input()
         if code == 'right_trigger':
-            self.set_speed(position)
+            self._tag_data['speed'] = self.set_speed(position)
             self.drive()
         if code == 'left_trigger':
-            self.set_speed(position)
+            self._tag_data['speed'] = self.set_speed(position)
             self.reverse()
         if code == 'dpad_left_right' or code == 'left_stick_x':
-            self.turn(code, position)
+            self._tag_data['turn_angle'] = self.turn(code, position)
 
         log.write_to_file(leader._tag_data)
 

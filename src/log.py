@@ -26,7 +26,8 @@ class Log:
         """
         Write dictionary into text file.
 
-        :param: dictionary: The dictionary passed in from a class. 
+        :param: dictionary: The dictionary that is passed in and
+                            converted to strings.
         :type: dict
         """
         dictionary['time'] = time.time()

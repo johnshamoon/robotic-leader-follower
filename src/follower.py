@@ -3,20 +3,15 @@ follower
 
 Author: John Shamoon
 """
-from os import path
 from time import time
 import numpy as np
-import sys
+import os
 
-FILE_PATH = path.dirname(path.realpath(__file__))
-SUNFOUNDER_PATH = "SunFounder_PiCar-V/remote_control/remote_control/driver"
-sys.path.append(FILE_PATH + "/../" + SUNFOUNDER_PATH)
-
-from camera import Camera
 from picar import back_wheels, front_wheels
 import picar
 
 from leader import MAX_SPEED as LEADER_MAX_SPEED
+from camera import Camera
 from tagrec import TagRecognition
 
 from log import Log
@@ -27,13 +22,20 @@ class Follower:
     Autonomous follower vehicle to follow another vehicle.
     Takes input from camera and autonomously follows another vehicle with an
     ARTag mounted at the rear-center of the leader vehicle.
+
+    :param test_img_src: Path to an image. Used to bypass the camera feed and
+                         follow ARTags from images instead. Used primarily for
+                         testing. Disabled by default.
+    :type test_img_src: str
+
+    :raise IOError: Thrown if test_img_src is not a file.
     """
 
     MAX_DISTANCE = 0.28
     """Length of a car from a SunFounder PiCar-V kit (in meters)."""
     MIN_DISTANCE = MAX_DISTANCE / 3
     """One third of the length of a car from a SunFounder PiCar-V kit (in meters)."""
-    FOLLOWER_MAX_SPEED = 75
+    FOLLOWER_MAX_SPEED = 55
     """
     The max speed of the leader vehicle. The leader is slower than the follower
     to allow the follower to catch up.
@@ -41,10 +43,19 @@ class Follower:
     CYCLE_TIME = 0.1
     """The cycle time of the system."""
 
-    def __init__(self):
+    def __init__(self, test_img_src=None):
+        self._test_mode = False
+        self._test_img_src = None
+        if test_img_src:
+            if os.path.isfile(test_img_src):
+                self._test_mode = True
+                self._test_img_src = test_img_src
+            else:
+                raise IOError("File does not exist.")
+
         picar.setup()
 
-        db_file = FILE_PATH + "/../" + SUNFOUNDER_PATH + "/config"
+        db_file = "config"
         self._fw = front_wheels.Front_Wheels(debug=False, db=db_file)
         self._bw = back_wheels.Back_Wheels(debug=False, db=db_file)
 
@@ -70,6 +81,7 @@ class Follower:
 
         self._tag_lost_time = 0
         self._speed_cycle_time = time()
+        self._turn_time = time()
 
 
     def drive(self):
@@ -84,8 +96,7 @@ class Follower:
         the leader vehicle's speed.
         """
 
-        # If the vehicle is too close to the object, significantly decreese
-        # speed.
+        # If the vehicle is too close to the object, stop the vehicle.
         if self._tag_data['z'] <= self.MIN_DISTANCE:
             self._speed = 0
         elif self.MIN_DISTANCE < self._tag_data['z'] <= (self.MIN_DISTANCE * 2):
@@ -100,8 +111,9 @@ class Follower:
                 self._speed += 1
                 self._speed_cycle_time = time()
 
-        self._bw.speed = self._speed
-        self._bw.forward()
+        if not self._test_mode:
+            self._bw.speed = self._speed
+            self._bw.forward()
 
 
     def stop(self):
@@ -114,7 +126,8 @@ class Follower:
         """Turn the wheels towards the last recognized object."""
         turn_angle = self.opencv_to_wheels(self._tag_data['decision'],
                                            self._tag_data['yaw'])
-        self._fw.turn(turn_angle)
+        if not self._test_mode:
+            self._fw.turn(turn_angle)
 
 
     def opencv_to_wheels(self, turn_decision, yaw):
@@ -125,6 +138,7 @@ class Follower:
         Everything to the left of center is negative ranging from [-45, -90)
         with -45 being the leftmost angle. Everything to the right of center is
         positive ranging from (90, 135] with 135 being the rightmost angle.
+        
         The wheels turn on a range of [45, 135] with 45 being the rightmost, 135
         being the leftmost, and 90 being center.
 
@@ -139,11 +153,11 @@ class Follower:
 
         :return: The turn angle to the ARTag in [45, 135].
         """
+        turn_angle = 90
         try:
             turn_decision = int(turn_decision)
-            yaw = float(yaw)
+            yaw = int(yaw)
         except (ValueError, TypeError), e:
-            turn_angle = 90
             turn_decision = 0
 
         if turn_decision == -1:
@@ -165,7 +179,10 @@ class Follower:
         :return: True if an ARTag is detected, False otherwise.
         :rtype: Boolean
         """
-        tag_data = self._tag.detect()
+        if self._test_mode:
+            tag_data = self._tag.detect(self._test_img_src)
+        else:
+            tag_data = self._tag.detect()
         detected = False
 
         if tag_data:
@@ -186,7 +203,11 @@ class Follower:
         """
         if self.detect():
             self.drive()
-            self.turn()
+            if not self._turn_time:
+                self._turn_time = time()
+            elif (time() - self._turn_time) >= self.CYCLE_TIME:
+                self.turn()
+                self._turn_time = time()
             self._tag_lost_time = 0
         else:
             if not self._tag_lost_time:
