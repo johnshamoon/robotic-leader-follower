@@ -1,6 +1,5 @@
 """
 follower
-
 Author: John Shamoon
 """
 from os import path
@@ -18,12 +17,12 @@ import picar
 
 from leader import MAX_SPEED as LEADER_MAX_SPEED
 from tagrec import TagRecognition
+
 from log import Log
 
 class Follower:
     """
     Autonomous follower vehicle to follow another vehicle.
-
     Takes input from camera and autonomously follows another vehicle with an
     ARTag mounted at the rear-center of the leader vehicle.
     """
@@ -54,10 +53,13 @@ class Follower:
 
         self._camera = Camera()
 
+        self._log = Log('follower')
+
         self._tag = TagRecognition(marker_length=0.025)
         self._speed = 0
 
         self._tag_data = {
+                'time': time(),
                 'x': 0,
                 'z': 0,
                 'direction': 0,
@@ -72,7 +74,6 @@ class Follower:
     def drive(self):
         """
         Drives forward and avoids forward collisions with recognized objects.
-
         Manages the speed to avoid collisions depending on the distance to the
         recognized object. If the recognized object is within MIN_DISTANCE, the
         speed will be set to 0. If the recognized object is outside of the
@@ -117,24 +118,19 @@ class Follower:
     def opencv_to_wheels(self, turn_decision, yaw):
         """
         Converts OpenCV's angle scale to the same scale as the wheels.
-
         OpenCV reports objects directly in front of it as 90 degrees.
         Everything to the left of center is negative ranging from [-45, -90)
         with -45 being the leftmost angle. Everything to the right of center is
         positive ranging from (90, 135] with 135 being the rightmost angle.
-
         The wheels turn on a range of [45, 135] with 45 being the rightmost, 135
         being the leftmost, and 90 being center.
-
         :param turn_decision: Where the leader vehicle is turning. -1 means the
                               leader is turning left, 1 means the leader is
                               turning right, and any other value means the
                               leader is not turning.
         :type turn_decision: int
-
         :param yaw: The yaw angle of the tag.
         :type yaw: float
-
         :return: The turn angle to the ARTag in [45, 135].
         """
         try:
@@ -155,11 +151,9 @@ class Follower:
     def detect(self):
         """
         Detects an ARTag and gets the object's data.
-
         If an ARTag is detected, the object's distance and turning angle will be
         updated and detect() will return True. If an ARTag is not detected,
         detect() will return False.
-
         :return: True if an ARTag is detected, False otherwise.
         :rtype: Boolean
         """
@@ -177,7 +171,6 @@ class Follower:
     def follow(self):
         """
         Follow an ARTag if one is found.
-
         If an ARTag is detected, the follower vehicle will turn towards it and
         manage speed to avoid collisions. If an ARTag is not detected, the vehicle
         will stop.
@@ -192,14 +185,14 @@ class Follower:
             elif (time() - self._tag_lost_time) >= self.CYCLE_TIME:
                 self.stop()
 
+        self._log.write_to_file(self._tag_data)
 
 def main():
     """Instantiates a Follower object and continously calls Follower.follow()."""
     follower = Follower()
-    log = Log()
     while True:
         follower.follow()
-        log.log_vehicle_data(follower)
+
 
 if __name__ == '__main__':
     main()

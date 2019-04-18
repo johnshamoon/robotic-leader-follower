@@ -48,6 +48,14 @@ class Leader:
 
         self.fw.calibration()
 
+        log = Log('leader')
+
+        self._tag_data = {
+                'time': time(),
+                'speed': 0,
+                'turn_angle': 0,
+        }
+
 
     def set_speed(self, position):
         """
@@ -58,14 +66,12 @@ class Leader:
         the speed will be LEADER.MAX_SPEED.
 
         :param position: The value of the button input.
-        :type position: float
+        :type position: int
         """
-        try:
-            position = float(position)
-            np.clip(position, -1, 1)
-            speed = int(MAX_SPEED * ((position + 1) / 2))
-        except (ValueError, TypeError), e:
+        if position == -1:
             speed = 0
+        else:
+            speed = int(MAX_SPEED * ((position + 1)/2))
         self.bw.speed = speed
 
 
@@ -127,13 +133,15 @@ class Leader:
         :param position: The value returned from InputController.get_input().
         :type position: float
         """
-        try:
-            position = float(position)
-            np.clip(position, -1.0, 1.0)
+        if code == 'dpad_left_right':
+            if position == -1:
+                self.turn_left()
+            elif position == 1:
+                self.turn_right()
+            else:
+                self.turn_straight()
+        elif code == 'left_stick_x':
             self.fw.turn(self.STRAIGHT_ANGLE + (self.fw.turning_max * position))
-        except (ValueError, TypeError), e:
-            # Ignore if the input isn't a float or an int.
-            pass
 
 
     def lead(self):
@@ -152,16 +160,17 @@ class Leader:
         if code == 'dpad_left_right' or code == 'left_stick_x':
             self.turn(code, position)
 
+        log.write_to_file(leader._tag_data)
+
 
 def main():
     """
     Instantiates a Leader object and continuously calls Leader.lead().
     """
     leader = Leader()
-    log = Log()
+
     while True:
         leader.lead()
-        log.log_vehicle_data(leader)
 
 
 if __name__ == '__main__':
