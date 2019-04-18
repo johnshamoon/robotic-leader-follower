@@ -5,6 +5,7 @@ Author: John Shamoon
 """
 from time import time
 import numpy as np
+import os
 
 from picar import back_wheels, front_wheels
 import picar
@@ -20,6 +21,13 @@ class Follower:
 
     Takes input from camera and autonomously follows another vehicle with an
     ARTag mounted at the rear-center of the leader vehicle.
+
+    :param test_img_src: Path to an image. Used to bypass the camera feed and
+                         follow ARTags from images instead. Used primarily for
+                         testing. Disabled by default.
+    :type test_img_src: str
+
+    :raise IOError: Thrown if test_img_src is not a file.
     """
 
     MAX_DISTANCE = 0.28
@@ -34,7 +42,16 @@ class Follower:
     CYCLE_TIME = 0.1
     """The cycle time of the system."""
 
-    def __init__(self):
+    def __init__(self, test_img_src=None):
+        self._test_mode = False
+        self._test_img_src = None
+        if test_img_src:
+            if os.path.isfile(test_img_src):
+                self._test_mode = True
+                self._test_img_src = test_img_src
+            else:
+                raise IOError("File does not exist.")
+
         picar.setup()
 
         db_file = "config"
@@ -76,8 +93,7 @@ class Follower:
         the leader vehicle's speed.
         """
 
-        # If the vehicle is too close to the object, significantly decreese
-        # speed.
+        # If the vehicle is too close to the object, stop the vehicle.
         if self._tag_data['z'] <= self.MIN_DISTANCE:
             self._speed = 0
         elif self.MIN_DISTANCE < self._tag_data['z'] <= (self.MIN_DISTANCE * 2):
@@ -92,8 +108,9 @@ class Follower:
                 self._speed += 1
                 self._speed_cycle_time = time()
 
-        self._bw.speed = self._speed
-        self._bw.forward()
+        if not self._test_mode:
+            self._bw.speed = self._speed
+            self._bw.forward()
 
 
     def stop(self):
@@ -106,7 +123,8 @@ class Follower:
         """Turn the wheels towards the last recognized object."""
         turn_angle = self.opencv_to_wheels(self._tag_data['decision'],
                                            self._tag_data['yaw'])
-        self._fw.turn(turn_angle)
+        if not self._test_mode:
+            self._fw.turn(turn_angle)
 
 
     def opencv_to_wheels(self, turn_decision, yaw):
@@ -158,7 +176,10 @@ class Follower:
         :return: True if an ARTag is detected, False otherwise.
         :rtype: Boolean
         """
-        tag_data = self._tag.detect()
+        if self._test_mode:
+            tag_data = self._tag.detect(self._test_img_src)
+        else:
+            tag_data = self._tag.detect()
         detected = False
 
         if tag_data:
