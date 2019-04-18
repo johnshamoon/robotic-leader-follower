@@ -209,13 +209,13 @@ class Leader:
         if self._demo_turn_decision == 'right':
             if self._demo_turn_angle <= minimum:
                 self._demo_turn_angle = minimum
-                self._demo_turn_decision == 'left'
+                self._demo_turn_decision = 'left'
             else:
                 self._demo_turn_angle -= 1
         elif self._demo_turn_decision == 'left':
             if self._demo_turn_angle >= maximum:
                 self._demo_turn_angle = maximum
-                self._demo_turn_decision == 'right'
+                self._demo_turn_decision = 'right'
             else:
                 self._demo_turn_angle += 1
 
