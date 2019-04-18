@@ -1,7 +1,7 @@
 """
 log
 
-By: Norma Chang
+Author: Norma Chang
 """
 import json
 import os.path
