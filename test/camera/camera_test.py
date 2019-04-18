@@ -209,145 +209,121 @@ class CameraTest(unittest.TestCase):
 
     def test_calibrate_pan_absolute_increase(self):
         camera = Camera()
-
         calbrate_pan_test(camera, 10, 10)
 
 
     def test_calibrate_pan_absolute_increase_at_bound(self):
         camera = Camera()
-
         calibrate_pan_test(camera, 180, 180)
 
 
     def test_calibrate_pan_absolute_increase_beyond_bound(self):
         camera = Camera()
-
         calibrate_pan_test(camera, 181, 180)
 
 
     def test_calibrate_pan_absolute_decrease(self):
         camera = Camera()
-
         calibrate_pan_test(camera, -10, -10)
 
 
     def test_calibrate_pan_absolute_decrease_at_bound(self):
         camera = Camera()
-
         calibrate_pan_test(camera, -180, -180)
 
 
     def test_calibrate_pan_absolute_decrease_beyond_bound(self):
         camera = Camera()
-
         calibrate_pan_test(camera, -181, -180)
 
 
     def test_calibrate_pan_realtive_increase(self):
         camera = Camera(camera_type=RELATIVE)
-
         calibrate_pan_test(camera, 10, 10)
 
 
     def test_calibrate_pan_realtive_increase_at_bound(self):
         camera = Camera(camera_type=RELATIVE)
-
         calibrate_pan_test(camera, 180, 180)
 
 
     def test_calibrate_pan_realtive_increase_beyond_bound(self):
         camera = Camera(camera_type=RELATIVE)
-
         calibrate_pan_test(camera, 181, 180)
 
 
     def test_calibrate_pan_realtive_decrease(self):
         camera = Camera(camera_type=RELATIVE)
-
         calibrate_pan_test(camera, -10, -10)
 
 
     def test_calibrate_pan_realtive_decrease_at_bound(self):
         camera = Camera(camera_type=RELATIVE)
-
         calibrate_pan_test(camera, -180, -180)
 
 
     def test_calibrate_pan_realtive_decrease_beyond_bound(self):
         camera = Camera(camera_type=RELATIVE)
-
         calibrate_pan_test(camera, -181, -180)
 
 
     def test_calibrate_tilt_increase_absolute(self):
         camera = Camera()
-
         calibrate_tilt_test(camera, 10, 10)
 
 
     def test_calibrate_tilt_absolute_increase_at_bound(self):
         camera = Camera()
-
         calibrate_tilt_test(camera, 150, 150)
 
 
     def test_calibrate_tilt_absolute_increase_beyond_bound(self):
         camera = Camera()
-
         calibrate_tilt_test(camera, 151, 150)
 
 
     def test_calibrate_tilt_decrease_absolute(self):
         camera = Camera()
-
         calibrate_tilt_test(camera, -10, -10)
 
 
     def test_calibrate_tilt_absolute_decrease_at_bound(self):
         camera = Camera()
-
         calibrate_tilt_test(camera, -150, -150)
 
 
     def test_calibrate_tilt_absolute_decrease_beyond_bound(self):
         camera = Camera()
-
         calibrate_tilt_test(camera, -151, -150)
 
 
     def test_calibrate_tilt_relative_increase(self):
         camera = Camera(camera_type=RELATIVE)
-
         calibrate_tilt_test(camera, 10, 10)
 
 
     def test_calibrate_tilt_relative_increase_at_bound(self):
         camera = Camera(camera_type=RELATIVE)
-
         calibrate_tilt_test(camera, 150, 150)
 
 
     def test_calibrate_tilt_relative_increase_beyond_bound(self):
         camera = Camera(camera_type=RELATIVE)
-
         calibrate_tilt_test(camera, 151, 150)
 
 
     def test_calibrate_tilt_relative_decrease(self):
         camera = Camera(camera_type=RELATIVE)
-
         calibrate_tilt_test(camera, -10, -10)
 
 
     def test_calibrate_tilt_relative_decrease_at_bound(self):
         camera = Camera(camera_type=RELATIVE)
-
         calibrate_tilt_test(camera, -150, -150)
 
 
     def test_calibrate_tilt_relative_decrease_beyond_bound(self):
         camera = Camera(camera_type=RELATIVE)
-
         calibrate_tilt_test(camera, -151, -150)
 
 
@@ -373,18 +349,18 @@ class CameraTest(unittest.TestCase):
         self.assertEqual(camera._current_tilt_angle, 0)
 
 
-def calibrate_pan_test(camera, calibration_value, expected_value):
-    camera.calibrate_pan(calibration_value)
-    offset = int(self._db.get('pan_offset', default_value=0))
-    self.assertEqual(camera._pan_offset, expected_value)
-    self.assertEqual(offset, expected_value)
+    def calibrate_pan_test(camera, calibration_value, expected_value):
+        camera.calibrate_pan(calibration_value)
+        offset = int(self._db.get('pan_offset', default_value=0))
+        self.assertEqual(camera._pan_offset, expected_value)
+        self.assertEqual(offset, expected_value)
 
 
-def calibrate_tilt_test(camera, calibration_value, expected_value):
-    camera.calibrate_tilt(calibration_value)
-    offset = int(self._db.get('tilt_offset', default_value=0))
-    self.assertEqual(camera._tilt_offset, expected_value)
-    self.assertEqual(offset, expected_value)
+    def calibrate_tilt_test(camera, calibration_value, expected_value):
+        camera.calibrate_tilt(calibration_value)
+        offset = int(self._db.get('tilt_offset', default_value=0))
+        self.assertEqual(camera._tilt_offset, expected_value)
+        self.assertEqual(offset, expected_value)
 
 
 if __name__ == '__main__':
