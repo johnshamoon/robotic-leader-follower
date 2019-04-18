@@ -21,13 +21,17 @@ class Leader:
     Takes input from /dev/input/js0 and directs the vehicle. To turn left or
     right, use the d-pad. To drive forward, use the right trigger. To drive
     backward, use the left trigger.
+
+    :param test_mode: Test mode. Disables movements (off by default).
+    :type test_mode: boolean
     """
 
     STRAIGHT_ANGLE = 90
     """The angle that the hardware associates as straight."""
 
 
-    def __init__(self):
+    def __init__(self, test_mode=False):
+        self._test_mode = False if test_mode is False else True
         self._controller = InputController()
 
         db_file = "config"
@@ -54,12 +58,15 @@ class Leader:
         :type position: float
         """
         try:
-            position = float(position)
-            np.clip(position, -1, 1)
+            position = np.clip(float(position), -1.0, 1.0)
             speed = int(MAX_SPEED * ((position + 1) / 2))
         except (ValueError, TypeError), e:
             speed = 0
-        self.bw.speed = speed
+
+        if not self._test_mode:
+            self.bw.speed = speed
+
+        return speed
 
 
     def drive(self):
@@ -80,26 +87,30 @@ class Leader:
         self.bw.backward()
 
 
-    def turn(self, code, position):
+    def turn(self, position):
         """
         Turns the wheels based on controller input.
 
         If position is -1, the wheels turn left. If position is 1, the wheels
         turn right. Otherwise, the wheels turn straight.
 
-        :param code: The code returned from InputController.get_input().
-        :type code: string
-
         :param position: The value returned from InputController.get_input().
         :type position: float
+
+        :return: The turn angle.
+        :rtype: float
+
+        :return: None if position is not a number.
+        :rtype: None
         """
         try:
-            position = float(position)
-            np.clip(position, -1.0, 1.0)
-            self.fw.turn(self.STRAIGHT_ANGLE + (self.fw.turning_max * position))
+            position = np.clip(float(position), -1.0, 1.0)
+            turn_angle = self.STRAIGHT_ANGLE + (self.fw.turning_max * position)
+            if not self._test_mode:
+                self.fw.turn(turn_angle)
+            return turn_angle
         except (ValueError, TypeError), e:
-            # Ignore if the input isn't a float or an int.
-            pass
+            return None
 
 
     def lead(self):
@@ -116,7 +127,7 @@ class Leader:
             self.set_speed(position)
             self.reverse()
         if code == 'dpad_left_right' or code == 'left_stick_x':
-            self.turn(code, position)
+            self.turn(position)
 
 
 def main():
