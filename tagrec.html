@@ -18,7 +18,7 @@
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="follower" href="follower.html" />
+    <link rel="prev" title="leader" href="leader.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -53,9 +53,10 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="camera.html">camera</a></li>
+<li class="toctree-l1"><a class="reference internal" href="follower.html">follower</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inputcontroller.html">inputcontroller</a></li>
 <li class="toctree-l1"><a class="reference internal" href="leader.html">leader</a></li>
-<li class="toctree-l1"><a class="reference internal" href="follower.html">follower</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">tagrec</a></li>
 </ul>
 </ul>
@@ -92,7 +93,7 @@
 <p>Author: Wisam Bunni</p>
 <dl class="class">
 <dt id="tagrec.TagRecognition">
-<em class="property">class </em><code class="descclassname">tagrec.</code><code class="descname">TagRecognition</code><span class="sig-paren">(</span><em>resolution=90</em>, <em>dead_zone=1.45</em>, <em>marker_length=0.06</em><span class="sig-paren">)</span><a class="headerlink" href="#tagrec.TagRecognition" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">tagrec.</code><code class="descname">TagRecognition</code><span class="sig-paren">(</span><em>resolution=90</em>, <em>dead_zone=1.45</em>, <em>marker_length=0.06</em>, <em>contrast=1</em>, <em>brightness=0</em><span class="sig-paren">)</span><a class="headerlink" href="#tagrec.TagRecognition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tag Recognition class.</p>
 <p>Takes input from the camera to look for an ARTag and returns useful
 information about the tag.</p>
@@ -105,6 +106,10 @@ information about the tag.</p>
 <li><strong>dead_zone</strong> (<em>float</em>) – The dead zone to consider everything to be directly in
 front of the camera.</li>
 <li><strong>marker_length</strong> (<em>float</em>) – The square length of the ARTag in meters.</li>
+<li><strong>contrast</strong> (<em>float</em>) – The contrast multiplier.
+A value in (0, 1) lowers the contrast and
+a value in [1, 100] increases the contrast.</li>
+<li><strong>brightness</strong> (<em>int</em>) – The brightness value in (-127, 127).</li>
 </ul>
 </td>
 </tr>
@@ -112,29 +117,8 @@ front of the camera.</li>
 </table>
 <dl class="attribute">
 <dt id="tagrec.TagRecognition.RESOLUTIONS">
-<code class="descname">RESOLUTIONS</code><em class="property"> = {90: [160, 90], 180: [320, 180], 240: [426, 240], 360: [480, 360], 480: [720, 480], 720: [1280, 720], 1080: [1920, 1080]}</em><a class="headerlink" href="#tagrec.TagRecognition.RESOLUTIONS" title="Permalink to this definition">¶</a></dt>
+<code class="descname">RESOLUTIONS</code><em class="property"> = {90: [160, 90], 144: [176, 144], 180: [320, 180], 240: [426, 240], 360: [480, 360], 480: [720, 480], 720: [1280, 720], 1080: [1920, 1080]}</em><a class="headerlink" href="#tagrec.TagRecognition.RESOLUTIONS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pre-set resolutions.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="tagrec.TagRecognition.detect">
-<code class="descname">detect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tagrec.TagRecognition.detect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Detect an ARTag.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Dictionary containing the x distance, z distance, direction,
-decision, and yaw if an ARTag is detected.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float, float, float, int, float</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None if an camera does not recognize an ARTag.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="method">
@@ -180,6 +164,40 @@ straight, and 1 means right.</td>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="tagrec.TagRecognition.detect">
+<code class="descname">detect</code><span class="sig-paren">(</span><em>img_src=None</em><span class="sig-paren">)</span><a class="headerlink" href="#tagrec.TagRecognition.detect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detect an ARTag.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>img_src</strong> (<em>str</em>) – Path to an image. Used to bypass the camera feed and
+track ARTags from images instead. Used primarily for
+testing purposes. Disabled by default.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Dictionary containing the x distance, z distance, direction,
+decision, and yaw if an ARTag is detected.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float, float, float, int, float</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None if a camera does not recognize an ARTag.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">None</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>IOError</strong> – Thrown if img_src contains an invalid path.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tagrec.main">
+<code class="descclassname">tagrec.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tagrec.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays ARTag information.</p>
+<p>Creates a TagRecognition object and prints tag information to the console.</p>
 </dd></dl>
 
 </div>

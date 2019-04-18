@@ -52,9 +52,10 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="camera.html">camera</a></li>
+<li class="toctree-l1"><a class="reference internal" href="follower.html">follower</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inputcontroller.html">inputcontroller</a></li>
 <li class="toctree-l1"><a class="reference internal" href="leader.html">leader</a></li>
-<li class="toctree-l1"><a class="reference internal" href="follower.html">follower</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tagrec.html">tagrec</a></li>
 </ul>
 </ul>
@@ -95,14 +96,29 @@ in front of the vehicle.</p>
 If an ARTag does not exist, the vehicle will become the leader vehicle.</p>
 <p>Authors: Zein Youssef and Steven Dropiewski</p>
 <dl class="function">
-<dt id="main.is_controller_connected">
-<code class="descclassname">main.</code><code class="descname">is_controller_connected</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.is_controller_connected" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="main.decide_role">
+<code class="descclassname">main.</code><code class="descname">decide_role</code><span class="sig-paren">(</span><em>tag_data</em><span class="sig-paren">)</span><a class="headerlink" href="#main.decide_role" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a Leader or Follower object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tag_data</strong> – Return value of TagRecognition.detect().</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">If tag_data is None, the vehicle will become a Leader. Otherwise,
+it will become a Follower.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="leader.html#leader.Leader" title="leader.Leader">Leader</a> or <a class="reference internal" href="follower.html#follower.Follower" title="follower.Follower">Follower</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="main.main">
 <code class="descclassname">main.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The main driver program for the robotic leader-follower software.</p>
+</dd></dl>
 
 </div>
 

@@ -53,9 +53,10 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="camera.html">camera</a></li>
+<li class="toctree-l1"><a class="reference internal" href="follower.html">follower</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inputcontroller.html">inputcontroller</a></li>
 <li class="toctree-l1"><a class="reference internal" href="leader.html">leader</a></li>
-<li class="toctree-l1"><a class="reference internal" href="follower.html">follower</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tagrec.html">tagrec</a></li>
 </ul>
 </ul>
@@ -101,6 +102,8 @@
  | <a href="#J"><strong>J</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#O"><strong>O</strong></a>
+ | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
@@ -109,6 +112,8 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="camera.html#camera.ABSOLUTE">ABSOLUTE (in module camera)</a>
+</li>
       <li><a href="inputcontroller.html#inputcontroller.InputController.AXIS_CALIBRATION">AXIS_CALIBRATION (inputcontroller.InputController attribute)</a>
 </li>
   </ul></td>
@@ -135,10 +140,16 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="follower.html#follower.Follower.convert_camera_angle">convert_camera_angle() (follower.Follower method)</a>
+      <li><a href="camera.html#camera.Camera.calibrate_pan">calibrate_pan() (camera.Camera method)</a>
+</li>
+      <li><a href="camera.html#camera.Camera.calibrate_tilt">calibrate_tilt() (camera.Camera method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="camera.html#camera.Camera">Camera (class in camera)</a>
+</li>
+      <li><a href="camera.html#module-camera">camera (module)</a>
+</li>
       <li><a href="follower.html#follower.Follower.CYCLE_TIME">CYCLE_TIME (follower.Follower attribute)</a>
 </li>
   </ul></td>
@@ -147,16 +158,18 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="main.html#main.decide_role">decide_role() (in module main)</a>
+</li>
       <li><a href="follower.html#follower.Follower.detect">detect() (follower.Follower method)</a>
 
       <ul>
         <li><a href="tagrec.html#tagrec.TagRecognition.detect">(tagrec.TagRecognition method)</a>
 </li>
       </ul></li>
-      <li><a href="inputcontroller.html#inputcontroller.InputController.DEVICE_NAME_BUFFER">DEVICE_NAME_BUFFER (inputcontroller.InputController attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="inputcontroller.html#inputcontroller.InputController.DEVICE_NAME_BUFFER">DEVICE_NAME_BUFFER (inputcontroller.InputController attribute)</a>
+</li>
       <li><a href="inputcontroller.html#inputcontroller.InputController.DEVICE_NAME_MAX_LENGTH">DEVICE_NAME_MAX_LENGTH (inputcontroller.InputController attribute)</a>
 </li>
       <li><a href="follower.html#follower.Follower.drive">drive() (follower.Follower method)</a>
@@ -203,9 +216,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="tagrec.html#tagrec.TagRecognition.get_direction">get_direction() (tagrec.TagRecognition method)</a>
 </li>
+      <li><a href="inputcontroller.html#inputcontroller.InputController.get_input">get_input() (inputcontroller.InputController method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="inputcontroller.html#inputcontroller.InputController.get_input">get_input() (inputcontroller.InputController method)</a>
+      <li><a href="camera.html#camera.Camera.get_pan_angle">get_pan_angle() (camera.Camera method)</a>
+</li>
+      <li><a href="camera.html#camera.Camera.get_tilt_angle">get_tilt_angle() (camera.Camera method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -218,8 +235,6 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="inputcontroller.html#module-inputcontroller">inputcontroller (module)</a>
-</li>
-      <li><a href="main.html#main.is_controller_connected">is_controller_connected() (in module main)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -247,13 +262,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="leader.html#leader.Leader.lead">lead() (leader.Leader method)</a>
 </li>
-      <li><a href="leader.html#leader.Leader">Leader (class in leader)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="leader.html#module-leader">leader (module)</a>
+      <li><a href="leader.html#leader.Leader">Leader (class in leader)</a>
 </li>
-      <li><a href="follower.html#follower.Follower.LEADER_MAX_SPEED">LEADER_MAX_SPEED (follower.Follower attribute)</a>
+      <li><a href="leader.html#module-leader">leader (module)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -263,25 +276,59 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="main.html#module-main">main (module)</a>
 </li>
-      <li><a href="follower.html#follower.main">main() (in module follower)</a>
+      <li><a href="camera.html#camera.main">main() (in module camera)</a>
 
       <ul>
+        <li><a href="follower.html#follower.main">(in module follower)</a>
+</li>
         <li><a href="inputcontroller.html#inputcontroller.main">(in module inputcontroller)</a>
 </li>
         <li><a href="leader.html#leader.main">(in module leader)</a>
 </li>
         <li><a href="main.html#main.main">(in module main)</a>
 </li>
+        <li><a href="tagrec.html#tagrec.main">(in module tagrec)</a>
+</li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="tagrec.html#tagrec.TagRecognition.make_decision">make_decision() (tagrec.TagRecognition method)</a>
 </li>
       <li><a href="follower.html#follower.Follower.MAX_DISTANCE">MAX_DISTANCE (follower.Follower attribute)</a>
 </li>
-      <li><a href="leader.html#leader.Leader.MAX_TURN_ANGLE">MAX_TURN_ANGLE (leader.Leader attribute)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="camera.html#camera.Camera.MAX_PAN_CALI_DEGREE">MAX_PAN_CALI_DEGREE (camera.Camera attribute)</a>
+</li>
+      <li><a href="camera.html#camera.Camera.MAX_PAN_DEGREE">MAX_PAN_DEGREE (camera.Camera attribute)</a>
+</li>
+      <li><a href="leader.html#leader.MAX_SPEED">MAX_SPEED (in module leader)</a>
+</li>
+      <li><a href="camera.html#camera.Camera.MAX_TILT_CALI_DEGREE">MAX_TILT_CALI_DEGREE (camera.Camera attribute)</a>
+</li>
+      <li><a href="camera.html#camera.Camera.MAX_TILT_DEGREE">MAX_TILT_DEGREE (camera.Camera attribute)</a>
 </li>
       <li><a href="follower.html#follower.Follower.MIN_DISTANCE">MIN_DISTANCE (follower.Follower attribute)</a>
+</li>
+      <li><a href="camera.html#camera.Camera.MIN_PAN_CALI_DEGREE">MIN_PAN_CALI_DEGREE (camera.Camera attribute)</a>
+</li>
+      <li><a href="camera.html#camera.Camera.MIN_PAN_TILT_DEGREE">MIN_PAN_TILT_DEGREE (camera.Camera attribute)</a>
+</li>
+      <li><a href="camera.html#camera.Camera.MIN_TILT_CALI_DEGREE">MIN_TILT_CALI_DEGREE (camera.Camera attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="follower.html#follower.Follower.opencv_to_wheels">opencv_to_wheels() (follower.Follower method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="camera.html#camera.Camera.pan">pan() (camera.Camera method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -289,7 +336,9 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="follower.html#follower.Follower.reset_camera">reset_camera() (follower.Follower method)</a>
+      <li><a href="camera.html#camera.RELATIVE">RELATIVE (in module camera)</a>
+</li>
+      <li><a href="camera.html#camera.Camera.reset_camera">reset_camera() (camera.Camera method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -321,20 +370,16 @@
 </li>
       <li><a href="tagrec.html#tagrec.TagRecognition">TagRecognition (class in tagrec)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="camera.html#camera.Camera.tilt">tilt() (camera.Camera method)</a>
+</li>
       <li><a href="follower.html#follower.Follower.turn">turn() (follower.Follower method)</a>
 
       <ul>
         <li><a href="leader.html#leader.Leader.turn">(leader.Leader method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="leader.html#leader.Leader.turn_left">turn_left() (leader.Leader method)</a>
-</li>
-      <li><a href="leader.html#leader.Leader.turn_right">turn_right() (leader.Leader method)</a>
-</li>
-      <li><a href="leader.html#leader.Leader.turn_straight">turn_straight() (leader.Leader method)</a>
-</li>
   </ul></td>
 </tr></table>
 

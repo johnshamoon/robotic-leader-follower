@@ -18,8 +18,8 @@
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="tagrec" href="tagrec.html" />
-    <link rel="prev" title="leader" href="leader.html" />
+    <link rel="next" title="inputcontroller" href="inputcontroller.html" />
+    <link rel="prev" title="camera" href="camera.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -54,9 +54,10 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="camera.html">camera</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">follower</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inputcontroller.html">inputcontroller</a></li>
 <li class="toctree-l1"><a class="reference internal" href="leader.html">leader</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">follower</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tagrec.html">tagrec</a></li>
 </ul>
 </ul>
@@ -93,29 +94,22 @@
 <p>Author: John Shamoon</p>
 <dl class="class">
 <dt id="follower.Follower">
-<em class="property">class </em><code class="descclassname">follower.</code><code class="descname">Follower</code><a class="headerlink" href="#follower.Follower" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">follower.</code><code class="descname">Follower</code><span class="sig-paren">(</span><em>test_img_src=None</em><span class="sig-paren">)</span><a class="headerlink" href="#follower.Follower" title="Permalink to this definition">¶</a></dt>
 <dd><p>Autonomous follower vehicle to follow another vehicle.</p>
 <p>Takes input from camera and autonomously follows another vehicle with an
 ARTag mounted at the rear-center of the leader vehicle.</p>
-<dl class="attribute">
-<dt id="follower.Follower.CYCLE_TIME">
-<code class="descname">CYCLE_TIME</code><em class="property"> = 0.1</em><a class="headerlink" href="#follower.Follower.CYCLE_TIME" title="Permalink to this definition">¶</a></dt>
-<dd><p>The cycle time of the system.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="follower.Follower.FOLLOWER_MAX_SPEED">
-<code class="descname">FOLLOWER_MAX_SPEED</code><em class="property"> = 100</em><a class="headerlink" href="#follower.Follower.FOLLOWER_MAX_SPEED" title="Permalink to this definition">¶</a></dt>
-<dd><p>The max speed of a car from a SunFounder PiCar-V kit.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="follower.Follower.LEADER_MAX_SPEED">
-<code class="descname">LEADER_MAX_SPEED</code><em class="property"> = 75</em><a class="headerlink" href="#follower.Follower.LEADER_MAX_SPEED" title="Permalink to this definition">¶</a></dt>
-<dd><p>The max speed of the leader vehicle. The leader is slower than the follower
-to allow the follower to catch up.</p>
-</dd></dl>
-
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>test_img_src</strong> (<em>str</em>) – Path to an image. Used to bypass the camera feed and
+follow ARTags from images instead. Used primarily for
+testing. Disabled by default.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>IOError</strong> – Thrown if test_img_src is not a file.</td>
+</tr>
+</tbody>
+</table>
 <dl class="attribute">
 <dt id="follower.Follower.MAX_DISTANCE">
 <code class="descname">MAX_DISTANCE</code><em class="property"> = 0.28</em><a class="headerlink" href="#follower.Follower.MAX_DISTANCE" title="Permalink to this definition">¶</a></dt>
@@ -128,16 +122,71 @@ to allow the follower to catch up.</p>
 <dd><p>One third of the length of a car from a SunFounder PiCar-V kit (in meters).</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="follower.Follower.FOLLOWER_MAX_SPEED">
+<code class="descname">FOLLOWER_MAX_SPEED</code><em class="property"> = 55</em><a class="headerlink" href="#follower.Follower.FOLLOWER_MAX_SPEED" title="Permalink to this definition">¶</a></dt>
+<dd><p>The max speed of the leader vehicle. The leader is slower than the follower
+to allow the follower to catch up.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="follower.Follower.CYCLE_TIME">
+<code class="descname">CYCLE_TIME</code><em class="property"> = 0.1</em><a class="headerlink" href="#follower.Follower.CYCLE_TIME" title="Permalink to this definition">¶</a></dt>
+<dd><p>The cycle time of the system.</p>
+</dd></dl>
+
 <dl class="method">
-<dt id="follower.Follower.convert_camera_angle">
-<code class="descname">convert_camera_angle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#follower.Follower.convert_camera_angle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Converts the camera’s angle scale to the same scale as the wheels.</p>
-<p>The camera reports objects directly in front of it as 90 degrees.
+<dt id="follower.Follower.drive">
+<code class="descname">drive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#follower.Follower.drive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drives forward and avoids forward collisions with recognized objects.</p>
+<p>Manages the speed to avoid collisions depending on the distance to the
+recognized object. If the recognized object is within MIN_DISTANCE, the
+speed will be set to 0. If the recognized object is outside of the
+MAX_DISTANCE, the speed will be set to FOLLOWER_MAX_SPEED. If the
+vehicle is within [MIN_DISTANCE, MAX_DISTANCE), the vehicle will match
+the leader vehicle’s speed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="follower.Follower.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#follower.Follower.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops the vehicle.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="follower.Follower.turn">
+<code class="descname">turn</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#follower.Follower.turn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn the wheels towards the last recognized object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="follower.Follower.opencv_to_wheels">
+<code class="descname">opencv_to_wheels</code><span class="sig-paren">(</span><em>turn_decision</em>, <em>yaw</em><span class="sig-paren">)</span><a class="headerlink" href="#follower.Follower.opencv_to_wheels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts OpenCV’s angle scale to the same scale as the wheels.</p>
+<p>OpenCV reports objects directly in front of it as 90 degrees.
 Everything to the left of center is negative ranging from [-45, -90)
 with -45 being the leftmost angle. Everything to the right of center is
 positive ranging from (90, 135] with 135 being the rightmost angle.</p>
 <p>The wheels turn on a range of [45, 135] with 45 being the rightmost, 135
 being the leftmost, and 90 being center.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>turn_decision</strong> (<em>int</em>) – Where the leader vehicle is turning. -1 means the
+leader is turning left, 1 means the leader is
+turning right, and any other value means the
+leader is not turning.</li>
+<li><strong>yaw</strong> (<em>float</em>) – The yaw angle of the tag.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The turn angle to the ARTag in [45, 135].</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -160,39 +209,12 @@ detect() will return False.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="follower.Follower.drive">
-<code class="descname">drive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#follower.Follower.drive" title="Permalink to this definition">¶</a></dt>
-<dd><p>Drives forward and avoids forward collisions with recognized objects.</p>
-<p>Manages the speed to avoid collisions depending on the distance to the
-recognized object. If the recognized object is within MIN_DISTANCE, the
-speed will be set to 0. If the recognized object is outside of the
-MAX_DISTANCE, the speed will be set to FOLLOWER_MAX_SPEED. If the
-vehicle is within [MIN_DISTANCE, MAX_DISTANCE), the vehicle will match
-the leader vehicle’s speed.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="follower.Follower.follow">
 <code class="descname">follow</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#follower.Follower.follow" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="follower.Follower.reset_camera">
-<code class="descname">reset_camera</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#follower.Follower.reset_camera" title="Permalink to this definition">¶</a></dt>
-<dd><p>Resets the camera to the default position.</p>
-<p>The default position is tilted to 120 degrees and panned to 90 degrees.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="follower.Follower.stop">
-<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#follower.Follower.stop" title="Permalink to this definition">¶</a></dt>
-<dd><p>Stops the vehicle.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="follower.Follower.turn">
-<code class="descname">turn</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#follower.Follower.turn" title="Permalink to this definition">¶</a></dt>
-<dd><p>Turn the wheels towards the last recognized object.</p>
+<dd><p>Follow an ARTag if one is found.</p>
+<p>If an ARTag is detected, the follower vehicle will turn towards it and
+manage speed to avoid collisions. If an ARTag is not detected, the vehicle
+will stop.</p>
 </dd></dl>
 
 </dd></dl>

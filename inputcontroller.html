@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="leader" href="leader.html" />
-    <link rel="prev" title="Welcome to Robotic Leader Follower’s documentation!" href="index.html" />
+    <link rel="prev" title="follower" href="follower.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -54,9 +54,10 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="camera.html">camera</a></li>
+<li class="toctree-l1"><a class="reference internal" href="follower.html">follower</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">inputcontroller</a></li>
 <li class="toctree-l1"><a class="reference internal" href="leader.html">leader</a></li>
-<li class="toctree-l1"><a class="reference internal" href="follower.html">follower</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tagrec.html">tagrec</a></li>
 </ul>
 </ul>
@@ -119,21 +120,10 @@
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="inputcontroller.InputController.AXIS_CALIBRATION">
-<code class="descname">AXIS_CALIBRATION</code><em class="property"> = 32767.0</em><a class="headerlink" href="#inputcontroller.InputController.AXIS_CALIBRATION" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calibrates axes to be in (-32767.0, 32767.0)</p>
-</dd></dl>
-
-<dl class="attribute">
 <dt id="inputcontroller.InputController.AXIS_CODES">
 <code class="descname">AXIS_CODES</code><em class="property"> = {0: 'left_stick_x', 1: 'left_stick_y', 2: 'right_stick_z', 5: 'right_stick_rotation_z', 9: 'right_trigger', 10: 'left_trigger', 16: 'dpad_left_right', 17: 'dpad_up_down'}</em><a class="headerlink" href="#inputcontroller.InputController.AXIS_CODES" title="Permalink to this definition">¶</a></dt>
 <dd><p>Linux axis codes from input-event-codes.h.</p>
 </dd></dl>
-
-<dl class="attribute">
-<dt id="inputcontroller.InputController.AXIS_MAP_BUFFER">
-<code class="descname">AXIS_MAP_BUFFER</code><em class="property"> = 64</em><a class="headerlink" href="#inputcontroller.InputController.AXIS_MAP_BUFFER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="attribute">
 <dt id="inputcontroller.InputController.BUTTON_CODES">
@@ -142,44 +132,21 @@
 </dd></dl>
 
 <dl class="attribute">
-<dt id="inputcontroller.InputController.BUTTON_MAP_BUFFER">
-<code class="descname">BUTTON_MAP_BUFFER</code><em class="property"> = 512</em><a class="headerlink" href="#inputcontroller.InputController.BUTTON_MAP_BUFFER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="inputcontroller.InputController.DEVICE_NAME_BUFFER">
-<code class="descname">DEVICE_NAME_BUFFER</code><em class="property"> = 65536</em><a class="headerlink" href="#inputcontroller.InputController.DEVICE_NAME_BUFFER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="inputcontroller.InputController.DEVICE_NAME_MAX_LENGTH">
-<code class="descname">DEVICE_NAME_MAX_LENGTH</code><em class="property"> = 100</em><a class="headerlink" href="#inputcontroller.InputController.DEVICE_NAME_MAX_LENGTH" title="Permalink to this definition">¶</a></dt>
-<dd><p>Device name can be at most 64 bytes.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="inputcontroller.InputController.EV_KEY">
-<code class="descname">EV_KEY</code><em class="property"> = 1</em><a class="headerlink" href="#inputcontroller.InputController.EV_KEY" title="Permalink to this definition">¶</a></dt>
-<dd><p>Button event type.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="inputcontroller.InputController.EV_REL">
-<code class="descname">EV_REL</code><em class="property"> = 2</em><a class="headerlink" href="#inputcontroller.InputController.EV_REL" title="Permalink to this definition">¶</a></dt>
-<dd><p>Axis event type.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="inputcontroller.InputController.FORMAT">
-<code class="descname">FORMAT</code><em class="property"> = 'IhBB'</em><a class="headerlink" href="#inputcontroller.InputController.FORMAT" title="Permalink to this definition">¶</a></dt>
-<dd><p>Format to unpack a struct. Unsigned int, short, unsigned short, unsigned
-short.</p>
+<dt id="inputcontroller.InputController.JSIOCGNAME">
+<code class="descname">JSIOCGNAME</code><em class="property"> = 2147510803L</em><a class="headerlink" href="#inputcontroller.InputController.JSIOCGNAME" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the device’s identifier string.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="inputcontroller.InputController.JSIOCGAXES">
 <code class="descname">JSIOCGAXES</code><em class="property"> = 2147576337L</em><a class="headerlink" href="#inputcontroller.InputController.JSIOCGAXES" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the device’s number of axes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inputcontroller.InputController.JSIOCGBUTTONS">
+<code class="descname">JSIOCGBUTTONS</code><em class="property"> = 2147576338L</em><a class="headerlink" href="#inputcontroller.InputController.JSIOCGBUTTONS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the device’s number of buttons.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -195,16 +162,50 @@ short.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="inputcontroller.InputController.JSIOCGBUTTONS">
-<code class="descname">JSIOCGBUTTONS</code><em class="property"> = 2147576338L</em><a class="headerlink" href="#inputcontroller.InputController.JSIOCGBUTTONS" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the device’s number of buttons.</p>
+<dt id="inputcontroller.InputController.FORMAT">
+<code class="descname">FORMAT</code><em class="property"> = 'IhBB'</em><a class="headerlink" href="#inputcontroller.InputController.FORMAT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format to unpack a struct. Unsigned int, short, unsigned short, unsigned
+short.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="inputcontroller.InputController.JSIOCGNAME">
-<code class="descname">JSIOCGNAME</code><em class="property"> = 2147510803L</em><a class="headerlink" href="#inputcontroller.InputController.JSIOCGNAME" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the device’s identifier string.</p>
+<dt id="inputcontroller.InputController.EV_KEY">
+<code class="descname">EV_KEY</code><em class="property"> = 1</em><a class="headerlink" href="#inputcontroller.InputController.EV_KEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Button event type.</p>
 </dd></dl>
+
+<dl class="attribute">
+<dt id="inputcontroller.InputController.EV_REL">
+<code class="descname">EV_REL</code><em class="property"> = 2</em><a class="headerlink" href="#inputcontroller.InputController.EV_REL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Axis event type.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inputcontroller.InputController.AXIS_CALIBRATION">
+<code class="descname">AXIS_CALIBRATION</code><em class="property"> = 32767.0</em><a class="headerlink" href="#inputcontroller.InputController.AXIS_CALIBRATION" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calibrates axes to be in (-32767.0, 32767.0)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inputcontroller.InputController.DEVICE_NAME_MAX_LENGTH">
+<code class="descname">DEVICE_NAME_MAX_LENGTH</code><em class="property"> = 100</em><a class="headerlink" href="#inputcontroller.InputController.DEVICE_NAME_MAX_LENGTH" title="Permalink to this definition">¶</a></dt>
+<dd><p>Device name can be at most 64 bytes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inputcontroller.InputController.DEVICE_NAME_BUFFER">
+<code class="descname">DEVICE_NAME_BUFFER</code><em class="property"> = 65536</em><a class="headerlink" href="#inputcontroller.InputController.DEVICE_NAME_BUFFER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inputcontroller.InputController.AXIS_MAP_BUFFER">
+<code class="descname">AXIS_MAP_BUFFER</code><em class="property"> = 64</em><a class="headerlink" href="#inputcontroller.InputController.AXIS_MAP_BUFFER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inputcontroller.InputController.BUTTON_MAP_BUFFER">
+<code class="descname">BUTTON_MAP_BUFFER</code><em class="property"> = 512</em><a class="headerlink" href="#inputcontroller.InputController.BUTTON_MAP_BUFFER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="inputcontroller.InputController.get_input">
