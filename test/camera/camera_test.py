@@ -8,6 +8,7 @@ sys.path.append(FILE_PATH + "/../../src")
 
 from camera import Camera
 
+
 class CameraTest(unittest.TestCase):
     def setUp(self):
         self._db = filedb.fileDB("config")
