@@ -5,6 +5,7 @@ Author: John Shamoon
 """
 from time import time
 import numpy as np
+import os
 
 from picar import back_wheels, front_wheels
 import picar
@@ -45,7 +46,7 @@ class Follower:
         self._test_mode = False
         self._test_img_src = None
         if test_img_src:
-            if path.isfile(test_img_src):
+            if os.path.isfile(test_img_src):
                 self._test_mode = True
                 self._test_img_src = test_img_src
             else:
