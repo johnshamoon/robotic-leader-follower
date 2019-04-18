@@ -26,7 +26,7 @@ class Follower:
     """Length of a car from a SunFounder PiCar-V kit (in meters)."""
     MIN_DISTANCE = MAX_DISTANCE / 3
     """One third of the length of a car from a SunFounder PiCar-V kit (in meters)."""
-    FOLLOWER_MAX_SPEED = 75
+    FOLLOWER_MAX_SPEED = 55
     """
     The max speed of the leader vehicle. The leader is slower than the follower
     to allow the follower to catch up.
@@ -48,7 +48,7 @@ class Follower:
 
         self._camera = Camera()
 
-        self._tag = TagRecognition(marker_length=0.025)
+        self._tag = TagRecognition(resolution=144, marker_length=0.025)
         self._speed = 0
 
         self._tag_data = {
@@ -61,6 +61,7 @@ class Follower:
 
         self._tag_lost_time = 0
         self._speed_cycle_time = time()
+        self._turn_time = time()
 
 
     def drive(self):
@@ -131,11 +132,11 @@ class Follower:
 
         :return: The turn angle to the ARTag in [45, 135].
         """
+        turn_angle = 90
         try:
             turn_decision = int(turn_decision)
-            yaw = float(yaw)
+            yaw = int(yaw)
         except (ValueError, TypeError), e:
-            turn_angle = 90
             turn_decision = 0
 
         if turn_decision == -1:
@@ -178,7 +179,11 @@ class Follower:
         """
         if self.detect():
             self.drive()
-            self.turn()
+            if not self._turn_time:
+                self._turn_time = time()
+            elif (time() - self._turn_time) >= self.CYCLE_TIME:
+                self.turn()
+                self._turn_time = time()
             self._tag_lost_time = 0
         else:
             if not self._tag_lost_time:
