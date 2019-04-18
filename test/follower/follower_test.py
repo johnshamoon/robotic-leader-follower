@@ -16,10 +16,6 @@ class FollowerTest(unittest.TestCase):
     def setUp(self):
         self._pictures_dir = FILE_PATH + "/../res/tag_pictures/"
 
-        self._decision_left = -1
-        self._decision_straight = 0
-        self._decision_right = 1
-
         self._default_tag_data = {
                 'x': 0,
                 'z': 0,
