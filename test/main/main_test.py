@@ -17,13 +17,13 @@ class MainTest(unittest.TestCase):
 
 
     def test_artag_not_detected(self):
-        img_src = self._pictures_dir + "no_tag.png"
+        img_src = self._pictures_dir + "no_tag.jpg"
         tag = TagRecognition()
         self.assertTrue(isinstance(decide_role(tag.detect(img_src)), Leader))
 
 
     def test_artag_detected(self):
-        img_src = self._pictures_dir + "straight_no_turn_5in.png"
+        img_src = self._pictures_dir + "straight_no_turn_5in.jpg"
         tag = TagRecognition()
         self.assertTrue(isinstance(decide_role(tag.detect(img_src)), Follower))
 

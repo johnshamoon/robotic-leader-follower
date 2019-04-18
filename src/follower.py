@@ -3,21 +3,16 @@ follower
 
 Author: John Shamoon
 """
-from os import path
 from time import time
 import numpy as np
-import sys
 
-FILE_PATH = path.dirname(path.realpath(__file__))
-SUNFOUNDER_PATH = "SunFounder_PiCar-V/remote_control/remote_control/driver"
-sys.path.append(FILE_PATH + "/../" + SUNFOUNDER_PATH)
-
-from camera import Camera
 from picar import back_wheels, front_wheels
 import picar
 
 from leader import MAX_SPEED as LEADER_MAX_SPEED
+from camera import Camera
 from tagrec import TagRecognition
+
 
 class Follower:
     """
@@ -42,7 +37,7 @@ class Follower:
     def __init__(self):
         picar.setup()
 
-        db_file = FILE_PATH + "/../" + SUNFOUNDER_PATH + "/config"
+        db_file = "config"
         self._fw = front_wheels.Front_Wheels(debug=False, db=db_file)
         self._bw = back_wheels.Back_Wheels(debug=False, db=db_file)
 
