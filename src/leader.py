@@ -10,7 +10,7 @@ from inputcontroller import InputController
 from picar import back_wheels, front_wheels
 import picar
 
-MAX_SPEED = 50
+MAX_SPEED = 45
 """The maximum speed of the leader vehicle."""
 
 
@@ -78,33 +78,6 @@ class Leader:
         The vehicle moves backward at the last set speed.
         """
         self.bw.backward()
-
-
-    def turn_left(self):
-        """
-        Turns the wheels to the left.
-
-        The wheels are turned 45 degrees to the left (135 degrees).
-        """
-        self.fw.turn_left()
-
-
-    def turn_right(self):
-        """
-        Turns the wheels to the right.
-
-        The wheels are turned 45 degrees to the right (45 degrees).
-        """
-        self.fw.turn_right()
-
-
-    def turn_straight(self):
-        """
-        Turns the wheels straight.
-
-        Turns the wheels to 90 degrees.
-        """
-        self.fw.turn(self.STRAIGHT_ANGLE)
 
 
     def turn(self, code, position):
