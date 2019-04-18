@@ -73,6 +73,7 @@ class FollowerTest(unittest.TestCase):
 
         self.assertEqual(follower._speed, LEADER_MAX_SPEED)
 
+
     def test_opencv_to_wheels_straight_decision(self):
         img_src = self._pictures_dir + "no_tag.jpg"
 
