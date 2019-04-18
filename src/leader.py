@@ -12,6 +12,7 @@ SUNFOUNDER_PATH = "SunFounder_PiCar-V/remote_control/remote_control/driver"
 sys.path.append(FILE_PATH + "/../" + SUNFOUNDER_PATH)
 
 from inputcontroller import InputController
+
 from log import Log
 
 from picar import back_wheels, front_wheels
@@ -51,27 +52,28 @@ class Leader:
         log = Log('leader')
 
         self._tag_data = {
-                'time': time(),
                 'speed': 0,
                 'turn_angle': 0,
         }
 
 
-    def set_speed(self, position):
+ def set_speed(self, position):
         """
         Sets the speed of the vehicle based on controller input.
 
         If the position is -1, the speed will be 0. If position is between (-1,1),
         the speed will increase as the position goes to 1. If the position is 1,
         the speed will be LEADER.MAX_SPEED.
-
+        
         :param position: The value of the button input.
-        :type position: int
+        :type position: float
         """
-        if position == -1:
+        try:
+            position = float(position)
+            np.clip(position, -1, 1)
+            speed = int(MAX_SPEED * ((position + 1) / 2))
+        except (ValueError, TypeError), e:
             speed = 0
-        else:
-            speed = int(MAX_SPEED * ((position + 1)/2))
         self.bw.speed = speed
 
 
@@ -133,15 +135,13 @@ class Leader:
         :param position: The value returned from InputController.get_input().
         :type position: float
         """
-        if code == 'dpad_left_right':
-            if position == -1:
-                self.turn_left()
-            elif position == 1:
-                self.turn_right()
-            else:
-                self.turn_straight()
-        elif code == 'left_stick_x':
+        try:
+            position = float(position)
+            np.clip(position, -1.0, 1.0)
             self.fw.turn(self.STRAIGHT_ANGLE + (self.fw.turning_max * position))
+        except (ValueError, TypeError), e:
+            # Ignore if the input isn't a float or an int.
+            pass
 
 
     def lead(self):
@@ -168,7 +168,6 @@ def main():
     Instantiates a Leader object and continuously calls Leader.lead().
     """
     leader = Leader()
-
     while True:
         leader.lead()
 

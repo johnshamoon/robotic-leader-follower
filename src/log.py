@@ -26,9 +26,10 @@ class Log:
         """
         Write dictionary into text file.
 
-        :param: dictionary: any dictionary
+        :param: dictionary: The dictionary passed in from a class. 
         :type: dict
         """
+        dictionary['time'] = time.time()
         with open(self.file_name, 'a') as outfile:
             json.dump(dictionary, outfile)
             outfile.write(',')
@@ -38,8 +39,10 @@ class Log:
         """
         Reads any log file that conforms to the specified format.
 
-        :param: file_name: any valid file name.
+        :param: file_name: The given file name in a valid format.
         :type: string
+
+        :return: An array of dictionaries
         """
         if os.path.isfile(file_name):
             log_file = open(file_name, 'r').read()
